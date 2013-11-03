@@ -21,7 +21,7 @@ define(['require','module','exports','logger'], function(require,module,exports,
               var formattedTemp;
              
               if (tempObs() === undefined)
-                     return '--.--'; // Not available yet
+                     return '--.--'; // Sensor discovered, but temperature observation not available yet
              
              switch (this.temperatureMode()) {
                         case TemperatureVM.prototype.MODE.FAHRENHEIT :
@@ -64,11 +64,6 @@ define(['require','module','exports','logger'], function(require,module,exports,
              }.bind(this)
             
          });
-//            this.firstNameCaps = ko.computed(function() {
-//                return this.firstName().toUpperCase();
-//            }, this);
-       
-        // TO DO : read from local storage
 
           this.location = ko.observable();
           var loc;

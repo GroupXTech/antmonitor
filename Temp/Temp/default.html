@@ -12,11 +12,10 @@
     <!-- Temp references -->
     <link href="/css/default.css" rel="stylesheet" />
 
+    <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
     <script src="/Scripts/knockout-3.0.0.debug.js"></script>
     <script src="/Scripts/require.js"></script>
     <script src="/js/default.js"></script>
-
-    
 
 </head>
 <body>
@@ -26,6 +25,8 @@
 
         <script type="text/html" id="temperature-template">
             <li>
+
+                <img class="icon" src="images/Temperature.scale-32.png" />
                 <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown'" />
                 <span class="temperature" data-bind="text: formattedCurrentTemp"></span>
 
@@ -46,7 +47,7 @@
             </li>
         </script>
 
-        <!--http://line25.com/tutorials/how-to-create-a-pure-css-dropdown-menu-->
+        <!-- Based on http://line25.com/tutorials/how-to-create-a-pure-css-dropdown-menu -->
 
         <nav>
             <ul>
@@ -57,20 +58,34 @@
                     <ul id="ulDevices" data-bind="template: {name : 'device-template', foreach: deviceVM.device}"></ul>
                 
                 </li>
+
                 <li>
                     <a href="#">Settings</a>
                     <ul>
                         <li>
-                            <a href="#">Temperature mode</a>
-                            <ul>
-                                <li><a href="#">Celcius</a></li>
-                                <li><a href="#">Fahrenheit</a></li>
-
-                            </ul>
-                        
+                           <label>Mode</label>
+                               
+                            <select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode"></select>
+                      
                         </li>
+
+                        <li>
+                            <label>24h min/max</label>
+                            <input type="checkbox"  data-bind="checked: settingVM.show24H"></li>
                        
                     </ul>
+                </li>
+
+                <li>
+                    <a href="#">About</a>
+
+                    <ul>
+                        <li>
+                            <a href="https://github.com/hkskoglund/libant">libant</a>
+                        </li>
+                    </ul>
+
+
                 </li>
              
             </ul>
@@ -87,7 +102,7 @@
            
             <!--
 
-                <select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode"></select>
+                
                 <button data-bind="click: settingVM.enable24H">Show 24H</button>
 
     -->

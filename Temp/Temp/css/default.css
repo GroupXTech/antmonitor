@@ -1,5 +1,4 @@
-﻿/*CSS drop down menu*/
-
+﻿/* Navigation based on http://line25.com/tutorials/how-to-create-a-pure-css-dropdown-menu */
 
 nav ul ul {
     display: none;
@@ -115,4 +114,8 @@ nav ul {
     color: white;
     font-size: large;
     font-weight: bold;
+}
+
+.icon {
+    height: 24px;
 }

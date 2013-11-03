@@ -18,6 +18,10 @@
 
     var host; // ANT host
 
+    var hostOptions;
+
+    var hostInitCB;
+
     var rootVM; // Root viewmodel, contains all the other sub-view models
 
     requirejs.config({
@@ -35,11 +39,7 @@
 
     });
 
-    // Why not app.onresume ?
-    Windows.UI.WebUI.WebUIApplication.addEventListener("resuming", function _resumingHandler() {
-       
-        host.init(hostOptions, hostInitCB);
-    }, false);
+    
 
     function _startKnockout(callback) {
 
@@ -49,8 +49,9 @@
 
                 settingVM: {
                     logging: ko.observable(true),     // Enable logging to console  
-                    temperatureMode: ko.observable(), // Celcius, fahrenheit
-                    show24H: ko.observable(false)     // Show 24H max/min
+                    temperatureMode: ko.observable(window.localStorage["temperaturemode"] || TemperatureVM.prototype.MODE.CELCIUS), // Celcius, fahrenheit
+                    temperatureModes : TemperatureVM.prototype.MODES,
+                    show24H: ko.observable(window.localStorage["show24h"] || false)     // Show 24H max/min
 
                 },
 
@@ -62,14 +63,16 @@
                 }
 
             };
-            //
-            rootVM.deviceVM.selectedDevice.subscribe(function (newValue) {
-                console.log("Selected device", newValue);
+            
+            // Persist change in mode to local storage
+            rootVM.settingVM.temperatureMode.subscribe(function (mode) {
+                window.localStorage["temperaturemode"] = mode;
             });
 
-
-            rootVM.settingVM.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
-            rootVM.settingVM.temperatureModes = TemperatureVM.prototype.MODES;
+            // Persist  to local storage
+            rootVM.settingVM.show24H.subscribe(function (show24h) {
+                window.localStorage["show24h"] = show24h;
+            });
 
             // TEST: Click-handler for show24H
 
@@ -150,8 +153,6 @@
         require(['anthost', 'usb/USBWindows','profiles/deviceProfile_ENVIRONMENT', 'profiles/RxScanMode'],
                       function (ANTHost, USBWindows, TEMPprofile, RxScanMode) {
 
-                        
-
                           host = new ANTHost();
 
                           var USBoptions = {
@@ -193,7 +194,7 @@
 
                           var usb = new USBWindows(USBoptions);
                           
-                          var hostOptions = {
+                           hostOptions = {
                               usb: usb,
                               reset: true,
                               libconfig: 'channelid,rxtimestamp',
@@ -233,7 +234,7 @@
                               },
                               onPage: onPage });
 
-                         var hostInitCB = function (error) {
+                         hostInitCB = function (error) {
                               // console.trace();
                               //  console.profileEnd();
                               if (error)
@@ -261,6 +262,11 @@
 
                       });
 
+    }
+
+    app.onresume = function () {
+        host.init(hostOptions, hostInitCB);
+           
     }
 
     app.onactivated = function (args) {
@@ -305,11 +311,19 @@
         // Force synchronous callback, without any delay with setTimeout
         host.options.resetDelay = 0;
 
+        // Remove previously registered devices from UI
+
+        rootVM.deviceVM.device.removeAll();
+
         host.resetSystem(function () {
+
             host.exit(_onExit);
         })
 
     };
+
+    // Why not app.onresume ?
+    Windows.UI.WebUI.WebUIApplication.addEventListener("resuming", app.onresume, false);
 
     app.start();
 
