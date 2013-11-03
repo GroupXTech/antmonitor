@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Temp</title>
+
+    <!-- WinJS references -->
+    <link href="//Microsoft.WinJS.2.0/css/ui-dark.css" rel="stylesheet" />
+    <script src="//Microsoft.WinJS.2.0/js/base.js"></script>
+    <script src="//Microsoft.WinJS.2.0/js/ui.js"></script>
+
+    <!-- Temp references -->
+    <link href="/css/default.css" rel="stylesheet" />
+
+    <script src="/Scripts/knockout-3.0.0.debug.js"></script>
+    <script src="/Scripts/require.js"></script>
+    <script src="/js/default.js"></script>
+
+    
+
+</head>
+<body>
+    <div id="appRoot">
+
+        <!-- Knockout templates -->
+
+        <script type="text/html" id="temperature-template">
+            <li>
+                <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown'" />
+                <span class="temperature" data-bind="text: formattedCurrentTemp"></span>
+
+                <span class="temperature24H" data-bind="text: formattedLow24H, visible: $root.settingVM.show24H"></span>
+                <span class="temperature24H" data-bind="text: formattedHigh24H, visible: $root.settingVM.show24H"></span>
+
+            </li>
+
+        </script>
+
+        <script type="text/html" id="device-template">
+            <li>
+                
+                <a href="#">
+                     <span data-bind="text: name"></span>
+                </a>
+
+            </li>
+        </script>
+
+        <!--http://line25.com/tutorials/how-to-create-a-pure-css-dropdown-menu-->
+
+        <nav>
+            <ul>
+                
+                <li data-bind="visible: deviceVM.device().length > 0">
+                    <a href="#">Devices</a>
+
+                    <ul id="ulDevices" data-bind="template: {name : 'device-template', foreach: deviceVM.device}"></ul>
+                
+                </li>
+                <li>
+                    <a href="#">Settings</a>
+                    <ul>
+                        <li>
+                            <a href="#">Temperature mode</a>
+                            <ul>
+                                <li><a href="#">Celcius</a></li>
+                                <li><a href="#">Fahrenheit</a></li>
+
+                            </ul>
+                        
+                        </li>
+                       
+                    </ul>
+                </li>
+             
+            </ul>
+
+
+        </nav>
+
+
+
+        
+
+        <div id="main">
+
+           
+            <!--
+
+                <select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode"></select>
+                <button data-bind="click: settingVM.enable24H">Show 24H</button>
+
+    -->
+            <ul id="ulMeasurements" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.measurement}"></ul>
+
+        </div>
+
+
+    </div> 
+   
+</body>
+</html>
