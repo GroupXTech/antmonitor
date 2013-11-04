@@ -1,56 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-
-  <Identity
-    Name="66f21c7e-2e65-4231-b4bb-ccfd429a1bbb"
-    Version="1.0.0.0"
-    Publisher="CN=HenningKnut" />
-
+  <Identity Name="66f21c7e-2e65-4231-b4bb-ccfd429a1bbb" Version="1.0.0.0" Publisher="CN=HenningKnut" />
   <Properties>
-    <DisplayName>Temp</DisplayName>
+    <DisplayName>TemperatureMonitor</DisplayName>
     <PublisherDisplayName>HenningKnut</PublisherDisplayName>
     <Logo>images\storelogo.png</Logo>
   </Properties>
-
   <Prerequisites>
     <OSMinVersion>6.3.0</OSMinVersion>
     <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
   </Prerequisites>
-
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
-
   <Applications>
-    <Application 
-      Id="App"
-      StartPage="default.html">
-
-      <m2:VisualElements
-        DisplayName="Temp"
-        Description="Temp"
-        ForegroundText="light"
-        BackgroundColor="#464646"
-        Square150x150Logo="images\Logo.png"
-        Square30x30Logo="images\SmallLogo.png">
-
-        <m2:SplashScreen Image="images\splashscreen.png" />
-
+    <Application Id="App" StartPage="default.html">
+      <m2:VisualElements DisplayName="TemperatureMonitor" Description="Monitor temperature by using ANT USB and ANT+ temperature sensors" ForegroundText="light" BackgroundColor="#464646" Square150x150Logo="images\Logo-2.png" Square30x30Logo="images\SmallLogo-2.png">
+        <m2:SplashScreen Image="images\splashscreen-2.png" />
       </m2:VisualElements>
     </Application>
   </Applications>
-
   <Capabilities>
-    <Capability Name="internetClient" />
-  
     <m2:DeviceCapability Name="usb">
-   <!--ANT USB2 Dynastream-->
-        <m2:Device Id="vidpid:0FCF 1008">
-            <!--<m2:Function Type="classId:ff * *"/>-->
-            <m2:Function Type="name:vendorSpecific"/>
-        </m2:Device>
+      <!--ANT USB2 Dynastream-->
+      <m2:Device Id="vidpid:0FCF 1008">
+        <!--<m2:Function Type="classId:ff * *"/>-->
+        <m2:Function Type="name:vendorSpecific" />
+      </m2:Device>
+      <!--ANT USB-m Dynastream-->
+      <m2:Device Id="vidpid:0FCF 1009">
+        <!--<m2:Function Type="classId:ff * *"/>-->
+        <m2:Function Type="name:vendorSpecific" />
+      </m2:Device>
     </m2:DeviceCapability>
-  
   </Capabilities>
-
 </Package>

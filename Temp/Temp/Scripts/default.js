@@ -3,15 +3,15 @@
 (function () {
     "use strict";
 
-    WinJS.log = function (message, tags, type) {
-        if (!console[type])
-            type = 'log';
+    //WinJS.log = function (message, tags, type) {
+    //    if (!console[type])
+    //        type = 'log';
 
-        console[type](Date.now(), message, tags);
+    //    console[type](Date.now(), message, tags);
 
-    }
+    //}
 
-    WinJS.Utilities.startLog();
+    //WinJS.Utilities.startLog();
 
     var app = WinJS.Application;
     var activation = Windows.ApplicationModel.Activation;
@@ -39,8 +39,7 @@
 
     });
 
-    
-
+  
     function _startKnockout(callback) {
 
         require(['vm/sensorVM', 'vm/temperatureVM', 'logger'], function (SensorVM, TemperatureVM, Logger) {
@@ -48,10 +47,21 @@
             rootVM = {
 
                 settingVM: {
-                    logging: ko.observable(true),     // Enable logging to console  
+
+                    logging: ko.observable(false),     // Enable logging to console  
+
                     temperatureMode: ko.observable(window.localStorage["temperaturemode"] || TemperatureVM.prototype.MODE.CELCIUS), // Celcius, fahrenheit
                     temperatureModes : TemperatureVM.prototype.MODES,
-                    show24H: ko.observable(window.localStorage["show24h"] || false)     // Show 24H max/min
+
+                    show24H: ko.observable(window.localStorage["show24h"] || false),     // Show 24H max/min
+
+                    // Which device number for a specific device type, i.e ANTUSB2 (in case of multiple devices)
+                    defaultANTUSBDevice: ko.observable(Number(window.localStorage["defaultANTUSBDevice"]) || 0),
+
+                    // Same as in package manifest, maybe : read manifest instead, package API?
+                    ANTUSBdevices: [{ name: 'ANTUSB2', vid: 4047, pid: 4104 },{ name: 'ANTUSB-m', vid: 0x0FCF, pid: 0x1009 }],
+
+                    selectedANTUSBdevice: ko.observable(),
 
                 },
 
@@ -63,6 +73,10 @@
                 }
 
             };
+
+            // Update current ANT usb device
+
+            rootVM.settingVM.selectedANTUSBdevice(rootVM.settingVM.ANTUSBdevices[window.localStorage["ANTUSBdevice"] || 0]);
             
             // Persist change in mode to local storage
             rootVM.settingVM.temperatureMode.subscribe(function (mode) {
@@ -72,6 +86,16 @@
             // Persist  to local storage
             rootVM.settingVM.show24H.subscribe(function (show24h) {
                 window.localStorage["show24h"] = show24h;
+            });
+
+            rootVM.settingVM.defaultANTUSBDevice.subscribe(function (device) {
+              
+                window.localStorage["defaultANTUSBDevice"] = device;
+            })
+
+            rootVM.settingVM.selectedANTUSBdevice.subscribe(function (newDevice) {
+                var i = rootVM.settingVM.ANTUSBdevices.indexOf(newDevice);
+                window.localStorage["ANTUSBdevice"] = i;
             });
 
             // TEST: Click-handler for show24H
@@ -86,7 +110,7 @@
             var deviceTypeVM;
 
             var sensorDictionary = {};
-            var logger = new Logger({ log: true });
+            var logger = new Logger({ log: rootVM.settingVM.logging() });
 
 
             var pageHandler = function (page) {
@@ -155,12 +179,14 @@
 
                           host = new ANTHost();
 
+                          var pickDevice = rootVM.settingVM.defaultANTUSBDevice() || 0;
+
                           var USBoptions = {
-                              // ANT USB 2 - nRFAP2
-                              vid: 4047,
-                              pid: 4104,
-                              device: 0, // Pick the first device, if multiple devices found
-                              log: true,
+                              // ANT USB 2 - nRFAP2 by default
+                              vid: rootVM.settingVM.selectedANTUSBdevice().vid || 0x0FCF,
+                              pid: rootVM.settingVM.selectedANTUSBdevice().pid || 0x1008,
+                              device: pickDevice, 
+                              log: rootVM.settingVM.logging() || false,
                               length: { in: 64 * 8 }, // Requested transfer size 512 bytes - allows reading of driver buffered data
 
                               // Subscribe to events from device watcher in the USB subsystem
@@ -200,7 +226,7 @@
                               libconfig: 'channelid,rxtimestamp',
                               //maxTransferRetries : 5, // Default = 5
                               transferProcessingLatecy: 20, // Default = 10 ms
-                              log: true
+                              log: rootVM.settingVM.logging() || false
                           };
 
                           
@@ -225,7 +251,7 @@
                           
 
                          var  channel = new RxScanMode({
-                              log: true,
+                              log: rootVM.settingVM.logging() || false,
                               channelId: {
                                   deviceNumber: 0,
                                   // deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,

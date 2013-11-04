@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Temp</title>
+    <title>Temperature Monitor</title>
 
     <!-- WinJS references -->
     <link href="//Microsoft.WinJS.2.0/css/ui-dark.css" rel="stylesheet" />
@@ -13,9 +13,12 @@
     <link href="/css/default.css" rel="stylesheet" />
 
     <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
-    <script src="/Scripts/knockout-3.0.0.debug.js"></script>
+    <script src="/Scripts/knockout-3.0.0.js"></script>
+
+    <!-- Requirejs https://github.com/jrburke/requirejs/blob/master/LICENSE-->
     <script src="/Scripts/require.js"></script>
-    <script src="/js/default.js"></script>
+    
+    <script src="/Scripts/default.js"></script>
 
 </head>
 <body>
@@ -26,7 +29,7 @@
         <script type="text/html" id="temperature-template">
             <li>
 
-                <img class="icon" src="images/Temperature.scale-32.png" />
+                <img class="icon" src="images/Temperature-30.png" />
                 <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown'" />
                 <span class="temperature" data-bind="text: formattedCurrentTemp"></span>
 
@@ -63,15 +66,30 @@
                     <a href="#">Settings</a>
                     <ul>
                         <li>
-                           <label>Mode</label>
+                           <label class="settingLabel">Mode</label>
                                
-                            <select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode"></select>
+                            <select  data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode"></select>
                       
                         </li>
 
                         <li>
-                            <label>24h min/max</label>
-                            <input type="checkbox"  data-bind="checked: settingVM.show24H"></li>
+                            <label class="settingLabel">24h</label>
+                            <input type="checkbox"  data-bind="checked: settingVM.show24H">
+                        </li>
+
+                        <li>
+                            <label class="settingLabel">Device</label>
+
+                            <input id="inputDefaultDevice" type="number" min="0" max="127" data-bind="value: settingVM.defaultANTUSBDevice" />
+
+                        </li>
+
+                        <li>
+                            <label class="settingLabel">USB</label>
+
+                            <select data-bind="options: settingVM.ANTUSBdevices, optionsText : 'name', value: settingVM.selectedANTUSBdevice"></select>
+
+                        </li>
                        
                     </ul>
                 </li>
