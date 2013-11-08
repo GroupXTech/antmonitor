@@ -76,11 +76,14 @@ input[type=radio], input[type=checked] {
     margin-top: 10px;
 
     margin-bottom : 10px;
+    height : 90vh;
 }
 
 #ulMeasurements {
     list-style-type: none;
     padding: 0;
+    height : 100%;
+    overflow : auto;
 }
 
 .temperature {

@@ -85,6 +85,8 @@ define(['require','module','exports','logger'], function(require,module,exports,
               }.bind(this)
           })
 
+          this._page = undefined;
+
      }
     
     
@@ -125,6 +127,8 @@ define(['require','module','exports','logger'], function(require,module,exports,
     TemperatureVM.prototype.updateFromPage = function (page)
     {
         
+        // For debugging, i.e inspect broadcast data
+        this._page = page;
         
         // Update view model
 

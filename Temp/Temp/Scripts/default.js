@@ -130,52 +130,56 @@
             var logger = new Logger({ log: rootVM.settingVM.logging() });
 
 
-             pageHandler = function (page) {
-                 //var page = e.data;
-                 page.sensorId = page.broadcast.channelId.getUniqueId();
-                //  console.log('Knockout App got message', page,e);
-                var sensorId = page.sensorId;
-                var deviceType = page.broadcast.channelId.deviceType;
-                var index;
+            pageHandler = function (page) {
+                var i;
+                for (i = 0; i < 15; i++) {
+                    //var page = e.data;
+                    page.sensorId = page.broadcast.channelId.getUniqueId()+i;
+                    //  console.log('Knockout App got message', page,e);
+                    var sensorId = page.sensorId;
+                    var deviceType = page.broadcast.channelId.deviceType;
+                    var index;
 
-                // Previous registered sensor
+                    // Previous registered sensor
 
-                if (typeof sensorDictionary[sensorId] !== 'undefined') {
-                    index = sensorDictionary[sensorId];
-                    deviceTypeVM = rootVM.sensorVM.measurement()[index];
-                    deviceTypeVM.updateFromPage(page);
-                    //  console.log("Picked deviceTypeVM from index",index,deviceTypeVM);
-                }
+                    if (typeof sensorDictionary[sensorId] !== 'undefined') {
+                        index = sensorDictionary[sensorId];
 
-                // New sensor
-
-                else
-                {
-                    index = rootVM.sensorVM.measurement().length;
-                    sensorDictionary[sensorId] = index;
-
-                    // Allow polymorph/hetrogene (i.e temperature, heart rate) viewModels in sensorVM
-                    switch (deviceType) {
-
-                        case 25: // Temperature
-
-                            deviceTypeVM = new TemperatureVM({
-                                logger: rootVM.sensorVM.getLogger(),
-                                temperatureMode: rootVM.settingVM.temperatureMode,
-                                sensorId : sensorId
-                            });
-
-                            break;
-
-                        default:
-
-                            logger.log('warn', "No support for device type ", deviceType);
-                            break;
+                        // sensorVM contains array of viewmodels 
+                        deviceTypeVM = rootVM.sensorVM.measurement()[index];
+                        deviceTypeVM.updateFromPage(page);
+                        //  console.log("Picked deviceTypeVM from index",index,deviceTypeVM);
                     }
 
-                    deviceTypeVM.updateFromPage(page);
-                    rootVM.sensorVM.measurement.push(deviceTypeVM);
-                    // console.log("New deviceTypeVM at index",index,deviceTypeVM);
+                        // New sensor
+
+                    else {
+                        index = rootVM.sensorVM.measurement().length;
+                        sensorDictionary[sensorId] = index;
+
+                        // Allow polymorph/hetrogene (i.e temperature, heart rate) viewModels in sensorVM
+                        switch (deviceType) {
+
+                            case 25: // Temperature
+
+                                deviceTypeVM = new TemperatureVM({
+                                    logger: rootVM.sensorVM.getLogger(),
+                                    temperatureMode: rootVM.settingVM.temperatureMode,
+                                    sensorId: sensorId
+                                });
+
+                                break;
+
+                            default:
+
+                                logger.log('warn', "No support for device type ", deviceType);
+                                break;
+                        }
+
+                        deviceTypeVM.updateFromPage(page);
+                        rootVM.sensorVM.measurement.push(deviceTypeVM);
+                        // console.log("New deviceTypeVM at index",index,deviceTypeVM);
+                    }
                 }
 
                 // e.source.postMessage('YES IT WORKS','*');
