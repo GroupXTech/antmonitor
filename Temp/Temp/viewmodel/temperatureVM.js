@@ -1,4 +1,4 @@
-/* global define: true */
+﻿/* global define: true */
 
 // Main viewmodel class
 define(['require','module','exports','logger'], function(require,module,exports,Logger) {
@@ -77,6 +77,14 @@ define(['require','module','exports','logger'], function(require,module,exports,
               window.localStorage[configuration.sensorId + '-location'] = newValue;
           })
 
+          this.timestamp = ko.observable();
+          this.formattedTimestamp = ko.computed({
+              read: function () {
+                  if (this.timestamp)
+                    return (new Date(this.timestamp())).toLocaleTimeString();
+              }.bind(this)
+          })
+
      }
     
     
@@ -128,7 +136,10 @@ define(['require','module','exports','logger'], function(require,module,exports,
             this.low24H(page.hour24Low);
         
         if (page.hour24High)
-              this.high24H(page.hour24High);
+            this.high24H(page.hour24High);
+
+        if (page.timestamp)
+            this.timestamp(page.timestamp);
     };
     
     TemperatureVM.prototype.getTemplateName = function (item)

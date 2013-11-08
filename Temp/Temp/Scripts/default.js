@@ -1,4 +1,6 @@
-﻿// For an introduction to the Blank template, see the following documentation:
+﻿/* global: window: true, ko: true, require: true */
+
+// For an introduction to the Blank template, see the following documentation:
 // http://go.microsoft.com/fwlink/?LinkId=232509
 (function () {
     "use strict";
@@ -22,16 +24,25 @@
 
     var hostInitCB;
 
+    // Page handler
+    var pageHandler;
+
     var rootVM; // Root viewmodel, contains all the other sub-view models
 
+    // Keys for localstorage - minimize chance for accessing wrong key
+    var localStorageKey = {
+        temperaturemode: "temperaturemode",
+        show24hMaxMin: "show24MaxMin",
+        defaultDeviceId : "defaultDeviceId"
+
+    }
+
+    // Configure requirejs script loader
+
     requirejs.config({
-        //By default load any module IDs from bower_components/libant
+       
         baseUrl: '../bower_components/libant',
-        //except, if the module ID starts with "app",
-        //load it from the js/app directory. paths
-        //config is relative to the baseUrl, and
-        //never includes a ".js" extension since
-        //the paths config could be for a directory.
+    
         paths: {
             // Knockout viewmodels
             vm: '../../viewmodel'
@@ -44,66 +55,72 @@
 
         require(['vm/sensorVM', 'vm/temperatureVM', 'logger'], function (SensorVM, TemperatureVM, Logger) {
 
-            rootVM = {
+            // Base viewmodel
 
+            rootVM = {
+                
                 settingVM: {
 
-                    logging: ko.observable(false),     // Enable logging to console  
+                    logging: ko.observable(true),     // Enable logging to console  
 
-                    temperatureMode: ko.observable(window.localStorage["temperaturemode"] || TemperatureVM.prototype.MODE.CELCIUS), // Celcius, fahrenheit
-                    temperatureModes : TemperatureVM.prototype.MODES,
 
-                    show24H: ko.observable(window.localStorage["show24h"] || false),     // Show 24H max/min
+                   
+                    temperatureMode:  ko.observable(window.localStorage[localStorageKey.temperaturemode] || TemperatureVM.prototype.MODE.CELCIUS), // Celcius, fahrenheit
+                  
+                        temperatureModes : TemperatureVM.prototype.MODES,
 
-                    // Which device number for a specific device type, i.e ANTUSB2 (in case of multiple devices)
-                    defaultANTUSBDevice: ko.observable(Number(window.localStorage["defaultANTUSBDevice"]) || 0),
+                    // Show 24H max/min
+                    show24H: ko.observable(window.localStorage[localStorageKey.show24hMaxMin] === "true" || false),     
 
-                    // Same as in package manifest, maybe : read manifest instead, package API?
-                    ANTUSBdevices: [{ name: 'ANTUSB2', vid: 4047, pid: 4104 },{ name: 'ANTUSB-m', vid: 0x0FCF, pid: 0x1009 }],
+                    //// Which device number for a specific device type, i.e ANTUSB2 (in case of multiple devices)
+                    //defaultANTUSBDevice: ko.observable(Number(window.localStorage["defaultANTUSBDevice"]) || 0),
 
-                    selectedANTUSBdevice: ko.observable(),
+                    //// Same as in package manifest, maybe : read manifest instead, package API?
+                    ANTUSBdevices: [{ name: 'ANTUSB2', vid: 4047, pid: 4104 },
+                                    { name: 'ANTUSB-m', vid: 0x0FCF, pid: 0x1009 }],
+
+                    //selectedANTUSBdevice: ko.observable(),
 
                 },
 
                 sensorVM: undefined,
 
+                // Contains all enumerated devices that fullfill the USB selector
                 deviceVM: {
-                    device: ko.observableArray(),
-                    selectedDevice: ko.observable()
+                    enumeratedDevice: ko.observableArray(),
+                    // User selected default device id.
+                   
+                    selectedDevice: ko.observable(),
+                   
                 }
 
             };
 
-            // Update current ANT usb device
+            // Subscribe to changes
 
-            rootVM.settingVM.selectedANTUSBdevice(rootVM.settingVM.ANTUSBdevices[window.localStorage["ANTUSBdevice"] || 0]);
             
-            // Persist change in mode to local storage
-            rootVM.settingVM.temperatureMode.subscribe(function (mode) {
-                window.localStorage["temperaturemode"] = mode;
-            });
-
-            // Persist  to local storage
             rootVM.settingVM.show24H.subscribe(function (show24h) {
-                window.localStorage["show24h"] = show24h;
+                window.localStorage[localStorageKey.show24hMaxMin] = show24h;
             });
 
-            rootVM.settingVM.defaultANTUSBDevice.subscribe(function (device) {
-              
-                window.localStorage["defaultANTUSBDevice"] = device;
-            })
+            rootVM.deviceVM.selectedDevice.subscribe(function (deviceInformation) {
 
-            rootVM.settingVM.selectedANTUSBdevice.subscribe(function (newDevice) {
-                var i = rootVM.settingVM.ANTUSBdevices.indexOf(newDevice);
-                window.localStorage["ANTUSBdevice"] = i;
+                var storedDefaultDeviceId = window.localStorage[localStorageKey.defaultDeviceId];
+
+                if (deviceInformation && (storedDefaultDeviceId !== deviceInformation.id)) {
+                    window.localStorage[localStorageKey.defaultDeviceId] = deviceInformation.id;
+                    exitAndResetDevice(function _initANT() {
+                        // Remove previous state
+                        rootVM.deviceVM.enumeratedDevice.removeAll();
+                        _initANTHost(pageHandler);
+                    });
+                }
             });
 
-            // TEST: Click-handler for show24H
-
-            rootVM.settingVM.enable24H = function () {
-                this.show24H(true);
-            }.bind(rootVM.settingVM);
-
+            rootVM.settingVM.temperatureMode.subscribe(function (mode) {
+                window.localStorage[localStorageKey.temperaturemode] = mode;
+            });
+         
 
             rootVM.sensorVM = new SensorVM({ log: rootVM.settingVM.logging() });
 
@@ -113,7 +130,7 @@
             var logger = new Logger({ log: rootVM.settingVM.logging() });
 
 
-            var pageHandler = function (page) {
+             pageHandler = function (page) {
                  //var page = e.data;
                  page.sensorId = page.broadcast.channelId.getUniqueId();
                 //  console.log('Knockout App got message', page,e);
@@ -139,7 +156,8 @@
 
                     // Allow polymorph/hetrogene (i.e temperature, heart rate) viewModels in sensorVM
                     switch (deviceType) {
-                        case 25: // temperature
+
+                        case 25: // Temperature
 
                             deviceTypeVM = new TemperatureVM({
                                 logger: rootVM.sensorVM.getLogger(),
@@ -166,7 +184,12 @@
             // window.addEventListener('message', pageHandler);
 
             // Activate knockoutjs on our root viewmodel
-            ko.applyBindings(rootVM, document.getElementById('appRoot'));
+            var rootElement = document.getElementById('appRoot');
+            ko.applyBindings(rootVM, rootElement);
+
+            rootElement.style.display = "block";
+
+        
 
             callback(pageHandler);
         });
@@ -179,33 +202,73 @@
 
                           host = new ANTHost();
 
-                          var pickDevice = rootVM.settingVM.defaultANTUSBDevice() || 0;
-
                           var USBoptions = {
-                              // ANT USB 2 - nRFAP2 by default
-                              vid: rootVM.settingVM.selectedANTUSBdevice().vid || 0x0FCF,
-                              pid: rootVM.settingVM.selectedANTUSBdevice().pid || 0x1008,
-                              device: pickDevice, 
+                              //// ANT USB 2 - nRFAP2 by default
+                              //vid:  0x0FCF,
+                              //pid:  0x1008,
+                              //device: 0,
+
+                              // If no deviceId available, it will try to automatically connect to the first enumerated device that matches a known ANT device
+                              knownDevices : rootVM.settingVM.ANTUSBdevices,
+
+                              // Last connected device id
+                              deviceId :  window.localStorage[localStorageKey.defaultDeviceId],
+                              
                               log: rootVM.settingVM.logging() || false,
-                              length: { in: 64 * 8 }, // Requested transfer size 512 bytes - allows reading of driver buffered data
+
+                              // Requested transfer size 512 bytes - allows reading of driver buffered data
+                              length: { in: 64 * 8 },
 
                               // Subscribe to events from device watcher in the USB subsystem
                               deviceWatcher: {
 
                                   onAdded: function (deviceInformation) {
-                                      rootVM.deviceVM.device.push(deviceInformation);
+
+                                      rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
+                                      // rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
+                                      //rootVM.deviceVM.enumeratedDevice.push({ name: 'TEST USB', id: 'testid' });
+
+                                      if (deviceInformation.id === this.usb.options.deviceId)
+                                      {
+                                          // Keep local storage synchronized (i.e deviceId was undefined during enumeration,
+                                          // but found among the known devices.
+
+                                          window.localStorage[localStorageKey.defaultDeviceId] = deviceInformation.id;
+
+                                          // Update selection with the specific device please, if the select drop-down is used
+
+                                          rootVM.deviceVM.selectedDevice(deviceInformation);
+                                      }
+
                                     
                                   }.bind(host),
 
                                   onRemoved: function (deviceInformation) {
-                                      var removedDeviceInformation = rootVM.deviceVM.device.remove(
+                                      var removedDeviceInformation = rootVM.deviceVM.enumeratedDevice.remove(
                                           // predicate - compares underlying array value with a condition
                                           // http://knockoutjs.com/documentation/observableArrays.html #remove and removeAll
                                           function (value) { return value.id === deviceInformation.id; });
                                      
                                   }.bind(host),
 
-                                  onEnumerationComplete: function () {
+                                  onEnumerationCompleted: function () {
+
+                                      //rootVM.deviceVM.enumerationComplete = true;
+
+                                      // In case deviceId is updated, during enumeration
+                                      window.localStorage[localStorageKey.defaultDeviceId] = this.usb.options.deviceId;
+
+                                      //
+                                      var devInfo;
+                                      for (var devNum=0;devNum<rootVM.deviceVM.enumeratedDevice().length;devNum++)
+                                      {
+                                          devInfo = rootVM.deviceVM.enumeratedDevice()[devNum];
+                                          if (this.usb.options.deviceId === devInfo.id) {
+                                              rootVM.deviceVM.selectedDevice(devInfo);
+                                              break;
+                                          }
+                                      }
+
 
                                   }.bind(host),
 
@@ -220,12 +283,20 @@
 
                           var usb = new USBWindows(USBoptions);
                           
-                           hostOptions = {
-                              usb: usb,
-                              reset: true,
+                          hostOptions = {
+
+                               usb: usb,
+
+                               // Reset device during init
+                               reset: true,
+
+                               // Append extended data
                               libconfig: 'channelid,rxtimestamp',
-                              //maxTransferRetries : 5, // Default = 5
+
+                               //maxTransferRetries : 5, // Default = 5
+
                               transferProcessingLatecy: 20, // Default = 10 ms
+
                               log: rootVM.settingVM.logging() || false
                           };
 
@@ -290,6 +361,36 @@
 
     }
 
+    function exitAndResetDevice(callback) {
+
+        var _onExit = function () {
+            this.log.log('log', 'Exited ANT device. I/O should be released for other applications now.');
+            if (typeof callback === 'function')
+                callback();
+        }.bind(host);
+
+        // Application can be terminated, so its best to reset all channels and exit just in case 
+        // Seems like handlers with setTimeout is not run anymore -> has consequence for the default 500ms delay after reset
+
+        // Don't attempt to reset if no device is available
+
+        if (host.usb.ANTdevice) {
+            // Force synchronous callback, without any delay with setTimeout
+            host.options.resetDelay = 0;
+
+            host.resetSystem(function () {
+                host.exit(_onExit);
+            });
+        }
+        else
+            host.exit(_onExit);
+
+    }
+
+    //
+    // WINDOWS APP SECTION
+    //
+
     app.onresume = function () {
         host.init(hostOptions, hostInitCB);
            
@@ -317,6 +418,7 @@
         }
     };
 
+   
     app.oncheckpoint = function (args) {
 
         // TODO: This application is about to be suspended. Save any state
@@ -326,25 +428,12 @@
         // asynchronous operation before your application is suspended, call
         // args.setPromise().
 
-
-        var _onExit = function () {
-            this.log.log('log', 'Exited ANT device');
-        }.bind(host);
-
-        // Application can be terminated, so its best to reset all channels and exit just in case 
-        // Seems like handlers with setTimeout is not run anymore -> has consequence for the default 500ms delay after reset
-
-        // Force synchronous callback, without any delay with setTimeout
-        host.options.resetDelay = 0;
-
+        
         // Remove previously registered devices from UI
 
-        rootVM.deviceVM.device.removeAll();
+        rootVM.deviceVM.enumeratedDevice.removeAll();
 
-        host.resetSystem(function () {
-
-            host.exit(_onExit);
-        })
+        exitAndResetDevice();
 
     };
 

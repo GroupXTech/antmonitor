@@ -17,7 +17,7 @@
 
     <!-- Requirejs https://github.com/jrburke/requirejs/blob/master/LICENSE-->
     <script src="/Scripts/require.js"></script>
-    
+
     <script src="/Scripts/default.js"></script>
 
 </head>
@@ -29,107 +29,82 @@
         <script type="text/html" id="temperature-template">
             <li>
 
-                <img class="icon" src="images/Temperature-30.png" />
-                <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown'" />
-                <span class="temperature" data-bind="text: formattedCurrentTemp"></span>
+                <div id="flexMeasurement">
+                    <img class="icon" src="images/Temperature-30.png" alt="Temperature" />
 
-                <span class="temperature24H" data-bind="text: formattedLow24H, visible: $root.settingVM.show24H"></span>
-                <span class="temperature24H" data-bind="text: formattedHigh24H, visible: $root.settingVM.show24H"></span>
+                    <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" />
+
+                    <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"></span>
+                    <!--<label data-bind="visible: $root.settingVM.show24H">Min</label>-->
+                    <span class="temperature24H" data-bind="text: formattedLow24H, visible: $root.settingVM.show24H, style: { color : low24H() < 0 ? '#3D76F5' : 'red'}"></span>
+                    <!--<label data-bind="visible: $root.settingVM.show24H">Max</label>-->
+                    <span class="temperature24H" data-bind="text: formattedHigh24H, visible: $root.settingVM.show24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}"></span>
+
+                    <span class="timestamp" data-bind="text: formattedTimestamp"></span>
+                </div>
+
 
             </li>
 
         </script>
 
-        <script type="text/html" id="device-template">
-            <li>
-                
-                <a href="#">
-                     <span data-bind="text: name"></span>
-                </a>
 
-            </li>
-        </script>
-
-        <!-- Based on http://line25.com/tutorials/how-to-create-a-pure-css-dropdown-menu -->
-
-        <nav>
-            <ul>
-                
-                <li data-bind="visible: deviceVM.device().length > 0">
-                    <a href="#">Devices</a>
-
-                    <ul id="ulDevices" data-bind="template: {name : 'device-template', foreach: deviceVM.device}"></ul>
-                
-                </li>
-
-                <li>
-                    <a href="#">Settings</a>
-                    <ul>
-                        <li>
-                           <label class="settingLabel">Mode</label>
-                               
-                            <select  data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode"></select>
-                      
-                        </li>
-
-                        <li>
-                            <label class="settingLabel">24h</label>
-                            <input type="checkbox"  data-bind="checked: settingVM.show24H">
-                        </li>
-
-                        <li>
-                            <label class="settingLabel">Device</label>
-
-                            <input id="inputDefaultDevice" type="number" min="0" max="127" data-bind="value: settingVM.defaultANTUSBDevice" />
-
-                        </li>
-
-                        <li>
-                            <label class="settingLabel">USB</label>
-
-                            <select data-bind="options: settingVM.ANTUSBdevices, optionsText : 'name', value: settingVM.selectedANTUSBdevice"></select>
-
-                        </li>
-                       
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="#">About</a>
-
-                    <ul>
-                        <li>
-                            <a href="https://github.com/hkskoglund/libant">libant</a>
-                        </li>
-                    </ul>
+        <nav id="appToolbar">
 
 
-                </li>
-             
-            </ul>
+            <div id="flexTemperatureMode">
 
+                <label id="lblTemperatureMonitor">Temperature Monitor</label>
+
+                <div id="divTemperatureMode">
+                    <label class="lblTemperatureMode">°C</label>
+                    <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
+                    <span id="spanSpace" ></span>
+                    <label class="lblTemperatureMode">°F</label>
+                    <input class="inpTemperatureMode" type="radio" value="fahrenheit" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
+                </div>
+
+                <div id="divMAXMIN">
+                    <label id="lblMAXMIN">MIN/MAX</label>
+                    <input type="checkbox" data-bind="checked: settingVM.show24H">
+                </div>
+
+
+                <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
+
+                <div id="divENUMERATEDDEVICE">
+
+                    <div data-bind="if: deviceVM.enumeratedDevice().length > 1">
+                        <img src="images/usb.png" alt="Device" title="ANT USB device" />
+                        <select data-bind="options: deviceVM.enumeratedDevice, optionsText: 'name', value: deviceVM.selectedDevice, optionsCaption: 'Device...', enable:  deviceVM.enumeratedDevice().length > 1"></select>
+                    </div>
+
+                    <!--<div data-bind="if: deviceVM.enumeratedDevice().length ===  0">
+        <span>No ANT device detected</span>
+    </div>-->
+
+                    <div data-bind="if: deviceVM.enumeratedDevice().length ===  1">
+                        <img src="images/usb.png" alt="Device" title="ANT USB device" />
+                        <span data-bind="text: deviceVM.enumeratedDevice()[0].name"></span>
+                    </div>
+                </div>
+               
+
+
+
+            </div>
 
         </nav>
 
 
-
-        
-
         <div id="main">
 
-           
-            <!--
-
-                
-                <button data-bind="click: settingVM.enable24H">Show 24H</button>
-
-    -->
             <ul id="ulMeasurements" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.measurement}"></ul>
 
         </div>
 
 
-    </div> 
-   
+    </div>
+
 </body>
 </html>

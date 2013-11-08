@@ -1,4 +1,4 @@
-/* global define: true */
+﻿/* global define: true */
 
 // Main viewmodel class
 define(['require','module','exports','logger'], function(require,module,exports,Logger) {

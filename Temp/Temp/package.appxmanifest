@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="66f21c7e-2e65-4231-b4bb-ccfd429a1bbb" Version="1.0.0.0" Publisher="CN=HenningKnut" />
+  <Identity Name="64959HenningKnutSkoglund.TemperatureMonitor" Version="1.1.0.1" Publisher="CN=533062DE-851A-4243-ABB9-6A5107CFD238" />
   <Properties>
     <DisplayName>TemperatureMonitor</DisplayName>
-    <PublisherDisplayName>HenningKnut</PublisherDisplayName>
+    <PublisherDisplayName>Henning Knut Skoglund</PublisherDisplayName>
     <Logo>images\storelogo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -16,7 +16,7 @@
   <Applications>
     <Application Id="App" StartPage="default.html">
       <m2:VisualElements DisplayName="TemperatureMonitor" Description="Monitor temperature by using ANT USB and ANT+ temperature sensors" ForegroundText="light" BackgroundColor="#464646" Square150x150Logo="images\Logo-2.png" Square30x30Logo="images\SmallLogo-2.png">
-        <m2:SplashScreen Image="images\splashscreen-2.png" />
+        <m2:SplashScreen Image="images\Temperature Monitor.png" />
       </m2:VisualElements>
     </Application>
   </Applications>
