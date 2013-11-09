@@ -61,7 +61,7 @@
                 
                 settingVM: {
 
-                    logging: ko.observable(true),     // Enable logging to console  
+                    logging: ko.observable(false),     // Enable logging to console  
 
 
                    
@@ -131,10 +131,11 @@
 
 
             pageHandler = function (page) {
-                var i;
-                for (i = 0; i < 15; i++) {
+                //var i;
+                // TEST multiple sensors for (i = 0; i < 15; i++) {
                     //var page = e.data;
-                    page.sensorId = page.broadcast.channelId.getUniqueId()+i;
+                //page.sensorId = page.broadcast.channelId.getUniqueId()+i;
+                page.sensorId = page.broadcast.channelId.getUniqueId();
                     //  console.log('Knockout App got message', page,e);
                     var sensorId = page.sensorId;
                     var deviceType = page.broadcast.channelId.deviceType;
@@ -180,7 +181,7 @@
                         rootVM.sensorVM.measurement.push(deviceTypeVM);
                         // console.log("New deviceTypeVM at index",index,deviceTypeVM);
                     }
-                }
+               // }
 
                 // e.source.postMessage('YES IT WORKS','*');
             };
