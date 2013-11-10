@@ -84,10 +84,14 @@
     </div>-->
 
                     <div data-bind="if: deviceVM.enumeratedDevice().length ===  1">
-                        <img src="images/usb.png" alt="Device" title="ANT USB device" />
+                        <img src="images/ant_usb.png" alt="ANT USB Device" title="ANT USB device" />
                         <span data-bind="text: deviceVM.enumeratedDevice()[0].name"></span>
                     </div>
-                </div>
+
+                    <div data-bind="if: deviceVM.enumeratedDevice().length ===  0 && deviceVM.enumerationCompleted()" >
+                        <img src="images/no_ant_usb.png" alt="No ANT USB Device" title="No ANT USB device" />
+                        <span>No ANT device found</span>
+                    </div>
                
 
 

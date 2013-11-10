@@ -61,7 +61,7 @@
                 
                 settingVM: {
 
-                    logging: ko.observable(false),     // Enable logging to console  
+                    logging: ko.observable(true),     // Enable logging to console  
 
 
                    
@@ -87,6 +87,8 @@
 
                 // Contains all enumerated devices that fullfill the USB selector
                 deviceVM: {
+
+                    enumerationCompleted : ko.observable(false),
                     enumeratedDevice: ko.observableArray(),
                     // User selected default device id.
                    
@@ -258,7 +260,7 @@
 
                                   onEnumerationCompleted: function () {
 
-                                      //rootVM.deviceVM.enumerationComplete = true;
+                                      rootVM.deviceVM.enumerationCompleted(true);
 
                                       // In case deviceId is updated, during enumeration
                                       window.localStorage[localStorageKey.defaultDeviceId] = this.usb.options.deviceId;
@@ -383,7 +385,7 @@
             // Force synchronous callback, without any delay with setTimeout
             host.options.resetDelay = 0;
 
-            host.resetSystem(function () {
+            host.resetSystem(function _exitAfterResetSystem() {
                 host.exit(_onExit);
             });
         }
