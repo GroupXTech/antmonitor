@@ -123,6 +123,7 @@
     <Content Include="Scripts\r.js" />
     <Content Include="Scripts\require.js" />
     <None Include="TemperatureMonitor_StoreKey.pfx" />
+    <Content Include="Scripts\require.min.js" />
     <Content Include="viewmodel\deviceVM.js" />
     <Content Include="viewmodel\sensorVM.js" />
     <Content Include="viewmodel\temperatureVM.js" />

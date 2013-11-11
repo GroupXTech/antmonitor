@@ -1,4 +1,4 @@
-﻿/* global: window: true, ko: true, require: true */
+﻿/* global: window: true, ko: true, require: true, WinJS: true, Windows: true, requirejs: true */
 
 // For an introduction to the Blank template, see the following documentation:
 // http://go.microsoft.com/fwlink/?LinkId=232509
@@ -33,9 +33,9 @@
     var localStorageKey = {
         temperaturemode: "temperaturemode",
         show24hMaxMin: "show24MaxMin",
-        defaultDeviceId : "defaultDeviceId"
+        defaultDeviceId: "defaultDeviceId"
 
-    }
+    };
 
     // Configure requirejs script loader
 
@@ -126,13 +126,10 @@
 
             rootVM.sensorVM = new SensorVM({ log: rootVM.settingVM.logging() });
 
-            var deviceTypeVM;
-
             var sensorDictionary = {};
-            var logger = new Logger({ log: rootVM.settingVM.logging() });
-
-
+   
             pageHandler = function (page) {
+                
                 //var i;
                 // TEST multiple sensors for (i = 0; i < 15; i++) {
                     //var page = e.data;
@@ -142,7 +139,8 @@
                     var sensorId = page.sensorId;
                     var deviceType = page.broadcast.channelId.deviceType;
                     var index;
-
+                    var deviceTypeVM;
+                   
                     // Previous registered sensor
 
                     if (typeof sensorDictionary[sensorId] !== 'undefined') {
@@ -174,13 +172,15 @@
                                 break;
 
                             default:
-
-                                logger.log('warn', "No support for device type ", deviceType);
+                                rootVM.sensorVM.getLogger().log('warn', "No support for device type ", deviceType);
                                 break;
                         }
 
-                        deviceTypeVM.updateFromPage(page);
-                        rootVM.sensorVM.measurement.push(deviceTypeVM);
+                        // If we have a page with a device type viewmodel available, update
+                        if (deviceTypeVM) {
+                            deviceTypeVM.updateFromPage(page);
+                            rootVM.sensorVM.measurement.push(deviceTypeVM);
+                        }
                         // console.log("New deviceTypeVM at index",index,deviceTypeVM);
                     }
                // }
@@ -195,8 +195,6 @@
             ko.applyBindings(rootVM, rootElement);
 
             rootElement.style.display = "block";
-
-        
 
             callback(pageHandler);
         });
@@ -251,7 +249,7 @@
                                   }.bind(host),
 
                                   onRemoved: function (deviceInformation) {
-                                      var removedDeviceInformation = rootVM.deviceVM.enumeratedDevice.remove(
+                                      rootVM.deviceVM.enumeratedDevice.remove(
                                           // predicate - compares underlying array value with a condition
                                           // http://knockoutjs.com/documentation/observableArrays.html #remove and removeAll
                                           function (value) { return value.id === deviceInformation.id; });
@@ -400,8 +398,8 @@
 
     app.onresume = function () {
         host.init(hostOptions, hostInitCB);
-           
-    }
+
+    };
 
     app.onactivated = function (args) {
 
@@ -411,7 +409,7 @@
 
                 case activation.ApplicationExecutionState.terminated:
                     // May deviate from default later...
-                    _startKnockout(_initANTHost)
+                    _startKnockout(_initANTHost);
                    
                     break;
 

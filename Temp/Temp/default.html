@@ -16,7 +16,8 @@
     <script src="/Scripts/knockout-3.0.0.js"></script>
 
     <!-- Requirejs https://github.com/jrburke/requirejs/blob/master/LICENSE-->
-    <script src="/Scripts/require.js"></script>
+    <!--<script src="/Scripts/require.js"></script>-->
+    <script src="/Scripts/require.min.js"></script>
 
     <script src="/Scripts/default.js"></script>
 
@@ -59,7 +60,7 @@
                 <div id="divTemperatureMode">
                     <label class="lblTemperatureMode">°C</label>
                     <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
-                    <span id="spanSpace" ></span>
+                    <span id="spanSpace"></span>
                     <label class="lblTemperatureMode">°F</label>
                     <input class="inpTemperatureMode" type="radio" value="fahrenheit" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
                 </div>
@@ -75,27 +76,21 @@
                 <div id="divENUMERATEDDEVICE">
 
                     <div data-bind="if: deviceVM.enumeratedDevice().length > 1">
-                        <img src="images/usb.png" alt="Device" title="ANT USB device" />
+                        <img src="images/ant_usb.png" alt="Device" title="ANT USB device" />
                         <select data-bind="options: deviceVM.enumeratedDevice, optionsText: 'name', value: deviceVM.selectedDevice, optionsCaption: 'Device...', enable:  deviceVM.enumeratedDevice().length > 1"></select>
                     </div>
-
-                    <!--<div data-bind="if: deviceVM.enumeratedDevice().length ===  0">
-        <span>No ANT device detected</span>
-    </div>-->
 
                     <div data-bind="if: deviceVM.enumeratedDevice().length ===  1">
                         <img src="images/ant_usb.png" alt="ANT USB Device" title="ANT USB device" />
                         <span data-bind="text: deviceVM.enumeratedDevice()[0].name"></span>
                     </div>
 
-                    <div data-bind="if: deviceVM.enumeratedDevice().length ===  0 && deviceVM.enumerationCompleted()" >
+                    <div data-bind="if: deviceVM.enumeratedDevice().length ===  0 && deviceVM.enumerationCompleted()">
                         <img src="images/no_ant_usb.png" alt="No ANT USB Device" title="No ANT USB device" />
                         <span>No ANT device found</span>
                     </div>
-               
 
-
-
+                </div>
             </div>
 
         </nav>
