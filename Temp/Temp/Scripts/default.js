@@ -398,34 +398,6 @@
 
     app.onresume = function () {
 
-        //// The old cold start init callback must be redefined for resume behavior
-        //// It's called after enumeration has found a matching ANT device 
-        //    host.usb._initCallback = function _initCB(err) {
-             
-        //        if (!err) {
-
-        //            this.usb.listen(this.RXparse.bind(this));
-
-        //            // If the user removes the ANT stick during standby, the channel configuration will be lost and open will fail -> must restart application to performance channel configuration once more
-        //            // Normally the ANT stick is not removed
-        //            // Another option: User start a new ANT application that reconfigures that channel -> gives problem
-        //            // Maybe the best option: reset and reconfigure channel always
-        //            this.openRxScanMode(0, function _openSent(err, msg) {
-
-        //            if (err)
-        //                this.log.log('error', err);
-
-                    
-        //        }.bind(host));
-        //        }
-        //        else
-        //            this.log.log('error', 'Cannot resume application from standby',err);
-               
-        //    }.bind(host);
-
-        //// Will enumerate devices again
-        //host.usb.ANTWatcher.start();
-
         host.init(hostOptions, hostInitCB);
 
     };
@@ -481,9 +453,12 @@
         host.closeChannel(0, function _closedSent(err,msg)
         {
             // host.usb.ANTdevice.close();
-            host.usb.exit();
-            var i = 1;
-        })
+            if (err)
+                this.log.log('error', err);
+
+            this.usb.exit();
+          
+        }.bind(host))
 
     };
 
