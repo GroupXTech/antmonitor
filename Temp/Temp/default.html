@@ -29,20 +29,51 @@
 
         <script type="text/html" id="temperature-template">
             <li>
+                <div>
+                    <div id="flexMeasurement">
+                        <img class="icon" src="images/Temperature-30.png" alt="Temperature" data-bind="attr: {title: ('Sensor id. : '+_page.sensorId) }" />
 
-                <div id="flexMeasurement">
-                    <img class="icon" src="images/Temperature-30.png" alt="Temperature" data-bind="attr: {title: ('Sensor id. : '+_page.sensorId) }" />
+                        <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" />
 
-                    <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" />
+                        <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"></span>
+                        <!--<label data-bind="visible: $root.settingVM.show24H">Min</label>-->
+                        <span class="temperature24H" data-bind="text: formattedLow24H, visible: $root.settingVM.show24H, style: { color : low24H() < 0 ? '#3D76F5' : 'red'}"></span>
+                        <!--<label data-bind="visible: $root.settingVM.show24H">Max</label>-->
+                        <span class="temperature24H" data-bind="text: formattedHigh24H, visible: $root.settingVM.show24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}"></span>
 
-                    <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"></span>
-                    <!--<label data-bind="visible: $root.settingVM.show24H">Min</label>-->
-                    <span class="temperature24H" data-bind="text: formattedLow24H, visible: $root.settingVM.show24H, style: { color : low24H() < 0 ? '#3D76F5' : 'red'}"></span>
-                    <!--<label data-bind="visible: $root.settingVM.show24H">Max</label>-->
-                    <span class="temperature24H" data-bind="text: formattedHigh24H, visible: $root.settingVM.show24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}"></span>
+                        <span class="timestamp" data-bind="text: formattedTimestamp"></span>
+                    </div>
 
-                    <span class="timestamp" data-bind="text: formattedTimestamp"></span>
+                   
+                    <div id="flexBattery" data-bind="if: (cumulativeOperatingTime() !== undefined) && $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+
+                        <div style="display:inline">
+                            <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                            
+                            <div style="display:inline" data-bind= "if: batteryStatus() === 1" >
+                                <img src="images/battery-full.png" />
+                            </div>
+
+                            <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3" >
+                                <img src="images/battery.png" />
+                            </div>
+
+                            <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                                <img src="images/battery-low.png" />
+                            </div>
+
+                            <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                                <img src="images/battery-empty.png" />
+                            </div>
+
+                            <span data-bind="text: batteryStatusString"></span>
+                        </div>
+
+                        
+                    </div>
                 </div>
+               
 
 
             </li>
@@ -68,6 +99,11 @@
                 <div id="divMAXMIN">
                     <label id="lblMAXMIN">MIN/MAX</label>
                     <input type="checkbox" data-bind="checked: settingVM.show24H">
+                </div>
+
+                <div id="divInfo">
+                    <img src="images/info.png"  alt="Information" title="Additional information (i.e operating time)" />
+                    <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
                 </div>
 
 

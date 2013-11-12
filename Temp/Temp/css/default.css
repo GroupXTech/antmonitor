@@ -14,6 +14,13 @@
   
 }
 
+#divInfo {
+    display : flex;
+    flex-flow : row no-wrap;
+     justify-content: space-around;
+     align-items : center;
+}
+
 #divTemperatureMode {
    
      display : flex;
@@ -44,6 +51,18 @@
     font-size : large;
 
 }
+
+#flexBattery {
+    display: flex;
+    flex-flow: row no-wrap;
+    justify-content: space-around;
+    align-items : center;
+    font-size : smaller;
+
+}
+
+
+
 
 
 .lblTemperatureMode, #lblMAXMIN, #spanSpace {

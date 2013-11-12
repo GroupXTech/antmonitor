@@ -1,7 +1,7 @@
 ﻿/* global define: true */
 
 // Main viewmodel class
-define(['require','module','exports','logger'], function(require,module,exports,Logger) {
+define(['require','module','exports','logger','profiles/Page'], function(require,module,exports,Logger,GenericPage) {
     'use strict';
     
      function TemperatureVM(configuration) {
@@ -87,6 +87,16 @@ define(['require','module','exports','logger'], function(require,module,exports,
 
           this._page = undefined;
 
+         // Common page 82
+
+          this.batteryStatus = ko.observable();
+          this.batteryStatusString = ko.observable();
+          this.cumulativeOperatingTime = ko.observable();
+          this.cumulativeOperatingTimeString = ko.observable();
+          this.lastBatteryReset = ko.observable();
+
+        
+
      }
     
     
@@ -124,28 +134,52 @@ define(['require','module','exports','logger'], function(require,module,exports,
 //    };
 //    
     // Takes page with current, low/high 24 h and puts it into the viewModel
-    TemperatureVM.prototype.updateFromPage = function (page)
-    {
-        
-        // For debugging, i.e inspect broadcast data
-        this._page = page;
-        
-        // Update view model
+     TemperatureVM.prototype.updateFromPage = function (page) {
+
+         // For debugging, i.e inspect broadcast data
+         this._page = page;
+
+         // Update view model
 
 
-        if (page.currentTemp)
-            this.currentTemp(page.currentTemp);
-        
-        if (page.hour24Low)
-            this.low24H(page.hour24Low);
-        
-        if (page.hour24High)
-            this.high24H(page.hour24High);
+         if (page.currentTemp)
+             this.currentTemp(page.currentTemp);
 
-        if (page.timestamp)
-            this.timestamp(page.timestamp);
-    };
-    
+         if (page.hour24Low)
+             this.low24H(page.hour24Low);
+
+         if (page.hour24High)
+             this.high24H(page.hour24High);
+
+         if (page.timestamp)
+             this.timestamp(page.timestamp);
+
+         // Common page 82
+
+         //TEST this.batteryStatus(2);
+         //this.batteryStatusString("Good");
+         //this.cumulativeOperatingTime(2);
+
+
+         switch (page.number) {
+
+             case GenericPage.prototype.COMMON.PAGE82:
+
+                 if (page.descriptive) {
+                     this.batteryStatus(page.descriptive.batteryStatus);
+                     this.batteryStatusString(page.batteryStatusString);
+                 }
+
+                 if (page.cumulativeOperatingTime) {
+                     this.cumulativeOperatingTime(page.cumulativeOperatingTime);
+                     this.cumulativeOperatingTimeString(page.cumulativeOperatingTimeString);
+                     this.lastBatteryReset(page.lastBatteryReset);
+                 }
+
+                 break;
+         }
+     };
+     
     TemperatureVM.prototype.getTemplateName = function (item)
     {
        // return undefined;

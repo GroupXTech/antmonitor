@@ -63,7 +63,7 @@
 
                     logging: ko.observable(true),     // Enable logging to console  
 
-
+                    showAdditionalInfo : ko.observable(false),
                    
                     temperatureMode:  ko.observable(window.localStorage[localStorageKey.temperaturemode] || TemperatureVM.prototype.MODE.CELCIUS), // Celcius, fahrenheit
                   
@@ -397,7 +397,33 @@
     //
 
     app.onresume = function () {
-        host.init(hostOptions, hostInitCB);
+
+        // The old cold start init callback must be redefined for resume behavior
+        // It's called after enumeration has found a matching ANT device 
+            host.usb._initCallback = function _initCB(err) {
+             
+                if (!err) {
+
+                    this.usb.listen(this.RXparse.bind(this));
+
+                    // If the user removes the ANT stick during standby, the channel configuration will be lost and open will fail -> must restart application to performance channel configuration once more
+                    // Normally the ANT stick is not removed
+                    this.openRxScanMode(0, function _openSent(err, msg) {
+
+                    if (err)
+                        this.log.log('error', err);
+
+                    
+                }.bind(host));
+                }
+                else
+                    this.log.log('error', 'Cannot resume application from standby',err);
+               
+            }.bind(host);
+
+        // Will enumerate devices again
+        host.usb.ANTWatcher.start();
+       
 
     };
 
@@ -407,20 +433,27 @@
 
             switch (args.detail.previousExecutionState) {
 
-                case activation.ApplicationExecutionState.terminated:
-                    // May deviate from default later...
-                    _startKnockout(_initANTHost);
-                   
-                    break;
-
                 default:
                     _startKnockout(_initANTHost);
+                    
+
                     break;
             }
 
 
             args.setPromise(WinJS.UI.processAll());
+           
         }
+
+        // Auto play
+
+        //else if (args.detail.lind === activation.ActivationKind.device)
+        //{
+        //    // Not implemented yet
+
+        //    //console.log("Autoplay activation", args);
+
+        //}
     };
 
    
@@ -434,11 +467,20 @@
         // args.setPromise().
 
         
-        // Remove previously registered devices from UI
+       
+
+        // exitAndResetDevice();
+
+        // Remove previously registered devices from UI -> enumeration will be restarted when resuming
 
         rootVM.deviceVM.enumeratedDevice.removeAll();
 
-        exitAndResetDevice();
+        host.closeChannel(0, function _closedSent(err,msg)
+        {
+            // host.usb.ANTdevice.close();
+            host.usb.exit();
+            var i = 1;
+        })
 
     };
 

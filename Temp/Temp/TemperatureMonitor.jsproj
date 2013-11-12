@@ -107,6 +107,11 @@
     <Content Include="bower_components\libant\usb\USBDevice.js" />
     <Content Include="bower_components\libant\usb\USBWindows.js" />
     <Content Include="default.html" />
+    <Content Include="images\battery-empty.png" />
+    <Content Include="images\battery-full.png" />
+    <Content Include="images\battery-low.png" />
+    <Content Include="images\battery.png" />
+    <Content Include="images\info.png" />
     <Content Include="images\logo-2.scale-100.png" />
     <Content Include="images\Temperature Monitor.scale-100.png" />
     <Content Include="images\Temperature-30.png" />
