@@ -1,4 +1,4 @@
-/*
+﻿/*
  Highcharts JS v3.0.7 (2013-10-24)
 
  (c) 2009-2013 Torstein Hønsi
