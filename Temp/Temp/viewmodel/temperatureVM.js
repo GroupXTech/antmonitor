@@ -1,14 +1,15 @@
 ﻿/* global define: true */
 
 // Main viewmodel class
-define(['require','module','exports','logger','profiles/Page'], function(require,module,exports,Logger,GenericPage) {
+define(['require','module','exports','logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(require,module,exports,Logger,GenericPage, GenericVM, TemperatureConverter) {
     'use strict';
     
      function TemperatureVM(configuration) {
          
-        // this._logger = new Logger(configuration.log);
-         this._logger = configuration.logger || new Logger(configuration.log); // Use sensorVM logger, or create a new one
-         
+         GenericVM.call(this, configuration);
+
+         this.tempConverter = new TemperatureConverter();
+          
          // Idea: Hook up temperatureMode observable to settingsVM
          this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
          
@@ -26,7 +27,8 @@ define(['require','module','exports','logger','profiles/Page'], function(require
              switch (this.temperatureMode()) {
                         case TemperatureVM.prototype.MODE.FAHRENHEIT :
                    
-                          formattedTemp = (tempObs()*(9/5)+32).toFixed(toFixedDigits || 2);
+                            //formattedTemp = (tempObs()*(9/5)+32);
+                            formattedTemp = this.tempConverter.fromCelciusToFahrenheit(tempObs()).toFixed(toFixedDigits || 2);
                              break;
                         
                         default :
@@ -50,7 +52,7 @@ define(['require','module','exports','logger','profiles/Page'], function(require
           this.high24H = ko.observable();
           this.formattedHigh24H = ko.computed({
              read: function () {
-                return getFormattedTemp(this.high24H,1);
+                return getFormattedTemp(this.high24H,1)+'&uarr;';
                 
              }.bind(this)
             
@@ -60,7 +62,7 @@ define(['require','module','exports','logger','profiles/Page'], function(require
           this.low24H = ko.observable();
           this.formattedLow24H = ko.computed({
              read: function () {
-                return getFormattedTemp(this.low24H,1);
+                return getFormattedTemp(this.low24H,1)+'&darr;';
              }.bind(this)
             
          });
@@ -68,6 +70,7 @@ define(['require','module','exports','logger','profiles/Page'], function(require
           this.location = ko.observable();
           var loc;
           loc = window.localStorage[configuration.sensorId + '-location'];
+        // configuration.storage.get(configuration.sensorId + '-location');
           if (loc)
               this.location(loc);
 
@@ -75,7 +78,9 @@ define(['require','module','exports','logger','profiles/Page'], function(require
 
           this.location.subscribe(function (newValue) {
               window.localStorage[configuration.sensorId + '-location'] = newValue;
-          })
+              //if (!this.disableLocationDBUpdate) // !undefined = true
+              //  configuration.storage.set(configuration.sensorId + '-location',newValue);
+          }.bind(this));
 
           this.timestamp = ko.observable();
           this.formattedTimestamp = ko.computed({
@@ -83,22 +88,18 @@ define(['require','module','exports','logger','profiles/Page'], function(require
                   if (this.timestamp)
                     return (new Date(this.timestamp())).toLocaleTimeString();
               }.bind(this)
-          })
+          });
 
           this._page = undefined;
 
-         // Common page 82
-
-          this.batteryStatus = ko.observable();
-          this.batteryStatusString = ko.observable();
-          this.cumulativeOperatingTime = ko.observable();
-          this.cumulativeOperatingTimeString = ko.observable();
-          this.lastBatteryReset = ko.observable();
+        
 
         
 
      }
     
+     TemperatureVM.prototype = Object.create(GenericVM.prototype);
+     TemperatureVM.prototype.constructor = TemperatureVM;
     
     TemperatureVM.prototype.MODE = {
         CELCIUS : 'celcius',
@@ -154,30 +155,7 @@ define(['require','module','exports','logger','profiles/Page'], function(require
          if (page.timestamp)
              this.timestamp(page.timestamp);
 
-         // Common page 82
-
-         //TEST this.batteryStatus(2);
-         //this.batteryStatusString("Good");
-         //this.cumulativeOperatingTime(2);
-
-
-         switch (page.number) {
-
-             case GenericPage.prototype.COMMON.PAGE82:
-
-                 if (page.descriptive) {
-                     this.batteryStatus(page.descriptive.batteryStatus);
-                     this.batteryStatusString(page.batteryStatusString);
-                 }
-
-                 if (page.cumulativeOperatingTime) {
-                     this.cumulativeOperatingTime(page.cumulativeOperatingTime);
-                     this.cumulativeOperatingTimeString(page.cumulativeOperatingTimeString);
-                     this.lastBatteryReset(page.lastBatteryReset);
-                 }
-
-                 break;
-         }
+         this.updateCommonPage(page);
      };
      
     TemperatureVM.prototype.getTemplateName = function (item)
