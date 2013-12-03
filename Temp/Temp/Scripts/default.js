@@ -48,9 +48,9 @@
 
         paths: {
             // Knockout viewmodels
-            vm: '../../viewmodel',
-            db: '../../Scripts',
-            converter: '../../converter'
+            vm: '../../scripts/viewmodel',
+            db: '../../scripts',
+            converter: '../../scripts/converter'
         },
 
     });
