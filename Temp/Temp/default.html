@@ -24,8 +24,8 @@
     <!-- Highcharts -->
     <script src="/scripts/highcharts/standalone-framework.src.js"></script>
 
-    <script src="/scripts/highcharts/highcharts.js"></script>
-    <!--<script src="/scripts/highcharts/highcharts.src.js"></script>-->
+    <!--<script src="/scripts/highcharts/highcharts.js"></script>-->
+    <script src="/scripts/highcharts/highcharts.src.js"></script>
 
     <script src="/scripts/default.js"></script>
 
@@ -39,8 +39,8 @@
             <li>
                 <div>
                     <div id="flexMeasurement">
-                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
-
+                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: location, attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId+' '+location()) }" />
+                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !location, attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
                         <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" />
 
                         <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"></span>
@@ -115,7 +115,7 @@
         <script type="text/html" id="footpod-template">
             <li>
                 <div id="flexMeasurement">
-                    <img class="icon" src="icon/footpod.png" alt="Footpod" data-bind="attr: {title: ('Sensor id. : '+_page.sensorId) }" />
+                    <img class="icon" src="icon/footpod.png" alt="Footpod" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
                    
                     <span data-bind="text: formattedSpeed"></span>
                     <span data-bind="text: formattedCumulativeDistance"></span>
@@ -177,6 +177,28 @@
                     </div>
 
                 </div>
+
+                <div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>
+
+            </li>
+        </script>
+
+        <script type="text/html" id="HRM-template">
+            <li>
+
+                <div id="flexMeasurement">
+
+                    <img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
+
+
+                    <span data-bind="text: computedHeartRate"></span>
+
+                    <span data-bind="text: RRInterval"></span>
+
+                </div>
+
+                <div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>
+
             </li>
         </script>
 

@@ -58,7 +58,36 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="bower_components\libant\.bower.json" />
+    <Content Include="bower_components\libant\.gitattributes" />
+    <Content Include="bower_components\libant\.gitignore" />
+    <Content Include="bower_components\libant\.git\config" />
+    <Content Include="bower_components\libant\.git\description" />
+    <Content Include="bower_components\libant\.git\FETCH_HEAD" />
+    <Content Include="bower_components\libant\.git\HEAD" />
+    <Content Include="bower_components\libant\.git\hooks\applypatch-msg.sample" />
+    <Content Include="bower_components\libant\.git\hooks\commit-msg.sample" />
+    <Content Include="bower_components\libant\.git\hooks\post-update.sample" />
+    <Content Include="bower_components\libant\.git\hooks\pre-applypatch.sample" />
+    <Content Include="bower_components\libant\.git\hooks\pre-commit.sample" />
+    <Content Include="bower_components\libant\.git\hooks\pre-push.sample" />
+    <Content Include="bower_components\libant\.git\hooks\pre-rebase.sample" />
+    <Content Include="bower_components\libant\.git\hooks\prepare-commit-msg.sample" />
+    <Content Include="bower_components\libant\.git\hooks\update.sample" />
+    <Content Include="bower_components\libant\.git\index" />
+    <Content Include="bower_components\libant\.git\info\exclude" />
+    <Content Include="bower_components\libant\.git\logs\HEAD" />
+    <Content Include="bower_components\libant\.git\logs\refs\heads\master" />
+    <Content Include="bower_components\libant\.git\logs\refs\remotes\origin\HEAD" />
+    <Content Include="bower_components\libant\.git\objects\pack\pack-da85b4b6bc8280d5a31ae69eb0270402c80d4a98.idx" />
+    <Content Include="bower_components\libant\.git\objects\pack\pack-da85b4b6bc8280d5a31ae69eb0270402c80d4a98.pack" />
+    <Content Include="bower_components\libant\.git\packed-refs" />
+    <Content Include="bower_components\libant\.git\refs\heads\master" />
+    <Content Include="bower_components\libant\.git\refs\remotes\origin\HEAD" />
+    <Content Include="bower_components\libant\.npmignore" />
+    <Content Include="bower_components\libant\anthost-uglified.js" />
     <Content Include="bower_components\libant\anthost.js" />
+    <Content Include="bower_components\libant\bower.json" />
     <Content Include="bower_components\libant\channel.js" />
     <Content Include="bower_components\libant\logger.js" />
     <Content Include="bower_components\libant\messages\ANTMessage.js" />
@@ -95,8 +124,11 @@
     <Content Include="bower_components\libant\messages\SetSerialNumChannelIdMessage.js" />
     <Content Include="bower_components\libant\messages\SetTransmitPowerMessage.js" />
     <Content Include="bower_components\libant\messages\UnAssignChannelMessage.js" />
+    <Content Include="bower_components\libant\package.json" />
     <Content Include="bower_components\libant\profiles\backgroundScanningChannel.js" />
+    <Content Include="bower_components\libant\profiles\crc.js" />
     <Content Include="bower_components\libant\profiles\deviceProfile.js" />
+    <Content Include="bower_components\libant\profiles\deviceProfile_ANTFS.js" />
     <Content Include="bower_components\libant\profiles\deviceProfile_ENVIRONMENT.js" />
     <Content Include="bower_components\libant\profiles\deviceProfile_HRM.js" />
     <Content Include="bower_components\libant\profiles\deviceProfile_SDM.js" />
@@ -112,8 +144,12 @@
     <Content Include="bower_components\libant\profiles\SDMPage2.js" />
     <Content Include="bower_components\libant\profiles\TemperaturePage0.js" />
     <Content Include="bower_components\libant\profiles\TemperaturePage1.js" />
+    <Content Include="bower_components\libant\profiles\WebSocketManager.js" />
+    <Content Include="bower_components\libant\README.md" />
     <Content Include="bower_components\libant\settings.js" />
+    <Content Include="bower_components\libant\usb\USBChrome.js" />
     <Content Include="bower_components\libant\usb\USBDevice.js" />
+    <Content Include="bower_components\libant\usb\USBNode.js" />
     <Content Include="bower_components\libant\usb\USBWindows.js" />
     <Content Include="default.html" />
     <Content Include="icon\ant_usb.png" />
@@ -155,6 +191,11 @@
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.WinJS.2.0, Version=1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bower_components\libant\.git\branches\" />
+    <Folder Include="bower_components\libant\.git\objects\info\" />
+    <Folder Include="bower_components\libant\.git\refs\tags\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <!-- To modify your build process, add your task inside one of the targets below then uncomment

@@ -158,6 +158,12 @@ input[type=radio], input[type=checked] {
    width : 99%
 }
 
+.HRMChart {
+   margin : 3px;
+   height : 255px;
+   width : 99%
+}
+
 
 #inputDefaultDevice {
     width: 30px;
@@ -168,4 +174,25 @@ input[type=radio], input[type=checked] {
 #divCredits {
     margin-top : 3px;
 }
+
+@media (max-width : 590px)
+    {
+    #divENUMERATEDDEVICE  { display : none; }
+}
+
+@media (max-width : 500px) {
+   #divInfo, #divGraph  { display : none; }
+}
+
+@media (max-width : 360px) {
+   #divMAXMIN, .location  { display : none; }
+
+  
+}
+
+@media (max-width : 300px) {
+   #divTemperatureMode, .timestamp, .temperature24H { display : none; }
+
+}
+
 

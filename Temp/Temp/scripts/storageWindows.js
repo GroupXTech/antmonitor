@@ -17,12 +17,15 @@ define(['require', 'module', 'exports', 'logger','db/storage'], function (requir
     StorageWindows.prototype.get = function (key, callback) {
         var db = {};
         db[key] = window.localStorage[key];
+        if (db[key] === "undefined")
+            db[key] = undefined;
       if (typeof callback === 'function')
         callback(db);
     };
 
     StorageWindows.prototype.set = function (key, value, callback) {
-        window.localStorage[key] = value;
+        if (value !== undefined)
+          window.localStorage[key] = value;
         if (typeof callback === 'function')
             callback();
     }

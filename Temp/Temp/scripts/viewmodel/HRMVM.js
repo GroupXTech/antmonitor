@@ -134,7 +134,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
     HRMVM.prototype = Object.create(GenericVM.prototype);
     HRMVM.prototype.constructor = HRMVM;
 
-   
+    HRMVM.prototype.INVALID_HR = 0x00;
     
    
     HRMVM.prototype.updateFromPage = function (page) {

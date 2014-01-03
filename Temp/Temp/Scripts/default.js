@@ -40,6 +40,8 @@
     var tempConverter;
     var timezoneOffsetInMilliseconds = (new Date()).getTimezoneOffset()*-60000; // 1000 ms pr second = 60000 ms / minute
 
+    var timerID = {}; // Holds timer id's
+
     // Configure requirejs script loader
 
     requirejs.config({
@@ -58,7 +60,7 @@
 
     function _startKnockout(callback) {
 
-        require(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'db/storageWindows', 'logger', 'converter/temperatureConverter'], function (SensorVM, TemperatureVM, FootpodVM, Storage, Logger, TemperatureConverter) {
+        require(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'db/storageWindows', 'logger', 'converter/temperatureConverter'], function (SensorVM, TemperatureVM, FootpodVM, HRMVM, Storage, Logger, TemperatureConverter) {
 
             // Base viewmodel
 
@@ -270,14 +272,43 @@
                             else {
                                 //for (testNr = 0; testNr <= 30;testNr++)
                                  // sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+testNr*30, page.currentTemp], false, sensorChart[sensorId].shift(), false)
-                                sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+timezoneOffsetInMilliseconds, page.currentTemp], false, sensorChart[sensorId].shift(), false)
+                                sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], false, sensorChart[sensorId].chart.series[0].data.length >= 1440, false)
                             }
                                
                             sensorChart[sensorId].timestamp = Date.now();
                             sensorChart[sensorId].chart.redraw();
                             //redrawTemperatureChart(sensorChart[sensorId]);
-                        }
+                        } else if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
+                            sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], false, sensorChart[sensorId].chart.series[0].data.length >= 1200, false);
+                            
+                            // Try to minimize CPU utilization by only redrawing after a specified timeout
+                            if (!sensorChart[sensorId].waitingForRedraw) {
+                                sensorChart[sensorId].waitingForRedraw = true;
+                                timerID.footpod = setTimeout(function () {
+                                    //console.time('redrawFootpodChart');
+                                    sensorChart[sensorId].chart.redraw();
+                                    //console.timeEnd('redrawFootpodChart');
+                                    sensorChart[sensorId].timestamp = Date.now();
+                                    handlerLogger.log('info', 'Redrawed footpod chart', sensorChart[sensorId].timestamp, 'series length ' + sensorChart[sensorId].chart.series[0].data.length);
+                                    sensorChart[sensorId].waitingForRedraw = false;
+                                }, 1000);
+                            }
+                        } else if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
+                            sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], false, sensorChart[sensorId].chart.series[0].data.length >= 1200, false);
 
+                            // Try to minimize CPU utilization by only redrawing after a specified timeout
+                            if (!sensorChart[sensorId].waitingForRedraw) {
+                                sensorChart[sensorId].waitingForRedraw = true;
+                                timerID.HRM = setTimeout(function () {
+                                    //console.time('redrawFootpodChart');
+                                    sensorChart[sensorId].chart.redraw();
+                                    //console.timeEnd('redrawFootpodChart');
+                                    sensorChart[sensorId].timestamp = Date.now();
+                                    handlerLogger.log('info', 'Redrawed HRM chart', sensorChart[sensorId].timestamp, 'series length ' + sensorChart[sensorId].chart.series[0].data.length);
+                                    sensorChart[sensorId].waitingForRedraw = false;
+                                }, 1000);
+                            }
+                        }
                         
 
                         //  console.log("Picked deviceTypeVM from index",index,deviceTypeVM);
@@ -335,26 +366,7 @@
                                         enabled : false
                                     },
 
-                                    //scrollbar: {
-                                    //    enabled : false
-                                    //},
-
-                                    //navigator: {
-                                    //    enabled: false
-                                    //},
-
-                                    //rangeSelector: {
-                                    //    enabled: false,
-                                    //    buttons: [{
-                                    //        type: 'minute',
-                                    //        count: 15,
-                                    //        text: '15min'
-                                    //    }, 
-                                    //     {
-                                    //        type: 'all',
-                                    //        text: 'All'
-                                    //    }]
-                                    //},
+                                  
 
                                     legend: {
                                         enabled: false
@@ -365,7 +377,6 @@
                                     },
 
 
-                           
                                     series: [{
                                         name: 'Temperature',
                                         id: 'temperature-current-' + sensorId,
@@ -388,23 +399,29 @@
                                             text: '',
                                         },
 
-                                        min: (function () {
-                                            var tempMode = rootVM.settingVM.temperatureMode();
+                                        //min: (function () {
+                                        //    var tempMode = rootVM.settingVM.temperatureMode();
 
-                                                switch (tempMode) {
+                                        //        switch (tempMode) {
 
-                                                    case TemperatureVM.prototype.MODE.CELCIUS:
-                                                        return -20;
+                                        //            case TemperatureVM.prototype.MODE.CELCIUS:
+                                        //                return -20;
 
-                                                    case TemperatureVM.prototype.MODE.FAHRENHEIT:
-                                                        return -4;
+                                        //            case TemperatureVM.prototype.MODE.FAHRENHEIT:
+                                        //                return -4;
 
-                                                    default:
-                                                        handlerLogger.log('error', 'Unknown temperature mode, cannot set minimum value for y-axis', tempMode);
-                                                        break;
-                                                }
+                                        //            default:
+                                        //                handlerLogger.log('error', 'Unknown temperature mode, cannot set minimum value for y-axis', tempMode);
+                                        //                break;
+                                        //        }
                       
-                                        })(),
+                                        //})(),
+
+                                        tickPositions: [],
+
+                                        startOnTick: false,
+
+                                        endOnTick: false,
                                        
                                         gridLineWidth: 0,
 
@@ -444,20 +461,20 @@
                                 });
 
                                 
-                                sensorChart[sensorId].shift = function ()
-                                {
+                                //sensorChart[sensorId].shift = function ()
+                                //{
                                     
-                                    return  sensorChart[sensorId].chart.series[0].data.length >= 1440;
-                                }
+                                //    return  sensorChart[sensorId].chart.series[0].data.length >= 1440;
+                                //}
 
                                 if (page.currentTemp !== undefined) {
                                    
                                     if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT)
-                                        sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, sensorChart[sensorId].shift(), false);
+                                        sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
                                     else {
                                        // for (var testNr = 0; testNr < 1440 ; testNr++) 
                                        //     sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+testNr*30, page.currentTemp], false, sensorChart[sensorId].shift(), false);
-                                        sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+timezoneOffsetInMilliseconds, page.currentTemp], true, sensorChart[sensorId].shift(), false);
+                                        sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], true, false, false);
 
                                         //}
 
@@ -467,6 +484,136 @@
                                   //  redrawTemperatureChart(sensorChart[sensorId]);
                                   
                                 }
+
+                                break;
+
+                            case 120: // HRM
+
+                                sensorDictionary[sensorId] = index;
+
+                                deviceTypeVM = new HRMVM({
+                                    logger: handlerLogger,
+                                    sensorId: sensorId
+                                });
+
+
+                                handlerLogger.log('log', 'New sensor at index ', index, 'page', page, sensorDictionary);
+                                deviceTypeVM.updateFromPage(page);
+                                // Add measurement/page=devicetype viewmodel to sensor array
+                                rootVM.sensorVM.measurement.push(deviceTypeVM);
+
+                                sensorChart[sensorId] = {};
+                                sensorChart[sensorId].chart = new Highcharts.Chart({
+                                    chart: {
+                                        renderTo: 'sensorChart-' + sensorId,
+                                        backgroundColor: 'transparent',
+                                        animation: false,
+                                        //height: 80,
+                                        //width: 200,
+                                        spacing: [7, 7, 7, 7]
+                                    },
+
+                                    credits: {
+                                        enabled: false
+                                    },
+
+
+                                    legend: {
+                                        enabled: false
+                                    },
+
+                                    title: {
+                                        text: '',
+                                    },
+
+
+
+                                    series: [{
+                                        name: 'HR',
+                                        id: 'HRM-HR-' + sensorId,
+                                        data: [], // tuples [timestamp,value]
+                                        type: 'areaspline',
+                                        color : 'red',
+
+                                        marker: {
+                                            enabled: false,
+                                            radius: 2
+                                        },
+
+                                        //tooltip: {
+                                        
+                                        //    valueDecimals: 2
+                                        //    //valueSuffix: '°'
+                                        //}
+                                    }],
+
+                                    yAxis: {
+                                        title: {
+                                            text: '',
+                                        },
+
+                                        min: 0,
+
+                                        gridLineWidth: 0,
+
+                                        tickPositions: [],
+
+                                        startOnTick: false,
+
+                                        endOnTick: false,
+
+                                        labels:
+                                             {
+                                                 enabled: false
+                                             },
+
+
+                                    },
+
+                                    xAxis: {
+
+                                        type: 'datetime',
+
+                                        // Turn off X-axis line
+                                        lineWidth: 0,
+
+                                        // Turn off tick-marks
+                                        tickLength: 0,
+
+                                        tickPositions: [],
+
+                                        labels:
+                                            {
+                                                enabled: false
+                                            },
+
+                                    },
+
+                                    //plotOptions: 
+                                    //    {
+
+                                    //    }
+
+
+                                });
+
+
+                                //sensorChart[sensorId].shift = function () {
+                                //    // Approx 4 Hz message rate
+                                //    // 4 * 60*5=1200 points in 5 minutes
+                                //    return sensorChart[sensorId].chart.series[0].data.length >= 1200;
+                                //}
+
+                                if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
+
+
+                                    sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], true, false, false);
+                                    sensorChart[sensorId].timestamp = Date.now(); // Last redraw time
+                                    //   sensorChart[sensorId].chart.redraw();
+                                }
+
+
+
 
                                 break;
 
@@ -481,6 +628,115 @@
 
                                 deviceTypeVM.updateFromPage(page);
                                 rootVM.sensorVM.measurement.push(deviceTypeVM);
+
+                                sensorChart[sensorId] = {};
+                                sensorChart[sensorId].chart = new Highcharts.Chart({
+                                    chart: {
+                                        renderTo: 'sensorChart-' + sensorId,
+                                        backgroundColor: 'transparent',
+                                        animation: false,
+                                        //height: 80,
+                                        //width: 200,
+                                        spacing: [7, 7, 7, 7]
+                                    },
+
+                                    credits: {
+                                        enabled: false
+                                    },
+
+               
+                                    legend: {
+                                        enabled: false
+                                    },
+
+                                    title: {
+                                        text: '',
+                                    },
+
+                                   
+
+                                    series: [{
+                                        name: 'Speed',
+                                        id: 'footpod-speed-' + sensorId,
+                                        data: [], // tuples [timestamp,value]
+                                        type: 'line',
+
+                                        marker : {
+                                            enabled : false,
+                                            radius : 2
+                                        },
+
+                                        tooltip: {
+                                            enabled : false,
+                                            valueDecimals: 2
+                                            //valueSuffix: '°'
+                                        }
+                                    }],
+
+                                    yAxis: {
+                                        title: {
+                                            text: '',
+                                        },
+
+                                        min: 0,
+
+                                        tickPositions: [],
+
+                                        startOnTick: false,
+
+                                        endOnTick: false,
+
+                                        gridLineWidth: 0,
+
+                                        labels:
+                                             {
+                                                 enabled: false
+                                             },
+
+
+                                    },
+
+                                    xAxis: {
+
+                                        type: 'datetime',
+
+                                        // Turn off X-axis line
+                                        lineWidth: 0,
+
+                                        // Turn off tick-marks
+                                        tickLength: 0,
+
+                                        tickPositions: [],
+
+                                        labels:
+                                            {
+                                                enabled: false
+                                            },
+
+                                    },
+
+                                    //plotOptions: 
+                                    //    {
+
+                                    //    }
+
+
+                                });
+
+
+                                //sensorChart[sensorId].shift = function () {
+                                //    // Approx 4 Hz message rate
+                                //    // 4 * 60*5=1200 points in 5 minutes
+                                //    return sensorChart[sensorId].chart.series[0].data.length >= 1200;
+                                //}
+
+                                if (page.speed !== undefined) {
+
+                                   
+                                    sensorChart[sensorId].chart.series[0].addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], true, false, false);
+                                        sensorChart[sensorId].timestamp = Date.now(); // Last redraw time
+                                         //   sensorChart[sensorId].chart.redraw();
+                                }
 
                                 break;
 
@@ -571,7 +827,8 @@
                                       rootVM.deviceVM.enumerationCompleted(true);
 
                                       // In case deviceId is updated, during enumeration
-                                      storage.set(localStorageKey.defaultDeviceId, this.usb.options.deviceId);
+                                      if (this.usb.options.deviceId)
+                                        storage.set(localStorageKey.defaultDeviceId, this.usb.options.deviceId);
 
                                       //
                                       var devInfo;
@@ -596,6 +853,7 @@
                           };
 
                           storage.get(localStorageKey.defaultDeviceId, function (db) {
+                             
                               USBoptions.deviceId = db[localStorageKey.defaultDeviceId];
                               configureUSB();
                           });
@@ -648,8 +906,8 @@
                                   log: rootVM.settingVM.logging() || false,
                                   channelId: {
                                       deviceNumber: 0,
-                                       deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
-                                      //deviceType: 0,
+                                     //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
+                                      deviceType: 0,
                                       transmissionType: 0
                                   },
                                   onPage: onPage
@@ -665,7 +923,7 @@
                                           this.log.log('log', "ANT host initialized");
 
                                       if (typeof this.usb.getDeviceWatcher === 'function' && this.log.logging)
-                                          this.log.log('log', 'Host environment offers device watching capability, i.e windows 8.1');
+                                          this.log.log('log', 'Host environment offers device watching capability, e.g windows 8.1');
 
                                       // console.profile('Establish channel');
 

@@ -1,9 +1,0 @@
-MainPackage=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_AnyCPU_Debug.appx
-SymbolPackage=C:\Users\HenningKnut\projects\temp\Temp\Temp\AppPackages\Temp_1.0.0.0_Debug_Test\Temp_1.0.0.0_AnyCPU_Debug.appxsym
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-ab.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-af.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-be.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-ca.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-da.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-de.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\Debug\Temp_1.0.0.0_Bundle\Temp_1.0.0.0_language-fa.appx

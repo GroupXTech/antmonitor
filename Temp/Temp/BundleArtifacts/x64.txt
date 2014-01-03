@@ -1,8 +1,0 @@
-MainPackage=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_x64.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-ab.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-af.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-be.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-ca.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-da.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-de.appx
-ResourcePack=C:\Users\HenningKnut\projects\temp\Temp\Temp\bin\x64\Release\TemperatureMonitor_1.0.0.5_Bundle\TemperatureMonitor_1.0.0.5_language-fa.appx

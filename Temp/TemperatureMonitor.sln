@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "TemperatureMonitor", "Temp\TemperatureMonitor.jsproj", "{66F21C7E-2E65-4231-B4BB-CCFD429A1BBB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagnostic Sessions", "Diagnostic Sessions", "{B72E72B2-F8D6-4EC2-8809-26D6766250DA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
