@@ -72,7 +72,7 @@
 
                 settingVM: {
 
-                    logging: ko.observable(true),     // Enable logging to console  
+                    logging: ko.observable(false),     // Enable logging to console  
 
                     showAdditionalInfo: ko.observable(false),
 
@@ -906,8 +906,8 @@
                                   log: rootVM.settingVM.logging() || false,
                                   channelId: {
                                       deviceNumber: 0,
-                                     //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
-                                      deviceType: 0,
+                                       deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
+                                     // deviceType: 0,
                                       transmissionType: 0
                                   },
                                   onPage: onPage

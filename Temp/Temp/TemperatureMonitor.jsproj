@@ -85,7 +85,6 @@
     <Content Include="bower_components\libant\.git\refs\heads\master" />
     <Content Include="bower_components\libant\.git\refs\remotes\origin\HEAD" />
     <Content Include="bower_components\libant\.npmignore" />
-    <Content Include="bower_components\libant\anthost-uglified.js" />
     <Content Include="bower_components\libant\anthost.js" />
     <Content Include="bower_components\libant\bower.json" />
     <Content Include="bower_components\libant\channel.js" />
