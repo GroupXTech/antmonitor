@@ -33,6 +33,22 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         this.previousHeartBeatEventTime = ko.observable();
         
         this.RRInterval = ko.observable();
+
+        // HRM page 1
+
+        this.cumulativeOperatingTimeString = ko.observable();
+        this.lastBatteryReset = ko.observable();
+
+        // HRM page 2
+
+        this.manufacturerID = ko.observable();
+        this.serialNumber = ko.observable();
+
+        // HRM page 3
+
+        this.softwareVersion = ko.observable();
+        this.hardwareVersion = ko.observable();
+        this.modelNumber = ko.observable();
 //
 //
 //        // SDM page 1
@@ -161,6 +177,38 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         if (page.RRInterval)
             this.RRInterval(page.RRInterval);
 
+        // HRM page 1
+
+        if (page.cumulativeOperatingTime)
+            this.cumulativeOperatingTime(page.cumulativeOperatingTime);
+
+        if (page.cumulativeOperatingTimeString)
+            this.cumulativeOperatingTimeString(page.cumulativeOperatingTimeString);
+
+        if (page.lastBatteryReset)
+            this.lastBatteryReset(page.lastBatteryReset);
+
+        // HRM page 2
+
+        if (page.manufacturerID)
+            this.manufacturerID(page.manufacturerID);
+
+        if (page.serialNumber)
+            this.serialNumber(page.serialNumber);
+
+        //if (page.broadcast.channelId && page.broadcast.channelId.deviceNumber)
+        //    this.deviceNumber(page.broadcast.channelId.deviceNumber);
+
+        // HRM page 3
+
+        if (page.hardwareVersion)
+            this.hardwareVersion(page.hardwareVersion);
+
+        if (page.softwareVersion)
+            this.softwareVersion(page.softwareVersion);
+
+        if (page.modelNumber)
+            this.modelNumber(page.modelNumber);
 //        var timestampDifference,
 //            distanceDifference,
 //            strideCountDifference,

@@ -124,25 +124,26 @@
     <Content Include="bower_components\libant\messages\SetTransmitPowerMessage.js" />
     <Content Include="bower_components\libant\messages\UnAssignChannelMessage.js" />
     <Content Include="bower_components\libant\package.json" />
+    <Content Include="bower_components\libant\profiles\antfs\crc.js" />
+    <Content Include="bower_components\libant\profiles\antfs\deviceProfile_ANTFS.js" />
     <Content Include="bower_components\libant\profiles\backgroundScanningChannel.js" />
-    <Content Include="bower_components\libant\profiles\crc.js" />
     <Content Include="bower_components\libant\profiles\deviceProfile.js" />
-    <Content Include="bower_components\libant\profiles\deviceProfile_ANTFS.js" />
-    <Content Include="bower_components\libant\profiles\deviceProfile_ENVIRONMENT.js" />
-    <Content Include="bower_components\libant\profiles\deviceProfile_HRM.js" />
-    <Content Include="bower_components\libant\profiles\deviceProfile_SDM.js" />
-    <Content Include="bower_components\libant\profiles\deviceProfile_SPDCAD.js" />
-    <Content Include="bower_components\libant\profiles\HRMPage0.js" />
-    <Content Include="bower_components\libant\profiles\HRMPage1.js" />
-    <Content Include="bower_components\libant\profiles\HRMPage2.js" />
-    <Content Include="bower_components\libant\profiles\HRMPage3.js" />
-    <Content Include="bower_components\libant\profiles\HRMPage4.js" />
+    <Content Include="bower_components\libant\profiles\environment\deviceProfile_ENVIRONMENT.js" />
+    <Content Include="bower_components\libant\profiles\environment\TemperaturePage0.js" />
+    <Content Include="bower_components\libant\profiles\environment\TemperaturePage1.js" />
+    <Content Include="bower_components\libant\profiles\hrm\deviceProfile_HRM.js" />
+    <Content Include="bower_components\libant\profiles\hrm\HRMPage0.js" />
+    <Content Include="bower_components\libant\profiles\hrm\HRMPage1.js" />
+    <Content Include="bower_components\libant\profiles\hrm\HRMPage2.js" />
+    <Content Include="bower_components\libant\profiles\hrm\HRMPage3.js" />
+    <Content Include="bower_components\libant\profiles\hrm\HRMPage4.js" />
     <Content Include="bower_components\libant\profiles\Page.js" />
     <Content Include="bower_components\libant\profiles\RxScanMode.js" />
-    <Content Include="bower_components\libant\profiles\SDMPage1.js" />
-    <Content Include="bower_components\libant\profiles\SDMPage2.js" />
-    <Content Include="bower_components\libant\profiles\TemperaturePage0.js" />
-    <Content Include="bower_components\libant\profiles\TemperaturePage1.js" />
+    <Content Include="bower_components\libant\profiles\sdm\deviceProfile_SDM.js" />
+    <Content Include="bower_components\libant\profiles\sdm\SDMPage1.js" />
+    <Content Include="bower_components\libant\profiles\sdm\SDMPage2.js" />
+    <Content Include="bower_components\libant\profiles\spdcad\deviceProfile_SPDCAD.js" />
+    <Content Include="bower_components\libant\profiles\spdcad\SPDCADPage0.js" />
     <Content Include="bower_components\libant\profiles\WebSocketManager.js" />
     <Content Include="bower_components\libant\README.md" />
     <Content Include="bower_components\libant\settings.js" />
@@ -192,6 +193,7 @@
     <SDKReference Include="Microsoft.WinJS.2.0, Version=1.0" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bin\" />
     <Folder Include="bower_components\libant\.git\branches\" />
     <Folder Include="bower_components\libant\.git\objects\info\" />
     <Folder Include="bower_components\libant\.git\refs\tags\" />

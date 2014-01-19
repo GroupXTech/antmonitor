@@ -100,7 +100,7 @@
 
                     </div>
 
-                    <div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>
+                    <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>-->
 
                    
 
@@ -178,7 +178,7 @@
 
                 </div>
 
-                <div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>
+                <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>-->
 
             </li>
         </script>
@@ -186,19 +186,56 @@
         <script type="text/html" id="HRM-template">
             <li>
 
+              <div>
+
                 <div id="flexMeasurement">
 
-                    <img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
+                    
+                    <img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }"  />
 
+                    <div style="display: inline" data-bind="if: computedHeartRate !== 0x00">
+                        <span class="computedHeartRate" data-bind="text: computedHeartRate"></span>
+                    </div>
 
-                    <span data-bind="text: computedHeartRate"></span>
-
-                    <span data-bind="text: RRInterval"></span>
+                    <div style="display: inline" data-bind="if: computedHeartRate === 0x00">
+                        <span class="computedHeartRate" >---</span>
+                    </div>
+                    
+                    <!--<span data-bind="text: RRInterval"></span>-->
 
                 </div>
 
-                <div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>
+                  <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                      <!-- HRM page 2-->
+                      <div style="display:inline" data-bind="if: manufacturerID() !== undefined ">
+                          <div style="display:inline" data-bind="if: (serialNumber() >> 16) === 0">
+                              <span data-bind="text: 'Manufacturer '+manufacturerID() +' SN '+serialNumber()"></span>
+                          </div>
+                              <div style="display:inline" data-bind="if: (serialNumber() >> 16) !== 0">
+                                  <span data-bind="text: 'Manufacturer '+manufacturerID() +' SN '+serialNumber()+' ('+_page.broadcast.channelId.deviceNumber+')'"></span>
+                              </div>
+                          </div>
 
+                      <!-- HRM page 3 -->
+
+                      <div style="display:inline" data-bind="if: softwareVersion() !== undefined ">
+                          <span data-bind="text: 'HW '+hardwareVersion() +' SW '+softwareVersion()+' Model '+modelNumber()"></span>
+                      </div>
+
+
+                      <!-- HRM page 1 -->
+
+                          <div>
+                              <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                                  <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+
+                              </div>
+                          </div>
+                      </div>
+
+
+                      <!--<div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+                  </div>
             </li>
         </script>
 
@@ -228,12 +265,6 @@
                             <img src="icon/info.png" data-bind="click: settingVM.toggleShowAdditionalInfo" alt="Information" title="Additional information (i.e operating time)" />
                             <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
                         </div>
-
-                        <div id="divGraph">
-                            <img src="icon/graph.png" data-bind="click: settingVM.toggleShowGraph" alt="Show/hide trend graph" title="Show/hide trend graph" />
-                            <!--<input type="checkbox" data-bind="checked: settingVM.showGraph" />-->
-                        </div>
-
 
                         <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
 
@@ -275,6 +306,11 @@
                 <div id="main">
 
                     <ul id="ulMeasurements" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.measurement}"></ul>
+
+                    <!-- Integrated chart with measurements from all sensors -->
+                    <div id="sensorChart-integrated">
+
+                    </div>
 
                 </div>
 
