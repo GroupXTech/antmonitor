@@ -14,7 +14,8 @@
 
 (function () {
 // encapsulated variables
-var UNDEFINED,
+    var
+    //UNDEFINED,
 	doc = document,
 	win = window,
 	math = Math,
@@ -43,7 +44,7 @@ var UNDEFINED,
 	hasBidiBug = isFirefox && parseInt(userAgent.split('Firefox/')[1], 10) < 4, // issue #38
 	useCanVG = !hasSVG && !isIE && !!doc.createElement('canvas').getContext,
 	Renderer,
-	hasTouch = doc.documentElement.ontouchstart !== UNDEFINED,
+	hasTouch = doc.documentElement.ontouchstart !== undefined,
 	symbolSizes = {},
 	idCounter = 0,
 	garbageBin,
@@ -279,7 +280,10 @@ function erase(arr, item) {
  * @param {Object} obj
  */
 function defined(obj) {
-	return obj !== UNDEFINED && obj !== null;
+    //return obj !== undefined && obj !== null;
+    // return obj !== undefined && obj !== null;
+
+    return obj != undefined;
 }
 
 /**
@@ -347,7 +351,7 @@ function pick() {
  */
 function css(el, styles) {
 	if (isIE) {
-		if (styles && styles.opacity !== UNDEFINED) {
+		if (styles && styles.opacity !== undefined) {
 			styles.filter = 'alpha(opacity=' + (styles.opacity * 100) + ')';
 		}
 	}
@@ -967,7 +971,7 @@ pathAnim = {
 						// Fx.prototype.cur returns the current value. The other ones are setters
 						// and returning a value has no effect.
 						return elem.attr ? // is SVG element wrapper
-							elem.attr(fx.prop, fn === 'cur' ? UNDEFINED : fx.now) : // apply the SVG wrapper's method
+							elem.attr(fx.prop, fn === 'cur' ? undefined : fx.now) : // apply the SVG wrapper's method
 							base.apply(this, arguments); // use jQuery's built-in method
 					};
 				}
@@ -1047,7 +1051,7 @@ pathAnim = {
 				options = args[0];
 
 				// Create the chart
-				if (options !== UNDEFINED) {
+				if (options !== undefined) {
 					/*jslint unused:false*/
 					options.chart = options.chart || {};
 					options.chart.renderTo = this[0];
@@ -1057,7 +1061,7 @@ pathAnim = {
 				}
 
 				// When called without parameters or with the return argument, get a predefined chart
-				if (options === UNDEFINED) {
+				if (options === undefined) {
 					ret = charts[attr(this[0], 'data-highcharts-chart')];
 				}	
 
@@ -1216,7 +1220,7 @@ pathAnim = {
 			var ret = e.originalEvent || e;
 			
 			// computed by jQuery, needed by IE8
-			if (ret.pageX === UNDEFINED) { // #1236
+			if (ret.pageX === undefined) { // #1236
 				ret.pageX = e.pageX;
 				ret.pageY = e.pageY;
 			}
@@ -1241,7 +1245,7 @@ pathAnim = {
 			}
 	
 			$el.stop();
-			if (params.opacity !== UNDEFINED && el.attr) {
+			if (params.opacity !== undefined && el.attr) {
 				params.opacity += 'px'; // force jQuery to use same logic as width and height (#2161)
 			}
 			$el.animate(params, options);
@@ -1919,7 +1923,7 @@ SVGElement.prototype = {
 				result = attrSetters[key] && attrSetters[key].call(wrapper, value, key);
 
 				if (result !== false) {
-					if (result !== UNDEFINED) {
+					if (result !== undefined) {
 						value = result; // the attribute setter has returned a new value to set
 					}
 
@@ -3994,7 +3998,7 @@ SVGRenderer.prototype = {
 					var textStyles = {};
 					styles = merge(styles); // create a copy to avoid altering the original object (#537)
 					each(['fontSize', 'fontWeight', 'fontFamily', 'color', 'lineHeight', 'width', 'textDecoration', 'textShadow'], function (prop) {
-						if (styles[prop] !== UNDEFINED) {
+						if (styles[prop] !== undefined) {
 							textStyles[prop] = styles[prop];
 							delete styles[prop];
 						}
@@ -4593,7 +4597,7 @@ Highcharts.VMLElement = VMLElement = {
 
 				if (result !== false && value !== null) { // #620
 
-					if (result !== UNDEFINED) {
+					if (result !== undefined) {
 						value = result; // the attribute setter has returned a new value to set
 					}
 
@@ -5793,7 +5797,7 @@ Tick.prototype = {
 			justifyLabel = axis.justifyLabels && (isFirst || isLast);
 
 		// Hide it if it now overlaps the neighbour label
-		if (labelEdge[line] === UNDEFINED || pxPos + leftSide > labelEdge[line]) {
+		if (labelEdge[line] === undefined || pxPos + leftSide > labelEdge[line]) {
 			labelEdge[line] = pxPos + rightSide;
 			
 		} else if (!justifyLabel) {
@@ -5955,7 +5959,7 @@ Tick.prototype = {
 		if (gridLineWidth) {
 			gridLinePath = axis.getPlotLinePath(pos + tickmarkOffset, gridLineWidth * reverseCrisp, old, true);
 
-			if (gridLine === UNDEFINED) {
+			if (gridLine === undefined) {
 				attribs = {
 					stroke: gridLineColor,
 					'stroke-width': gridLineWidth
@@ -6535,10 +6539,10 @@ Axis.prototype = {
 		// Flag, stagger lines or not
 		axis.userOptions = userOptions;
 
-		//axis.axisTitleMargin = UNDEFINED,// = options.title.margin,
+		//axis.axisTitleMargin = undefined,// = options.title.margin,
 		axis.minPixelPadding = 0;
-		//axis.ignoreMinPadding = UNDEFINED; // can be set to true by a column or bar series
-		//axis.ignoreMaxPadding = UNDEFINED;
+		//axis.ignoreMinPadding = undefined; // can be set to true by a column or bar series
+		//axis.ignoreMaxPadding = undefined;
 
 		axis.chart = chart;
 		axis.reversed = options.reversed;
@@ -6549,10 +6553,10 @@ Axis.prototype = {
 		axis.names = [];
 
 		// Elements
-		//axis.axisGroup = UNDEFINED;
-		//axis.gridGroup = UNDEFINED;
-		//axis.axisTitle = UNDEFINED;
-		//axis.axisLine = UNDEFINED;
+		//axis.axisGroup = undefined;
+		//axis.gridGroup = undefined;
+		//axis.axisTitle = undefined;
+		//axis.axisLine = undefined;
 
 		// Shorthand types
 		axis.isLog = type === 'logarithmic';
@@ -6561,13 +6565,13 @@ Axis.prototype = {
 		// Flag, if axis is linked to another axis
 		axis.isLinked = defined(options.linkedTo);
 		// Linked axis.
-		//axis.linkedParent = UNDEFINED;
+		//axis.linkedParent = undefined;
 
 		// Tick positions
-		//axis.tickPositions = UNDEFINED; // array containing predefined positions
+		//axis.tickPositions = undefined; // array containing predefined positions
 		// Tick intervals
-		//axis.tickInterval = UNDEFINED;
-		//axis.minorTickInterval = UNDEFINED;
+		//axis.tickInterval = undefined;
+		//axis.minorTickInterval = undefined;
 
 		axis.tickmarkOffset = (axis.categories && options.tickmarkPlacement === 'between') ? 0.5 : 0;
 
@@ -6576,7 +6580,7 @@ Axis.prototype = {
 		axis.labelEdge = [];
 		// Minor ticks
 		axis.minorTicks = {};
-		//axis.tickAmount = UNDEFINED;
+		//axis.tickAmount = undefined;
 
 		// List of plotLines/Bands
 		axis.plotLinesAndBands = [];
@@ -6585,21 +6589,21 @@ Axis.prototype = {
 		axis.alternateBands = {};
 
 		// Axis metrics
-		//axis.left = UNDEFINED;
-		//axis.top = UNDEFINED;
-		//axis.width = UNDEFINED;
-		//axis.height = UNDEFINED;
-		//axis.bottom = UNDEFINED;
-		//axis.right = UNDEFINED;
-		//axis.transA = UNDEFINED;
-		//axis.transB = UNDEFINED;
-		//axis.oldTransA = UNDEFINED;
+		//axis.left = undefined;
+		//axis.top = undefined;
+		//axis.width = undefined;
+		//axis.height = undefined;
+		//axis.bottom = undefined;
+		//axis.right = undefined;
+		//axis.transA = undefined;
+		//axis.transB = undefined;
+		//axis.oldTransA = undefined;
 		axis.len = 0;
-		//axis.oldMin = UNDEFINED;
-		//axis.oldMax = UNDEFINED;
-		//axis.oldUserMin = UNDEFINED;
-		//axis.oldUserMax = UNDEFINED;
-		//axis.oldAxisLength = UNDEFINED;
+		//axis.oldMin = undefined;
+		//axis.oldMax = undefined;
+		//axis.oldUserMin = undefined;
+		//axis.oldUserMax = undefined;
+		//axis.oldAxisLength = undefined;
 		axis.minRange = axis.userMinRange = options.minRange || options.maxZoom;
 		axis.range = options.range;
 		axis.offset = options.offset || 0;
@@ -6613,16 +6617,16 @@ Axis.prototype = {
 		axis.stackExtremes = {};
 
 		// Min and max in the data
-		//axis.dataMin = UNDEFINED,
-		//axis.dataMax = UNDEFINED,
+		//axis.dataMin = undefined,
+		//axis.dataMax = undefined,
 
 		// The axis range
 		axis.max = null;
 		axis.min = null;
 
 		// User set min and max
-		//axis.userMin = UNDEFINED,
-		//axis.userMax = UNDEFINED,
+		//axis.userMin = undefined,
+		//axis.userMax = undefined,
 
 		// Crosshair options
 		axis.crosshair = pick(options.crosshair, splat(chart.options.tooltip.crosshairs)[isXAxis ? 0 : 1], false);
@@ -6640,7 +6644,7 @@ Axis.prototype = {
 		axis.series = axis.series || []; // populated by Series
 
 		// inverted charts have reversed xAxes as default
-		if (chart.inverted && isXAxis && axis.reversed === UNDEFINED) {
+		if (chart.inverted && isXAxis && axis.reversed === undefined) {
 			axis.reversed = true;
 		}
 
@@ -6706,7 +6710,7 @@ Axis.prototype = {
 			// Decide whether we should add a numeric symbol like k (thousands) or M (millions).
 			// If we are to enable this in tooltip or other places as well, we can move this
 			// logic to the numberFormatter and enable it by a parameter.
-			while (i-- && ret === UNDEFINED) {
+			while (i-- && ret === undefined) {
 				multi = Math.pow(1000, i + 1);
 				if (numericSymbolDetector >= multi && numericSymbols[i] !== null) {
 					ret = numberFormat(value / multi, -1) + numericSymbols[i];
@@ -6714,12 +6718,12 @@ Axis.prototype = {
 			}
 		}
 
-		if (ret === UNDEFINED) {
+		if (ret === undefined) {
 			if (value >= 10000) { // add thousands separators
 				ret = numberFormat(value, 0);
 
 			} else { // small numbers
-				ret = numberFormat(value, -1, UNDEFINED, ''); // #2466
+				ret = numberFormat(value, -1, undefined, ''); // #2466
 			}
 		}
 
@@ -7019,7 +7023,7 @@ Axis.prototype = {
 			maxArgs;
 
 		// Set the automatic minimum range based on the closest point distance
-		if (axis.isXAxis && axis.minRange === UNDEFINED && !axis.isLog) {
+		if (axis.isXAxis && axis.minRange === undefined && !axis.isLog) {
 
 			if (defined(options.min) || defined(options.max)) {
 				axis.minRange = null; // don't do this again
@@ -7033,7 +7037,7 @@ Axis.prototype = {
 					loopLength = series.xIncrement ? 1 : xData.length - 1;
 					for (i = loopLength; i > 0; i--) {
 						distance = xData[i] - xData[i - 1];
-						if (closestDataRange === UNDEFINED || distance < closestDataRange) {
+						if (closestDataRange === undefined || distance < closestDataRange) {
 							closestDataRange = distance;
 						}
 					}
@@ -7386,7 +7390,7 @@ Axis.prototype = {
 			maxTicks = chart.maxTicks;
 
 		if (maxTicks && maxTicks[key] && !axis.isDatetimeAxis && !axis.categories && !axis.isLinked &&
-				axis.options.alignTicks !== false && this.min !== UNDEFINED) {
+				axis.options.alignTicks !== false && this.min !== undefined) {
 			var oldTickAmount = axis.tickAmount,
 				calculatedTickAmount = tickPositions.length,
 				tickAmount;
@@ -7534,22 +7538,22 @@ Axis.prototype = {
 		// Prevent pinch zooming out of range. Check for defined is for #1946.
 		if (!this.allowZoomOutside) {
 			if (defined(this.dataMin) && newMin <= this.dataMin) {
-				newMin = UNDEFINED;
+				newMin = undefined;
 			}
 			if (defined(this.dataMax) && newMax >= this.dataMax) {
-				newMax = UNDEFINED;
+				newMax = undefined;
 			}
 		}
 
 		// In full view, displaying the reset zoom button is not required
-		this.displayBtn = newMin !== UNDEFINED || newMax !== UNDEFINED;
+		this.displayBtn = newMin !== undefined || newMax !== undefined;
 
 		// Do it
 		this.setExtremes(
 			newMin,
 			newMax,
 			false,
-			UNDEFINED,
+			undefined,
 			{ trigger: 'zoom' }
 		);
 		return true;
@@ -7723,7 +7727,7 @@ Axis.prototype = {
 
 						if (w) {
 							x = axis.translate(pos); // don't handle log
-							if (lastRight[lineNo] !== UNDEFINED && x < lastRight[lineNo]) {
+							if (lastRight[lineNo] !== undefined && x < lastRight[lineNo]) {
 								overlap = true;
 							}
 							lastRight[lineNo] = x + w;
@@ -8000,7 +8004,7 @@ Axis.prototype = {
 							alternateBands[pos] = new PlotLineOrBand(axis);
 						}
 						from = pos + tickmarkOffset; // #949
-						to = tickPositions[i + 1] !== UNDEFINED ? tickPositions[i + 1] + tickmarkOffset : axis.max;
+						to = tickPositions[i + 1] !== undefined ? tickPositions[i + 1] + tickmarkOffset : axis.max;
 						alternateBands[pos].options = {
 							from: isLog ? lin2log(from) : from,
 							to: isLog ? lin2log(to) : to,
@@ -8707,7 +8711,7 @@ Tooltip.prototype = {
 		this.options = options;
 
 		// Keep track of the current series
-		//this.currentSeries = UNDEFINED;
+		//this.currentSeries = undefined;
 
 		// List of crosshairs
 		this.crosshairs = [];
@@ -8843,7 +8847,7 @@ Tooltip.prototype = {
 		
 		// When tooltip follows mouse, relate the position to the mouse
 		if (this.followPointer && mouseEvent) {
-			if (mouseEvent.chartX === UNDEFINED) {
+			if (mouseEvent.chartX === undefined) {
 				mouseEvent = chart.pointer.normalize(mouseEvent);
 			}
 			ret = [
@@ -9142,7 +9146,7 @@ Pointer.prototype = {
 		}
 
 		// chartX and chartY
-		if (ePos.pageX === UNDEFINED) { // IE < 9. #886.
+		if (ePos.pageX === undefined) { // IE < 9. #886.
 			chartX = mathMax(e.x, e.clientX - chartPosition.left); // #2005, #2129: the second case is 
 				// for IE10 quirks mode within framesets
 			chartY = e.y;
@@ -9291,7 +9295,7 @@ Pointer.prototype = {
 		allowMove = allowMove && tooltip && tooltipPoints;
 			
 		// Check if the points have moved outside the plot area, #1003
-		if (allowMove && splat(tooltipPoints)[0].plotX === UNDEFINED) {
+		if (allowMove && splat(tooltipPoints)[0].plotX === undefined) {
 			allowMove = false;
 		}	
 
@@ -9962,7 +9966,7 @@ var TrackerMixin = Highcharts.TrackerMixin = {
 					point = target.point;
 					target = target.parentNode;
 				}
-				if (point !== UNDEFINED && point !== chart.hoverPoint) { // undefined on graph in scatterchart
+				if (point !== undefined && point !== chart.hoverPoint) { // undefined on graph in scatterchart
 					point.onMouseOver(e);
 				}
 			};
@@ -10229,7 +10233,7 @@ Legend.prototype = {
 				markerOptions = item.convertAttribs(markerOptions);
 				for (key in markerOptions) {
 					val = markerOptions[key];
-					if (val !== UNDEFINED) {
+					if (val !== undefined) {
 						symbolAttr[key] = val;
 					}
 				}
@@ -10517,7 +10521,7 @@ Legend.prototype = {
 			var seriesOptions = series.options;
 
 			// Handle showInLegend. If the series is linked to another series, defaults to false.
-			if (!pick(seriesOptions.showInLegend, !defined(seriesOptions.linkedTo) ? UNDEFINED : false, true)) {
+			if (!pick(seriesOptions.showInLegend, !defined(seriesOptions.linkedTo) ? undefined : false, true)) {
 				return;
 			}
 
@@ -10791,7 +10795,7 @@ Legend.prototype = {
 		
 		if (currentPage > 0) {
 			
-			if (animation !== UNDEFINED) {
+			if (animation !== undefined) {
 				setAnimation(animation, this.chart);
 			}
 			
@@ -10971,40 +10975,40 @@ Chart.prototype = {
 		this.callback = callback;
 		this.isResizing = 0;
 		this.options = options;
-		//chartTitleOptions = UNDEFINED;
-		//chartSubtitleOptions = UNDEFINED;
+		//chartTitleOptions = undefined;
+		//chartSubtitleOptions = undefined;
 
 		this.axes = [];
 		this.series = [];
 		this.hasCartesianSeries = optionsChart.showAxes;
-		//this.axisOffset = UNDEFINED;
-		//this.maxTicks = UNDEFINED; // handle the greatest amount of ticks on grouped axes
-		//this.inverted = UNDEFINED;
-		//this.loadingShown = UNDEFINED;
-		//this.container = UNDEFINED;
-		//this.chartWidth = UNDEFINED;
-		//this.chartHeight = UNDEFINED;
-		//this.marginRight = UNDEFINED;
-		//this.marginBottom = UNDEFINED;
-		//this.containerWidth = UNDEFINED;
-		//this.containerHeight = UNDEFINED;
-		//this.oldChartWidth = UNDEFINED;
-		//this.oldChartHeight = UNDEFINED;
+		//this.axisOffset = undefined;
+		//this.maxTicks = undefined; // handle the greatest amount of ticks on grouped axes
+		//this.inverted = undefined;
+		//this.loadingShown = undefined;
+		//this.container = undefined;
+		//this.chartWidth = undefined;
+		//this.chartHeight = undefined;
+		//this.marginRight = undefined;
+		//this.marginBottom = undefined;
+		//this.containerWidth = undefined;
+		//this.containerHeight = undefined;
+		//this.oldChartWidth = undefined;
+		//this.oldChartHeight = undefined;
 
-		//this.renderTo = UNDEFINED;
-		//this.renderToClone = UNDEFINED;
+		//this.renderTo = undefined;
+		//this.renderToClone = undefined;
 
-		//this.spacingBox = UNDEFINED
+		//this.spacingBox = undefined
 
-		//this.legend = UNDEFINED;
+		//this.legend = undefined;
 
 		// Elements
-		//this.chartBackground = UNDEFINED;
-		//this.plotBackground = UNDEFINED;
-		//this.plotBGImage = UNDEFINED;
-		//this.plotBorder = UNDEFINED;
-		//this.loadingDiv = UNDEFINED;
-		//this.loadingSpan = UNDEFINED;
+		//this.chartBackground = undefined;
+		//this.plotBackground = undefined;
+		//this.plotBGImage = undefined;
+		//this.plotBorder = undefined;
+		//this.loadingDiv = undefined;
+		//this.loadingSpan = undefined;
 
 		var chart = this,
 			eventType;
@@ -12305,7 +12309,7 @@ Chart.prototype = {
 		fireEvent(chart, 'destroy');
 		
 		// Delete the chart from charts lookup array
-		charts[chart.index] = UNDEFINED;
+		charts[chart.index] = undefined;
 		chart.renderTo.removeAttribute('data-highcharts-chart');
 
 		// remove events
@@ -12549,8 +12553,8 @@ Point.prototype = {
 
 		// If no x is set by now, get auto incremented value. All points must have an
 		// x value, however the y value can be null to create a gap in the series
-		if (point.x === UNDEFINED && series) {
-			point.x = x === UNDEFINED ? series.autoIncrement() : x;
+		if (point.x === undefined && series) {
+			point.x = x === undefined ? series.autoIncrement() : x;
 		}
 
 		return point;
@@ -13054,8 +13058,8 @@ Series.prototype = {
 				// apply if the series xAxis or yAxis option mathches the number of the
 				// axis, or if undefined, use the first axis
 				if ((seriesOptions[AXIS] === axisOptions.index) ||
-						(seriesOptions[AXIS] !== UNDEFINED && seriesOptions[AXIS] === axisOptions.id) ||
-						(seriesOptions[AXIS] === UNDEFINED && axisOptions.index === 0)) {
+						(seriesOptions[AXIS] !== undefined && seriesOptions[AXIS] === axisOptions.id) ||
+						(seriesOptions[AXIS] === undefined && axisOptions.index === 0)) {
 
 					// register this series in the axis.series lookup
 					axis.series.push(series);
@@ -13335,7 +13339,7 @@ Series.prototype = {
 			}
 		} else {
 			for (i = 0; i < dataLength; i++) {
-				if (data[i] !== UNDEFINED) { // stray commas in oldIE
+				if (data[i] !== undefined) { // stray commas in oldIE
 					pt = { series: series };
 					series.pointClass.prototype.applyOptions.apply(pt, [data[i]]);
 					series.updateParallelArrays(pt, i);
@@ -13426,7 +13430,7 @@ Series.prototype = {
 		// Find the closest distance between processed points
 		for (i = processedXData.length - 1; i >= 0; i--) {
 			distance = processedXData[i] - processedXData[i - 1];
-			if (distance > 0 && (closestPointRange === UNDEFINED || distance < closestPointRange)) {
+			if (distance > 0 && (closestPointRange === undefined || distance < closestPointRange)) {
 				closestPointRange = distance;
 
 			// Unsorted data is not supported by the line tooltip, as well as data grouping and
@@ -13517,7 +13521,7 @@ Series.prototype = {
 			if (!hasGroupedData) {
 				if (data[cursor]) {
 					point = data[cursor];
-				} else if (dataOptions[cursor] !== UNDEFINED) { // #970
+				} else if (dataOptions[cursor] !== undefined) { // #970
 					data[cursor] = point = (new pointClass()).init(series, dataOptions[cursor], processedXData[i]);
 				}
 				points[i] = point;
@@ -13536,7 +13540,7 @@ Series.prototype = {
 				}
 				if (data[i]) {
 					data[i].destroyElements();
-					data[i].plotX = UNDEFINED; // #1003
+					data[i].plotX = undefined; // #1003
 				}
 			}
 		}
@@ -13700,7 +13704,7 @@ Series.prototype = {
 
 			// For points within the visible range, including the first point outside the
 			// visible range, consider y extremes
-			validValue = y !== null && y !== UNDEFINED && (!yAxis.isLog || (y.length || y > 0));
+			validValue = y !== null && y !== undefined && (!yAxis.isLog || (y.length || y > 0));
 			withinRange = this.getExtremesFromAll || this.cropped || ((xData[i + 1] || x) >= xMin &&
 				(xData[i - 1] || x) <= xMax);
 
@@ -13802,7 +13806,7 @@ Series.prototype = {
 			point.plotY = (typeof yValue === 'number' && yValue !== Infinity) ?
 				//mathRound(yAxis.translate(yValue, 0, 1, 0, 1) * 10) / 10 : // Math.round fixes #591
 				yAxis.translate(yValue, 0, 1, 0, 1) :
-				UNDEFINED;
+				undefined;
 
 			// Set client related positions for mouse tracking
 			point.clientX = dynamicallyPlaced ? xAxis.translate(xValue, 0, 0, 0, 1) : point.plotX; // #1514
@@ -13810,7 +13814,7 @@ Series.prototype = {
 			point.negative = point.y < (threshold || 0);
 
 			// some API data
-			point.category = categories && categories[point.x] !== UNDEFINED ?
+			point.category = categories && categories[point.x] !== undefined ?
 				categories[point.x] : point.x;
 
 
@@ -13871,7 +13875,7 @@ Series.prototype = {
 				nextPoint = points[i + 1];
 
 				// Set this range's low to the last range's high plus one
-				low = high === UNDEFINED ? 0 : high + 1;
+				low = high === undefined ? 0 : high + 1;
 				// Now find the new high
 				high = points[i + 1] ?
 					mathMin(mathMax(0, mathFloor( // #2070
@@ -14104,11 +14108,11 @@ Series.prototype = {
 				plotY = point.plotY;
 				graphic = point.graphic;
 				pointMarkerOptions = point.marker || {};
-				enabled = (seriesMarkerOptions.enabled && pointMarkerOptions.enabled === UNDEFINED) || pointMarkerOptions.enabled;
+				enabled = (seriesMarkerOptions.enabled && pointMarkerOptions.enabled === undefined) || pointMarkerOptions.enabled;
 				isInside = chart.isInsidePlot(mathRound(plotX), plotY, chart.inverted); // #1858
 
 				// only draw the point if y is defined
-				if (enabled && plotY !== UNDEFINED && !isNaN(plotY) && point.y !== null) {
+				if (enabled && plotY !== undefined && !isNaN(plotY) && point.y !== null) {
 
 					// shortcuts
 					pointAttr = point.pointAttr[point.selected ? SELECT_STATE : NORMAL_STATE];
@@ -14847,7 +14851,7 @@ Series.prototype = {
 	/**
 	 * Set the visibility of the graph
 	 *
-	 * @param vis {Boolean} True to show the series, false to hide. If UNDEFINED,
+	 * @param vis {Boolean} True to show the series, false to hide. If undefined,
 	 *        the visibility is toggled.
 	 */
 	setVisible: function (vis, redraw) {
@@ -14859,7 +14863,7 @@ Series.prototype = {
 			oldVisibility = series.visible;
 
 		// if called without an argument, toggle visibility
-		series.visible = vis = series.userOptions.visible = vis === UNDEFINED ? !oldVisibility : vis;
+		series.visible = vis = series.userOptions.visible = vis === undefined ? !oldVisibility : vis;
 		showOrHide = vis ? 'show' : 'hide';
 
 		// show or hide elements
@@ -14926,12 +14930,12 @@ Series.prototype = {
 	 * Set the selected state of the graph
 	 *
 	 * @param selected {Boolean} True to select the series, false to unselect. If
-	 *        UNDEFINED, the selection state is toggled.
+	 *        undefined, the selection state is toggled.
 	 */
 	select: function (selected) {
 		var series = this;
 		// if called without an argument, toggle
-		series.selected = selected = (selected === UNDEFINED) ? !series.selected : selected;
+		series.selected = selected = (selected === undefined) ? !series.selected : selected;
 
 		if (series.checkbox) {
 			series.checkbox.checked = selected;
@@ -15340,7 +15344,7 @@ extend(Series.prototype, {
 		this.remove(false);
 		for (n in proto) { // Overwrite series-type specific methods (#2270)
 			if (proto.hasOwnProperty(n)) {
-				this[n] = UNDEFINED;
+				this[n] = undefined;
 			}
 		}
 		extend(this, seriesTypes[newOptions.type || oldType].prototype);
@@ -15365,9 +15369,9 @@ extend(Axis.prototype, {
 		newOptions = chart.options[this.coll][this.options.index] = merge(this.userOptions, newOptions);
 
 		this.destroy(true);
-		this._addedPlotLB = this.userMin = this.userMax = UNDEFINED; // #1611, #2306
+		this._addedPlotLB = this.userMin = this.userMax = undefined; // #1611, #2306
 
-		this.init(chart, extend(newOptions, { events: UNDEFINED }));
+		this.init(chart, extend(newOptions, { events: undefined }));
 
 		chart.isDirtyBox = true;
 		if (pick(redraw, true)) {
@@ -15872,7 +15876,7 @@ var ColumnSeries = extendClass(Series, {
 						yAxis.len === otherYAxis.len && yAxis.pos === otherYAxis.pos) {  // #642, #2086
 					if (otherOptions.stacking) {
 						stackKey = otherSeries.stackKey;
-						if (stackGroups[stackKey] === UNDEFINED) {
+						if (stackGroups[stackKey] === undefined) {
 							stackGroups[stackKey] = columnCount++;
 						}
 						columnIndex = stackGroups[stackKey];
@@ -16028,7 +16032,7 @@ var ColumnSeries = extendClass(Series, {
 			var plotY = point.plotY,
 				graphic = point.graphic;
 
-			if (plotY !== UNDEFINED && !isNaN(plotY) && point.y !== null) {
+			if (plotY !== undefined && !isNaN(plotY) && point.y !== null) {
 				shapeArgs = point.shapeArgs;
 				
 				if (graphic) { // update
@@ -16245,7 +16249,7 @@ var PiePoint = extendClass(Point, {
 			method;
 
 		// if called without an argument, toggle visibility
-		point.visible = point.options.visible = vis = vis === UNDEFINED ? !point.visible : vis;
+		point.visible = point.options.visible = vis = vis === undefined ? !point.visible : vis;
 		series.options.data[inArray(point, series.data)] = point.options; // update userOptions.data
 		
 		method = vis ? 'show' : 'hide';
@@ -16718,7 +16722,7 @@ Series.prototype.drawDataLabels = function () {
 					};
 					// Remove unused attributes (#947)
 					for (name in attr) {
-						if (attr[name] === UNDEFINED) {
+						if (attr[name] === undefined) {
 							delete attr[name];
 						}
 					}

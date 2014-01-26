@@ -158,6 +158,7 @@
     <Content Include="icon\battery-low.png" />
     <Content Include="icon\battery.png" />
     <Content Include="icon\footpod.png" />
+    <Content Include="icon\spdcad.png" />
     <Content Include="icon\graph.png" />
     <Content Include="icon\heart.png" />
     <Content Include="icon\info.png" />
@@ -186,6 +187,7 @@
     <Content Include="scripts\viewmodel\genericVM.js" />
     <Content Include="scripts\viewmodel\HRMVM.js" />
     <Content Include="scripts\viewmodel\sensorVM.js" />
+    <Content Include="scripts\viewmodel\SPDCADVM.js" />
     <Content Include="scripts\viewmodel\temperatureVM.js" />
     <None Include="Temp_TemporaryKey.pfx" />
   </ItemGroup>

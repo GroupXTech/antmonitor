@@ -155,7 +155,8 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
          if (page.timestamp)
              this.timestamp(page.timestamp);
 
-         this.updateCommonPage(page);
+        // if ((page.profile && page.profile.hasCommonPages) || !page.profile)
+             this.updateCommonPage(page);
      };
      
     TemperatureVM.prototype.getTemplateName = function (item)

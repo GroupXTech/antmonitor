@@ -44,12 +44,22 @@
 
 }
 
+#flexDiv {
+   display: flex;
+    flex-flow: row no-wrap;
+    justify-content: space-around;
+    align-items : center;
+    font-size : large;
+}
+
 #flexMeasurement {
     display: flex;
     flex-flow: row no-wrap;
     justify-content: space-around;
     align-items : center;
     font-size : large;
+    width : 94%;
+    
 
 }
 
@@ -116,7 +126,7 @@ input[type=radio], input[type=checked] {
     height: 80%;
 }
 
-.temperature {
+.temperature, .largeNumber {
   
     font-size: xx-large;
     font-weight: bold;
@@ -131,7 +141,7 @@ input[type=radio], input[type=checked] {
     width : 100px;
 }
 
-.location {
+.location, #wheelCircumference {
     background-color: transparent;
     min-width: 50px;
     max-width: 150px;
@@ -143,8 +153,19 @@ input[type=radio], input[type=checked] {
    
 }
 
+#flexIcon {
+  width : 6%;
+  align-content : center;
+}
+
+
 .icon {
     height: 24px;
+    
+}
+
+.floatleft {
+   float : left;
 }
 
 .timestamp {
