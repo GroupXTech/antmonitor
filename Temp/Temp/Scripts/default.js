@@ -1,6 +1,6 @@
 ﻿/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true */
 
-(function ANTMonitorApp () {
+(function ANTMonitorApp() {
     "use strict";
 
     //WinJS.log = function (message, tags, type) {
@@ -16,13 +16,13 @@
     // Persistence object
     var storage;
 
-   // var host; // ANT host
+    // var host; // ANT host
 
     var hostOptions;
 
     var hostInitCB;
 
-   
+
 
     var rootVM; // Root viewmodel, contains all the other sub-view models
 
@@ -39,58 +39,57 @@
 
     var timerID = {}; // Holds timer id's
 
-    var  sensorChart = {}; // Contains chart instances
-
-
-    function ANTMonitorUI()
-    {
+    function ANTMonitorUI() {
+        
         this.hostAppEnvironment = this.getApplicationHostEnvironment();
 
-        
         if (!(requirejs && Highcharts && HighchartsAdapter)) {
             console.error('Application requires libraries; requirejs, Highcharts and HighchartsAdapter (standalone)');
             return;
         }
-        
+
         // Start if all dependant libraries are ready
 
-            console.info('Requirejs '+requirejs.version);
+        console.info('Requirejs ' + requirejs.version);
 
-            console.info(Highcharts.product + ' ' + Highcharts.version);
+        console.info(Highcharts.product + ' ' + Highcharts.version);
 
-            // Standalone adapter
-            console.info(Highcharts.product + ' adapter', HighchartsAdapter);
-           
-            // Configure requirejs script loader
-            requirejs.config({
+        // Standalone adapter
+        console.info(Highcharts.product + ' adapter', HighchartsAdapter);
 
-                baseUrl: '../bower_components/libant',
+        // Configure requirejs script loader
+        requirejs.config({
 
-                paths: {
-                    // Knockout viewmodels
-                    vm: '../../scripts/viewmodel',
-                    db: '../../scripts',
-                    converter: '../../scripts/converter'
-                },
+            baseUrl: '../bower_components/libant',
 
-            });
+            paths: {
+                // Knockout viewmodels
+                vm: '../../scripts/viewmodel',
+                db: '../../scripts',
+                converter: '../../scripts/converter'
+            },
 
-            if (this.isWindowsHost())
-                this.startWindowsApp();
-            else if (this.isChromeHost())
-                this._startKnockout(this._initANTHost);
+        });
         
+        this.sensorChart = {};
+        
+        
+        if (this.isWindowsHost())
+            this.startAsWindowsApp();
+        else if (this.isChromeHost())
+            this._startKnockout(this._initANTHost);
+
     }
 
     ANTMonitorUI.prototype.isWindowsHost = function () {
         return this.hostAppEnvironment === "windows";
-    }
+    };
 
     ANTMonitorUI.prototype.isChromeHost = function () {
         return this.hostAppEnvironment === "chrome";
-    }
+    };
 
-   
+
 
     // Determine app execution environment
     ANTMonitorUI.prototype.getApplicationHostEnvironment = function () {
@@ -99,15 +98,14 @@
         // Win 8 app
         if (protocol === 'ms-appx:' || window.WinJS)
             return "windows";
-        // Chrome packaged App
+            // Chrome packaged App
         else if (protocol === 'chrome-extension:' || window.chrome)
             return "chrome";
         else
             return undefined;
-    }
+    };
 
-    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, Storage, Logger, TemperatureConverter)
-    {
+    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, Storage, Logger, TemperatureConverter) {
         var antUI = this,
             rootVM;
 
@@ -119,7 +117,7 @@
         this.viewModel.FootpodVM = FootpodVM;
         this.viewModel.HRMVM = HRMVM;
         this.viewModel.SPDCADVM = SPDCADVM;
-        // Holds a reference to the viewmodel for discovered sensors
+        // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
         this.viewModel.sensorDictionary = {};
 
 
@@ -175,7 +173,7 @@
         rootVM = this.viewModel.rootVM;
 
         rootVM.settingVM.toggleShowCredits = function (data, event) {
-            rootVM.settingVM.showCredits(!rootVM.settingVM.showCredits())
+            rootVM.settingVM.showCredits(!rootVM.settingVM.showCredits());
         };
 
 
@@ -185,10 +183,10 @@
         };
 
         storage.get(localStorageKey.temperaturemode, function _fetchTemperatureMode(db) {
-          
+
             rootVM.settingVM.temperatureMode = ko.observable(db[localStorageKey.temperaturemode] || TemperatureVM.prototype.MODE.CELCIUS);
             storage.get(localStorageKey.show24hMaxMin, function _fetchShow24hMaxMin(db) {
-                
+
                 rootVM.settingVM.show24H = ko.observable(db[localStorageKey.show24hMaxMin] === "true" || false);
                 // antUI identifier is found in the outer scope environment (initViewModels)
                 // [[scope]] internal list of current scope and parent scopes (initViewModels,ANTMonitorApp,Globals,null)
@@ -196,12 +194,12 @@
             });
         });
 
-    }
+    };
 
 
     ANTMonitorUI.prototype._startKnockout = function () {
 
-        var 
+        var
             currentStorageFunc,
             dependencies;
 
@@ -211,18 +209,17 @@
 
         dependencies = ['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', currentStorageFunc, 'logger', 'converter/temperatureConverter'];
 
-        
+
 
         require(dependencies, this.initViewModels.bind(this));
 
 
-    }
+    };
 
-    ANTMonitorUI.prototype.configureKnockout = function() {
+    ANTMonitorUI.prototype.configureKnockout = function () {
 
-        var rootVM = this.viewModel.rootVM,
-            antUI = this;
-
+        var rootVM = this.viewModel.rootVM;
+      
         // Subscribe to changes
 
 
@@ -251,15 +248,15 @@
         });
 
         rootVM.settingVM.temperatureMode.subscribe(function (newMode) {
-            var temperatureAxis = sensorChart.integrated.chart.yAxis[0],
+            var temperatureAxis = this.sensorChart.integrated.chart.yAxis[0],
                 seriesData;
 
             storage.set(localStorageKey.temperaturemode, newMode);
 
-            for (var serieNr = 0; serieNr < sensorChart.integrated.chart.series.length; serieNr++) {
+            for (var serieNr = 0; serieNr < this.sensorChart.integrated.chart.series.length; serieNr++) {
 
-                if (sensorChart.integrated.chart.series[serieNr].name.indexOf('Temperature') !== -1) {
-                    seriesData = sensorChart.integrated.chart.series[serieNr].options.data;
+                if (this.sensorChart.integrated.chart.series[serieNr].name.indexOf('Temperature') !== -1) {
+                    seriesData = this.sensorChart.integrated.chart.series[serieNr].options.data;
 
                     // Convert y-point to requested temperature mode
 
@@ -272,7 +269,7 @@
                         } else if (newMode === TemperatureVM.prototype.MODE.CELCIUS) {
                             seriesData[point][1] = tempConverter.fromFahrenheitToCelcius(seriesData[point][1]);
 
-                            temperatureAxis.setExtremes(-20, null, false)
+                            temperatureAxis.setExtremes(-20, null, false);
                         }
 
 
@@ -283,15 +280,15 @@
                     else if (newMode === TemperatureVM.prototype.MODE.CELCIUS)
                         temperatureAxis.setExtremes(-20, null, false);
 
-                    sensorChart.integrated.chart.series[serieNr].setData(sensorChart.integrated.chart.series[serieNr].options.data, false, false);
+                    this.sensorChart.integrated.chart.series[serieNr].setData(this.sensorChart.integrated.chart.series[serieNr].options.data, false, false);
 
                 }
 
             }
 
-            antUI.redrawIntegratedChart();
-           
-        });
+            this.redrawIntegratedChart();
+
+        }.bind(this));
 
 
         rootVM.sensorVM = new this.viewModel.SensorVM({ log: rootVM.settingVM.logging() });
@@ -309,15 +306,15 @@
 
         // bind sets the BoundThis property of this.PageHandler to this
         this._initANTHost(this.pageHandler.bind(this));
-    }
+    };
 
     ANTMonitorUI.prototype.createIntegratedChart = function () {
         var rootVM = this.viewModel.rootVM,
             antUI = this;
 
-        if (!sensorChart.integrated) {
-            sensorChart.integrated = {};
-            sensorChart.integrated.chart = new Highcharts.Chart({
+        if (!this.sensorChart.integrated) {
+            this.sensorChart.integrated = {};
+            this.sensorChart.integrated.chart = new Highcharts.Chart({
 
                 chart: {
                     renderTo: 'sensorChart-integrated',
@@ -673,10 +670,9 @@
 
             });
         }
-    }
+    };
 
-    ANTMonitorUI.prototype.addTemperatureSeries = function (page)
-    {
+    ANTMonitorUI.prototype.addTemperatureSeries = function (page) {
         var addedSeries,
             rootVM = this.viewModel.rootVM,
             TemperatureVM = this.viewModel.TemperatureVM,
@@ -685,7 +681,7 @@
 
         var handlerLogger = rootVM.sensorVM.getLogger();
 
-        addedSeries = sensorChart.integrated.chart.addSeries(
+        addedSeries = this.sensorChart.integrated.chart.addSeries(
             {
                 name: 'Temperature ' + sensorId,
                 id: 'temperature-current-' + sensorId,
@@ -717,7 +713,7 @@
 
         // Add counter to filter out sensorId that come and go quickly - filter out noise
 
-        
+
 
         deviceTypeVM = new TemperatureVM({
             logger: handlerLogger,
@@ -740,7 +736,7 @@
             }
             else {
                 // for (var testNr = 0; testNr < 1440 ; testNr++) 
-                //     sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+testNr*30, page.currentTemp], false, sensorChart[sensorId].shift(), false);
+                //     this.sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+testNr*30, page.currentTemp], false, this.sensorChart[sensorId].shift(), false);
                 addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], true, false, false);
 
 
@@ -748,23 +744,22 @@
 
 
         }
-    }
+    };
 
-    ANTMonitorUI.prototype.addHRMSeries = function (page)
-    {
+    ANTMonitorUI.prototype.addHRMSeries = function (page) {
 
         var addedSeries,
            rootVM = this.viewModel.rootVM,
            HRMVM = this.viewModel.HRMVM,
-          
+
            deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId;
 
         var handlerLogger = rootVM.sensorVM.getLogger();
 
-       
 
-        addedSeries = sensorChart.integrated.chart.addSeries(
+
+        addedSeries = this.sensorChart.integrated.chart.addSeries(
           {
               name: 'Heartrate ' + sensorId,
               id: 'heartrate-current-' + sensorId,
@@ -810,13 +805,13 @@
 
 
             addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
-          
-          
+
+
         }
 
         // RR
 
-        addedSeries = sensorChart.integrated.chart.addSeries(
+        addedSeries = this.sensorChart.integrated.chart.addSeries(
           {
               name: 'RR ' + sensorId,
               id: 'rr-' + sensorId,
@@ -853,21 +848,21 @@
 
         this.redrawIntegratedChart();
 
-    }
+    };
 
     ANTMonitorUI.prototype.addSPDCADSeries = function (page) {
         var addedSeries,
            rootVM = this.viewModel.rootVM,
            SPDCADVM = this.viewModel.SPDCADVM,
-          
+
            deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId;
 
         var handlerLogger = rootVM.sensorVM.getLogger();
 
-    
 
-        addedSeries = sensorChart.integrated.chart.addSeries(
+
+        addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
                name: 'Cadence ' + sensorId,
                id: 'spdcad-cadence-' + sensorId,
@@ -918,7 +913,7 @@
 
         }
 
-        addedSeries = sensorChart.integrated.chart.addSeries(
+        addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
                name: 'Speed ' + sensorId,
                id: 'spdcad-speed-' + sensorId,
@@ -958,10 +953,9 @@
 
         this.redrawIntegratedChart();
 
-    }
+    };
 
-    ANTMonitorUI.prototype.addFootpodSeries = function (page)
-    {
+    ANTMonitorUI.prototype.addFootpodSeries = function (page) {
         var addedSeries,
          rootVM = this.viewModel.rootVM,
          FootpodVM = this.viewModel.FootpodVM,
@@ -970,9 +964,9 @@
 
         var handlerLogger = rootVM.sensorVM.getLogger();
 
-       
 
-        addedSeries = sensorChart.integrated.chart.addSeries(
+
+        addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
                name: 'Footpod ' + sensorId,
                id: 'footpod-speed-' + sensorId,
@@ -1017,21 +1011,20 @@
 
 
             addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], false, false, false);
-            
+
 
         }
 
         this.redrawIntegratedChart();
 
-    }
+    };
 
     ANTMonitorUI.prototype.redrawIntegratedChart = function () {
-        sensorChart.integrated.lastRedrawTimestamp = Date.now(); // Last redraw time
-        sensorChart.integrated.chart.redraw();
-    }
+        this.sensorChart.integrated.lastRedrawTimestamp = Date.now(); // Last redraw time
+        this.sensorChart.integrated.chart.redraw();
+    };
 
-    ANTMonitorUI.prototype.processRR = function (page)
-    {
+    ANTMonitorUI.prototype.processRR = function (page) {
         var currentSeries,
             currentTimestamp,
             len,
@@ -1040,7 +1033,7 @@
         // If aggregated RR data is available process it (buffered data in deviceProfile)
 
         if (page.aggregatedRR) {
-            currentSeries = sensorChart.integrated.chart.get('rr-' + sensorId);
+            currentSeries = this.sensorChart.integrated.chart.get('rr-' + sensorId);
             currentTimestamp = page.timestamp + timezoneOffsetInMilliseconds;
             // Start with the latest measurement and go back in time
             for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
@@ -1052,142 +1045,138 @@
                 currentTimestamp -= page.aggregatedRR[RRmeasurementNr];
             }
         }
-    }
+    };
 
-    ANTMonitorUI.prototype.pageHandler = function (page)
-    {
-      
+    ANTMonitorUI.prototype.pageHandler = function (page) {
+
         //  console.log('Knockout App got message', page,e);
-        var antUI = this;
-        var rootVM = this.viewModel.rootVM;
-            var sensorId = page.broadcast.channelId.sensorId;
-            var deviceType = page.broadcast.channelId.deviceType;
-           var deviceTypeVM;
-            var handlerLogger = rootVM.sensorVM.getLogger();
-           
-            var currentSeries;
-              
-               
+        var antUI = this,
+            rootVM = this.viewModel.rootVM,
+            sensorId = page.broadcast.channelId.sensorId,
+            deviceType = page.broadcast.channelId.deviceType,
+            deviceTypeVM,
+            handlerLogger = rootVM.sensorVM.getLogger(),
+            currentSeries,
+
         // Viewmodels - alias
 
-            var TemperatureVM = this.viewModel.TemperatureVM,
-                HRMVM = this.viewModel.HRMVM,
-                FootpodVM = this.viewModel.FootpodVM,
-                SPDCADVM = this.viewModel.SPDCADVM;
+            TemperatureVM = this.viewModel.TemperatureVM,
+            HRMVM = this.viewModel.HRMVM,
+            FootpodVM = this.viewModel.FootpodVM,
+            SPDCADVM = this.viewModel.SPDCADVM;
 
-            deviceTypeVM = this.viewModel.sensorDictionary[sensorId];
+        deviceTypeVM = this.viewModel.sensorDictionary[sensorId];
 
-            // Refresh viewmodel with new page data from sensor
-            if (deviceTypeVM)
-                deviceTypeVM.updateFromPage(page);
+        // Refresh viewmodel with new page data from sensor
+        if (deviceTypeVM)
+            deviceTypeVM.updateFromPage(page);
 
-             switch (deviceType) {
+        switch (deviceType) {
 
-                    case 25:
-                        if (!deviceTypeVM)
-                            this.addTemperatureSeries(page);
-                        else
-                        {
-                            if (deviceTypeVM instanceof TemperatureVM && page.currentTemp !== undefined) {
+            case 25:
+                if (!deviceTypeVM)
+                    this.addTemperatureSeries(page);
+                else {
+                    if (deviceTypeVM instanceof TemperatureVM && page.currentTemp !== undefined) {
 
-                                currentSeries = sensorChart.integrated.chart.get('temperature-current-' + sensorId);
+                        currentSeries = this.sensorChart.integrated.chart.get('temperature-current-' + sensorId);
 
-                                if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-                                    currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, tempConverter.fromCelciusToFahrenheit(page.currentTemp)]);
-                                } else {
-                                    currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
-                                }
-
-                                // Immediate redraw due to slow update frequency (1 minute)
-                                this.redrawIntegratedChart();
-                   
-                            } 
+                        if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
+                            currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, tempConverter.fromCelciusToFahrenheit(page.currentTemp)]);
+                        } else {
+                            currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
                         }
 
-                        break;
+                        // Immediate redraw due to slow update frequency (1 minute)
+                        this.redrawIntegratedChart();
 
-                    case 120: 
-
-                        if (!deviceTypeVM)
-                            this.addHRMSeries(page);
-                        else {
-                            if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
-                                currentSeries = sensorChart.integrated.chart.get('heartrate-current-' + sensorId);
-                                currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], false,
-                                    currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                     // currentSeries.data.length > 5,
-                                    false);
-
-                                
-
-                                if ((Date.now() - sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                                    this.redrawIntegratedChart();
-                                }
-
-                            }
-                        }
-                        
-
-                        break;
-
-                    case 121:
-
-                        if (!deviceTypeVM)
-                            this.addSPDCADSeries(page);
-                        else {
-                            if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
-                                currentSeries = sensorChart.integrated.chart.get('spdcad-cadence-' + sensorId);
-                                currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.cadence], false,
-                                    currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                     // currentSeries.data.length > 5,
-                                    false);
-                            } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
-                                currentSeries = sensorChart.integrated.chart.get('spdcad-speed-' + sensorId);
-                                currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
-                                    currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                     // currentSeries.data.length > 5,
-                                    false);
-                            }
-
-                            if ((Date.now() - sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                                this.redrawIntegratedChart();
-                            }
-                        }
-
-                        break;
-
-                    case 124:
-
-                        if (!deviceTypeVM)
-                            this.addFootpodSeries(page);
-                        else {
-                        
-                            if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
-                                currentSeries = sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
-                                currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
-
-
-                            }
-
-                            if ((Date.now() - sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                                this.redrawIntegratedChart();
-                            }
-
-
-                        }
-                        
-
-                        break;
-
-                    default:
-
-                        handlerLogger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
-                        break;
+                    }
                 }
 
-    }
+                break;
 
-    ANTMonitorUI.prototype.startWindowsApp = function() {
+            case 120:
+
+                if (!deviceTypeVM)
+                    this.addHRMSeries(page);
+                else {
+                    if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
+                        currentSeries = this.sensorChart.integrated.chart.get('heartrate-current-' + sensorId);
+                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], false,
+                            currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                             // currentSeries.data.length > 5,
+                            false);
+
+
+
+                        if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
+                            this.redrawIntegratedChart();
+                        }
+
+                    }
+                }
+
+
+                break;
+
+            case 121:
+
+                if (!deviceTypeVM)
+                    this.addSPDCADSeries(page);
+                else {
+                    if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
+                        currentSeries = this.sensorChart.integrated.chart.get('spdcad-cadence-' + sensorId);
+                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.cadence], false,
+                            currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                             // currentSeries.data.length > 5,
+                            false);
+                    } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
+                        currentSeries = this.sensorChart.integrated.chart.get('spdcad-speed-' + sensorId);
+                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
+                            currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                             // currentSeries.data.length > 5,
+                            false);
+                    }
+
+                    if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
+                        this.redrawIntegratedChart();
+                    }
+                }
+
+                break;
+
+            case 124:
+
+                if (!deviceTypeVM)
+                    this.addFootpodSeries(page);
+                else {
+
+                    if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
+                        currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
+                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
+
+
+                    }
+
+                    if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
+                        this.redrawIntegratedChart();
+                    }
+
+
+                }
+
+
+                break;
+
+            default:
+
+                handlerLogger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
+                break;
+        }
+
+    };
+
+    ANTMonitorUI.prototype.startAsWindowsApp = function () {
         var app, activation;
 
         if (this.hostAppEnvironment === "windows") {
@@ -1264,7 +1253,7 @@
         Windows.UI.WebUI.WebUIApplication.addEventListener("resuming", app.onresume, false);
 
         app.start();
-    }
+    };
 
     ANTMonitorUI.prototype._initANTHost = function (onPage) {
         var antUI = this,
@@ -1446,11 +1435,9 @@
 
                       });
 
-    }
+    };
 
     var ui = new ANTMonitorUI();
-    
-   
 
     function exitAndResetDevice(callback) {
 
@@ -1478,8 +1465,4 @@
 
     }
 
-
-   
-
-   
 })();
