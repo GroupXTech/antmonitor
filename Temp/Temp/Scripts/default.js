@@ -249,7 +249,8 @@
 
         rootVM.settingVM.temperatureMode.subscribe(function (newMode) {
             var temperatureAxis = this.sensorChart.integrated.chart.yAxis[0],
-                seriesData;
+                seriesData,
+                TemperatureVM = this.viewModel.TemperatureVM;
 
             storage.set(localStorageKey.temperaturemode, newMode);
 
