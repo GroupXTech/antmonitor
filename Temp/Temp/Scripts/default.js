@@ -13,34 +13,8 @@
 
     //WinJS.Utilities.startLog();
 
-    // Persistence object
-    var storage;
-
-    // var host; // ANT host
-
-    var hostOptions;
-
-    var hostInitCB;
-
-
-
-    var rootVM; // Root viewmodel, contains all the other sub-view models
-
-    // Keys for localstorage - minimize chance for accessing wrong key
-    var localStorageKey = {
-        temperaturemode: "temperaturemode",
-        show24hMaxMin: "show24MaxMin",
-        defaultDeviceId: "defaultDeviceId"
-
-    };
-
-    var tempConverter;
-    var timezoneOffsetInMilliseconds = (new Date()).getTimezoneOffset() * -60000; // 1000 ms pr second = 60000 ms / minute
-
-    var timerID = {}; // Holds timer id's
-
     function ANTMonitorUI() {
-        
+
         this.hostAppEnvironment = this.getApplicationHostEnvironment();
 
         if (!(requirejs && Highcharts && HighchartsAdapter)) {
@@ -65,20 +39,33 @@
             paths: {
                 // Knockout viewmodels
                 vm: '../../scripts/viewmodel',
-                db: '../../scripts',
+                db: '../../scripts/db',
                 converter: '../../scripts/converter'
             },
 
         });
-        
+
         this.sensorChart = {};
-        
-        
+
+        this.host = undefined; // defined in _initANTHost
+
+        // Holds timer id for all used setTimeout/setInterval 
+        this.timerID = {};
+
+        this.timezoneOffsetInMilliseconds = this.getTimezoneOffset();
+
+        // Persistence object
+        this.storage = undefined;
+
         if (this.isWindowsHost())
             this.startAsWindowsApp();
         else if (this.isChromeHost())
             this._startKnockout(this._initANTHost);
 
+    }
+
+    ANTMonitorUI.prototype.getTimezoneOffset = function () {
+        return (new Date()).getTimezoneOffset() * -60000; // 1000 ms pr second = 60000 ms / minute
     }
 
     ANTMonitorUI.prototype.isWindowsHost = function () {
@@ -88,8 +75,6 @@
     ANTMonitorUI.prototype.isChromeHost = function () {
         return this.hostAppEnvironment === "chrome";
     };
-
-
 
     // Determine app execution environment
     ANTMonitorUI.prototype.getApplicationHostEnvironment = function () {
@@ -106,8 +91,9 @@
     };
 
     ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, Storage, Logger, TemperatureConverter) {
-        var antUI = this,
-            rootVM;
+
+        var rootVM; // Root viewmodel, contains all the other sub-view models
+        var tempModeKey;
 
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
@@ -117,15 +103,15 @@
         this.viewModel.FootpodVM = FootpodVM;
         this.viewModel.HRMVM = HRMVM;
         this.viewModel.SPDCADVM = SPDCADVM;
+
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
+
         this.viewModel.sensorDictionary = {};
 
+        if (Storage)
+            this.storage = new Storage();
 
-        // Base viewmodel
-
-        storage = new Storage();
-
-        tempConverter = new TemperatureConverter();
+        this.tempConverter = new TemperatureConverter();
 
         this.viewModel.rootVM = {
 
@@ -135,22 +121,9 @@
 
                 showAdditionalInfo: ko.observable(false),
 
-
                 showCredits: ko.observable(false),
 
-                // temperatureMode:  ko.observable(storage.get() || TemperatureVM.prototype.MODE.CELCIUS), // Celcius, fahrenheit
-
                 temperatureModes: TemperatureVM.prototype.MODES,
-
-                // Show 24H max/min
-                // show24H: ko.observable(storage.get(localStorageKey.show24hMaxMin) === "true" || false),     
-
-                //// Which device number for a specific device type, i.e ANTUSB2 (in case of multiple devices)
-                //defaultANTUSBDevice: ko.observable(Number(window.localStorage["defaultANTUSBDevice"]) || 0),
-
-
-
-                //selectedANTUSBdevice: ko.observable(),
 
             },
 
@@ -176,83 +149,83 @@
             rootVM.settingVM.showCredits(!rootVM.settingVM.showCredits());
         };
 
-
-
         rootVM.settingVM.toggleShowAdditionalInfo = function (data, event) {
             rootVM.settingVM.showAdditionalInfo(!rootVM.settingVM.showAdditionalInfo());
         };
 
-        storage.get(localStorageKey.temperaturemode, function _fetchTemperatureMode(db) {
+        tempModeKey = this.storage.__proto__.key.temperaturemode;
 
-            rootVM.settingVM.temperatureMode = ko.observable(db[localStorageKey.temperaturemode] || TemperatureVM.prototype.MODE.CELCIUS);
-            storage.get(localStorageKey.show24hMaxMin, function _fetchShow24hMaxMin(db) {
+        this.storage.get(tempModeKey, function _fetchTemperatureMode(db) {
 
-                rootVM.settingVM.show24H = ko.observable(db[localStorageKey.show24hMaxMin] === "true" || false);
-                // antUI identifier is found in the outer scope environment (initViewModels)
-                // [[scope]] internal list of current scope and parent scopes (initViewModels,ANTMonitorApp,Globals,null)
-                antUI.configureKnockout();
-            });
-        });
+            var show24hMaxMinKey = this.storage.__proto__.key.show24hMaxMin;
+
+            rootVM.settingVM.temperatureMode = ko.observable(db[tempModeKey] || TemperatureVM.prototype.MODE.CELCIUS);
+
+            this.storage.get(show24hMaxMinKey, function _fetchShow24hMaxMin(db) {
+
+                rootVM.settingVM.show24H = ko.observable(db[show24hMaxMinKey] === "true" || false);
+                
+                this.configureKnockout();
+
+            }.bind(this));
+
+        }.bind(this));
 
     };
 
-
     ANTMonitorUI.prototype._startKnockout = function () {
 
-        var
-            currentStorageFunc,
+        var currentStorageFunc,
             dependencies;
 
         if (this.isWindowsHost())
             currentStorageFunc = 'db/storageWindows';
-        // TO DO : support chrome, maybe
+        else if (this.isChromeHost())
+            currentStorageFunc = 'db/storage'
+            
 
         dependencies = ['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', currentStorageFunc, 'logger', 'converter/temperatureConverter'];
 
-
-
         require(dependencies, this.initViewModels.bind(this));
-
 
     };
 
     ANTMonitorUI.prototype.configureKnockout = function () {
 
         var rootVM = this.viewModel.rootVM;
-      
+
         // Subscribe to changes
 
-
         rootVM.settingVM.show24H.subscribe(function (show24h) {
-            storage.set(localStorageKey.show24hMaxMin, show24h);
-        });
+            this.storage.set(this.storage.__proto__.key.show24hMaxMin, show24h);
+        }.bind(this));
 
         rootVM.deviceVM.selectedDevice.subscribe(function (deviceInformation) {
 
             var storedDefaultDeviceId;
 
-            storage.get(localStorageKey.defaultDeviceId, function (db) {
-                storedDefaultDeviceId = db[localStorageKey.defaultDeviceId];
+            this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
+                storedDefaultDeviceId = db[this.storage.__proto__.key.defaultDeviceId];
 
                 if (deviceInformation && (storedDefaultDeviceId !== deviceInformation.id)) {
-                    storage.set(localStorageKey.defaultDeviceId, deviceInformation.id);
-                    exitAndResetDevice(function _initANT() {
+                    this.storage.set(this.storage.__proto__.key.defaultDeviceId, deviceInformation.id);
+                    this.exitAndResetDevice(function _initANT() {
                         // Remove previous state
                         rootVM.deviceVM.enumeratedDevice.removeAll();
                         this._initANTHost(pageHandler);
-                    });
+                    }.bind(this));
                 }
-            });
+            }.bind(this));
 
-
-        });
+        }.bind(this));
 
         rootVM.settingVM.temperatureMode.subscribe(function (newMode) {
+
             var temperatureAxis = this.sensorChart.integrated.chart.yAxis[0],
                 seriesData,
                 TemperatureVM = this.viewModel.TemperatureVM;
 
-            storage.set(localStorageKey.temperaturemode, newMode);
+            this.storage.set(this.storage.__proto__.key.temperaturemode, newMode);
 
             for (var serieNr = 0; serieNr < this.sensorChart.integrated.chart.series.length; serieNr++) {
 
@@ -264,15 +237,14 @@
                     for (var point = 0; point < seriesData.length; point++) {
                         if (newMode === TemperatureVM.prototype.MODE.FAHRENHEIT) {
 
-                            seriesData[point][1] = tempConverter.fromCelciusToFahrenheit(seriesData[point][1]);
+                            seriesData[point][1] = this.tempConverter.fromCelciusToFahrenheit(seriesData[point][1]);
 
 
                         } else if (newMode === TemperatureVM.prototype.MODE.CELCIUS) {
-                            seriesData[point][1] = tempConverter.fromFahrenheitToCelcius(seriesData[point][1]);
+                            seriesData[point][1] = this.tempConverter.fromFahrenheitToCelcius(seriesData[point][1]);
 
                             temperatureAxis.setExtremes(-20, null, false);
                         }
-
 
                     }
 
@@ -291,14 +263,14 @@
 
         }.bind(this));
 
-
         rootVM.sensorVM = new this.viewModel.SensorVM({ log: rootVM.settingVM.logging() });
-
 
         // window.addEventListener('message', pageHandler);
 
         // Activate knockoutjs on our root viewmodel
+
         var rootElement = document.getElementById('appRoot');
+
         ko.applyBindings(rootVM, rootElement);
 
         rootElement.style.display = "block";
@@ -306,10 +278,11 @@
         this.createIntegratedChart();
 
         // bind sets the BoundThis property of this.PageHandler to this
-        this._initANTHost(this.pageHandler.bind(this));
+        this._initANTHost(this.onpage.bind(this));
     };
 
     ANTMonitorUI.prototype.createIntegratedChart = function () {
+
         var rootVM = this.viewModel.rootVM,
             antUI = this;
 
@@ -674,13 +647,13 @@
     };
 
     ANTMonitorUI.prototype.addTemperatureSeries = function (page) {
+
         var addedSeries,
             rootVM = this.viewModel.rootVM,
             TemperatureVM = this.viewModel.TemperatureVM,
             deviceTypeVM,
-           sensorId = page.broadcast.channelId.sensorId;
-
-        var handlerLogger = rootVM.sensorVM.getLogger();
+            sensorId = page.broadcast.channelId.sensorId,
+            handlerLogger = rootVM.sensorVM.getLogger();
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
             {
@@ -703,19 +676,6 @@
                 }
             }, false, false);
 
-        // Mysterious transmission type = 1 unexpectedly...with valid device number and device type
-        //if (page.broadcast.channelId.transmissionType !== 149)
-        //{
-        //    if (handlerLogger.logging)
-        //        handlerLogger.log('warn', 'Cannot register temperature sensor with transmission type ', page.broadcast.channelId.transmissionType, 'expected 149', page);
-        //    break;
-
-        //}
-
-        // Add counter to filter out sensorId that come and go quickly - filter out noise
-
-
-
         deviceTypeVM = new TemperatureVM({
             logger: handlerLogger,
             temperatureMode: rootVM.settingVM.temperatureMode,
@@ -732,13 +692,12 @@
         if (page.currentTemp !== undefined) {
 
             if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-                addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, tempConverter.fromCelciusToFahrenheit(page.currentTemp)], true, false, false);
+                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], true, false, false);
 
             }
             else {
-                // for (var testNr = 0; testNr < 1440 ; testNr++) 
-                //     this.sensorChart[sensorId].chart.series[0].addPoint([page.timestamp+testNr*30, page.currentTemp], false, this.sensorChart[sensorId].shift(), false);
-                addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], true, false, false);
+
+                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], true, false, false);
 
 
             }
@@ -752,13 +711,9 @@
         var addedSeries,
            rootVM = this.viewModel.rootVM,
            HRMVM = this.viewModel.HRMVM,
-
            deviceTypeVM,
-           sensorId = page.broadcast.channelId.sensorId;
-
-        var handlerLogger = rootVM.sensorVM.getLogger();
-
-
+           sensorId = page.broadcast.channelId.sensorId,
+           handlerLogger = rootVM.sensorVM.getLogger();
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
           {
@@ -805,8 +760,7 @@
         if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
 
 
-            addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
-
+            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
 
         }
 
@@ -852,16 +806,13 @@
     };
 
     ANTMonitorUI.prototype.addSPDCADSeries = function (page) {
+
         var addedSeries,
            rootVM = this.viewModel.rootVM,
            SPDCADVM = this.viewModel.SPDCADVM,
-
-           deviceTypeVM,
-           sensorId = page.broadcast.channelId.sensorId;
-
-        var handlerLogger = rootVM.sensorVM.getLogger();
-
-
+             deviceTypeVM,
+           sensorId = page.broadcast.channelId.sensorId,
+            handlerLogger = rootVM.sensorVM.getLogger();
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
@@ -904,14 +855,9 @@
 
         rootVM.sensorVM.measurement.push(deviceTypeVM);
 
-
-
         if (page.cadence !== undefined) {
 
-
-            addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.cadence], false, false, false);
-
-
+            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false, false, false);
         }
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
@@ -947,8 +893,7 @@
         if (page.unCalibratedSpeed !== undefined) {
 
             // Converted speed taking wheel circumference into account
-            addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false, false, false);
-
+            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false, false, false);
 
         }
 
@@ -957,15 +902,13 @@
     };
 
     ANTMonitorUI.prototype.addFootpodSeries = function (page) {
+
         var addedSeries,
          rootVM = this.viewModel.rootVM,
          FootpodVM = this.viewModel.FootpodVM,
          deviceTypeVM,
-         sensorId = page.broadcast.channelId.sensorId;
-
-        var handlerLogger = rootVM.sensorVM.getLogger();
-
-
+         sensorId = page.broadcast.channelId.sensorId,
+         handlerLogger = rootVM.sensorVM.getLogger();
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
@@ -1010,9 +953,7 @@
 
         if (page.speed !== undefined) {
 
-
-            addedSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], false, false, false);
-
+            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false, false, false);
 
         }
 
@@ -1026,6 +967,7 @@
     };
 
     ANTMonitorUI.prototype.processRR = function (page) {
+
         var currentSeries,
             currentTimestamp,
             len,
@@ -1035,7 +977,7 @@
 
         if (page.aggregatedRR) {
             currentSeries = this.sensorChart.integrated.chart.get('rr-' + sensorId);
-            currentTimestamp = page.timestamp + timezoneOffsetInMilliseconds;
+            currentTimestamp = page.timestamp + this.timezoneOffsetInMilliseconds;
             // Start with the latest measurement and go back in time
             for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
                 currentSeries.addPoint([currentTimestamp, page.aggregatedRR[RRmeasurementNr]], false,
@@ -1048,7 +990,7 @@
         }
     };
 
-    ANTMonitorUI.prototype.pageHandler = function (page) {
+    ANTMonitorUI.prototype.onpage = function (page) {
 
         //  console.log('Knockout App got message', page,e);
         var antUI = this,
@@ -1083,9 +1025,9 @@
                         currentSeries = this.sensorChart.integrated.chart.get('temperature-current-' + sensorId);
 
                         if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-                            currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, tempConverter.fromCelciusToFahrenheit(page.currentTemp)]);
+                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)]);
                         } else {
-                            currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
+                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
                         }
 
                         // Immediate redraw due to slow update frequency (1 minute)
@@ -1103,12 +1045,10 @@
                 else {
                     if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
                         currentSeries = this.sensorChart.integrated.chart.get('heartrate-current-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.computedHeartRate], false,
+                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false,
                             currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
                              // currentSeries.data.length > 5,
                             false);
-
-
 
                         if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
                             this.redrawIntegratedChart();
@@ -1116,7 +1056,6 @@
 
                     }
                 }
-
 
                 break;
 
@@ -1127,13 +1066,13 @@
                 else {
                     if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
                         currentSeries = this.sensorChart.integrated.chart.get('spdcad-cadence-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.cadence], false,
+                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false,
                             currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
                              // currentSeries.data.length > 5,
                             false);
                     } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
                         currentSeries = this.sensorChart.integrated.chart.get('spdcad-speed-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
+                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
                             currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
                              // currentSeries.data.length > 5,
                             false);
@@ -1154,7 +1093,7 @@
 
                     if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
                         currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.speed], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
+                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false, currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
 
 
                     }
@@ -1163,33 +1102,34 @@
                         this.redrawIntegratedChart();
                     }
 
-
                 }
-
 
                 break;
 
             default:
 
                 handlerLogger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
+
                 break;
         }
 
     };
 
     ANTMonitorUI.prototype.startAsWindowsApp = function () {
-        var app, activation;
 
-        if (this.hostAppEnvironment === "windows") {
+        var app,
+            activation;
+
+        if (this.isWindowsHost()) {
             app = WinJS.Application;
             activation = Windows.ApplicationModel.Activation;
         }
 
         app.onresume = function () {
 
-            host.init(hostOptions, hostInitCB);
+            this.host.init(this.host.options, this.host.options.initCB);
 
-        };
+        }.bind(this);
 
         app.onactivated = function (args) {
 
@@ -1203,7 +1143,6 @@
 
                         break;
                 }
-
 
                 args.setPromise(WinJS.UI.processAll());
 
@@ -1220,7 +1159,6 @@
             //}
         }.bind(this);
 
-
         app.oncheckpoint = function (args) {
 
             // TODO: This application is about to be suspended. Save any state
@@ -1230,25 +1168,23 @@
             // asynchronous operation before your application is suspended, call
             // args.setPromise().
 
-
-
-
             // exitAndResetDevice();
 
             // Remove previously registered devices from UI -> enumeration will be restarted when resuming
+            var rootVM = this.viewModel.rootVM;
 
             rootVM.deviceVM.enumeratedDevice.removeAll();
 
-            host.closeChannel(0, function _closedSent(err, msg) {
+            this.host.closeChannel(0, function _closedSent(err, msg) {
                 // host.usb.ANTdevice.close();
                 if (err && this.log.logging)
                     this.log.log('error', err);
 
                 this.usb.exit();
 
-            }.bind(host));
+            }.bind(this.host));
 
-        };
+        }.bind(this);
 
         // Why not app.onresume ?
         Windows.UI.WebUI.WebUIApplication.addEventListener("resuming", app.onresume, false);
@@ -1257,191 +1193,190 @@
     };
 
     ANTMonitorUI.prototype._initANTHost = function (onPage) {
-        var antUI = this,
-            rootVM = this.viewModel.rootVM;
 
-        require(['anthost', 'usb/USBWindows', 'profiles/environment/deviceProfile_ENVIRONMENT', 'profiles/RxScanMode'],
-                      function (ANTHost, USBWindows, TEMPprofile, RxScanMode) {
+        var USBHostModuleId,
+            initUSBHost = function (ANTHost, USBHost, TEMPprofile, RxScanMode) {
 
-                          antUI.host = new ANTHost();
+                var rootVM = this.viewModel.rootVM;
 
-                          var USBoptions = {
-                              //// ANT USB 2 - nRFAP2 by default
-                              //vid:  0x0FCF,
-                              //pid:  0x1008,
-                              //device: 0,
+                this.host = new ANTHost();
 
-                              // If no deviceId available, it will try to automatically connect to the first enumerated device that matches a known ANT device
-                              knownDevices: [{ name: 'ANTUSB2', vid: 4047, pid: 4104 },
-                                              { name: 'ANTUSB-m', vid: 0x0FCF, pid: 0x1009 }],
-                              // Last connected device id
-                              // deviceId :  storage.get(localStorageKey.defaultDeviceId),
+                var USBoptions = {
 
-                              log: rootVM.settingVM.logging() || false,
+                    log: rootVM.settingVM.logging() || false,
 
-                              // Requested transfer size 512 bytes - allows reading of driver buffered data
-                              length: { in: 64 * 8 },
+                    // Requested transfer size 512 bytes - allows reading of driver buffered data
 
-                              // Subscribe to events from device watcher in the USB subsystem
-                              deviceWatcher: {
+                    length: { in: 64 * 8 },
 
-                                  onAdded: function (deviceInformation) {
+                    // Windows 8 USB: Subscribe to events from device watcher in the USB subsystem
 
-                                      rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
-                                      // rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
-                                      //rootVM.deviceVM.enumeratedDevice.push({ name: 'TEST USB', id: 'testid' });
+                    deviceWatcher: {
 
-                                      if (deviceInformation.id === this.usb.options.deviceId) {
-                                          // Keep local storage synchronized (i.e deviceId was undefined during enumeration,
-                                          // but found among the known devices.
+                        onAdded: function (deviceInformation) {
+                            var host = this.host;
 
-                                          storage.set(localStorageKey.defaultDeviceId, deviceInformation.id);
+                            rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
+                            // rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
+                            //rootVM.deviceVM.enumeratedDevice.push({ name: 'TEST USB', id: 'testid' });
 
-                                          // Update selection with the specific device please, if the select drop-down is used
+                            if (deviceInformation.id === host.usb.options.deviceId) {
+                                // Keep local storage synchronized (i.e deviceId was undefined during enumeration,
+                                // but found among the known devices.
 
-                                          rootVM.deviceVM.selectedDevice(deviceInformation);
-                                      }
+                                this.storage.set(this.storage.__proto__.key.defaultDeviceId, deviceInformation.id);
 
+                                // Update selection with the specific device please, if the select drop-down is used
 
-                                  }.bind(antUI.host),
+                                rootVM.deviceVM.selectedDevice(deviceInformation);
+                            }
 
-                                  onRemoved: function (deviceInformation) {
-                                      // Remove from UI
-                                      rootVM.deviceVM.enumeratedDevice.remove(
-                                          // predicate - compares underlying array value with a condition
-                                          // http://knockoutjs.com/documentation/observableArrays.html #remove and removeAll
-                                          function (value) { return value.id === deviceInformation.id; });
+                        }.bind(this),
 
-                                  }.bind(antUI.host),
+                        onRemoved: function (deviceInformation) {
+                            // Remove from UI
+                            rootVM.deviceVM.enumeratedDevice.remove(
+                                // predicate - compares underlying array value with a condition
+                                // http://knockoutjs.com/documentation/observableArrays.html #remove and removeAll
+                                function (value) { return value.id === deviceInformation.id; });
 
-                                  onEnumerationCompleted: function () {
+                        }.bind(this.host),
 
-                                      rootVM.deviceVM.enumerationCompleted(true);
+                        onEnumerationCompleted: function () {
 
-                                      // In case deviceId is updated, during enumeration
-                                      if (this.usb.options.deviceId)
-                                          storage.set(localStorageKey.defaultDeviceId, this.usb.options.deviceId);
+                            var host = this.host;
 
-                                      //
-                                      var devInfo;
-                                      for (var devNum = 0; devNum < rootVM.deviceVM.enumeratedDevice().length; devNum++) {
-                                          devInfo = rootVM.deviceVM.enumeratedDevice()[devNum];
-                                          if (this.usb.options.deviceId === devInfo.id) {
-                                              rootVM.deviceVM.selectedDevice(devInfo);
-                                              break;
-                                          }
-                                      }
+                            rootVM.deviceVM.enumerationCompleted(true);
 
+                            // In case deviceId is updated, during enumeration
+                            if (host.usb.options.deviceId)
+                                this.storage.set(this.storage.__proto__.key.defaultDeviceId, host.usb.options.deviceId);
 
-                                  }.bind(antUI.host),
+                            //
+                            var devInfo;
+                            for (var devNum = 0; devNum < rootVM.deviceVM.enumeratedDevice().length; devNum++) {
+                                devInfo = rootVM.deviceVM.enumeratedDevice()[devNum];
+                                if (host.usb.options.deviceId === devInfo.id) {
+                                    rootVM.deviceVM.selectedDevice(devInfo);
+                                    break;
+                                }
+                            }
 
-                                  onStopped: function () {
+                        }.bind(this),
 
-                                  }.bind(antUI.host),
+                        onStopped: function () { }.bind(this.host),
 
-                                  onUpdated: function () { }.bind(antUI.host)
+                        onUpdated: function () { }.bind(this.host)
 
-                              }
-                          };
+                    }
+                };
 
-                          storage.get(localStorageKey.defaultDeviceId, function (db) {
+                this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
 
-                              USBoptions.deviceId = db[localStorageKey.defaultDeviceId];
-                              configureUSB();
-                          });
+                    USBoptions.deviceId = db[this.storage.__proto__.key.defaultDeviceId];
+                    configureUSB.bind(this)();
+                }.bind(this));
 
-                          function configureUSB() {
+                function configureUSB() {
 
-                              var usb = new USBWindows(USBoptions);
+                    var usb = new USBHost(USBoptions),
+                        hostOptions,
+                        hostInitCB;
 
-                              hostOptions = {
+                    hostOptions = {
 
-                                  usb: usb,
+                        usb: usb,
 
-                                  // Reset device during init
-                                  reset: true,
+                        // Reset device during init
+                        reset: true,
 
-                                  // Append extended data
-                                  libconfig: 'channelid,rxtimestamp,rssi',
+                        // Append extended data
+                        libconfig: 'channelid,rxtimestamp,rssi',
 
-                                  //maxTransferRetries : 5, // Default = 5
+                        //maxTransferRetries : 5, // Default = 5
 
-                                  // Increased to 2 seconds to allow for handling buffered data (typically broadcasts) by driver (WINUSB)
-                                  // at start without any resending
-                                  transferProcessingLatency: 2000, // Default = 10 ms
+                        // Increased to 2 seconds to allow for handling buffered data (typically broadcasts) by driver (WINUSB)
+                        // at start without any resending
+                        transferProcessingLatency: 2000, // Default = 10 ms
 
-                                  log: rootVM.settingVM.logging() || false
-                              };
+                        log: rootVM.settingVM.logging() || false
+                    };
 
+                    var onChannelEstablished = function (error, _pchannel) {
+                        //console.profileEnd();
 
+                        if (!error && this.log.logging)
+                            this.log.log('log', 'Channel established', _pchannel);
+                        else if (this.log.logging)
+                            this.log.log('log', 'Failed to establish channel', error.message);
 
-                              var onChannelEstablished = function (error, _pchannel) {
-                                  //console.profileEnd();
+                        //        this.closeChannel(channel.establish.channelNumber, function (error,responseMsg)
+                        //                          {
+                        //                              if (error)
+                        //                                  this.log.log('log','Failed to close channel',channel.establish.channelNumber,error.message);
+                        //                              
+                        //                          }.bind(this));
 
-                                  if (!error && this.log.logging)
-                                      this.log.log('log', 'Channel established', _pchannel);
-                                  else if (this.log.logging)
-                                      this.log.log('log', 'Failed to establish channel', error.message);
+                    }.bind(this.host);
 
-                                  //        this.closeChannel(channel.establish.channelNumber, function (error,responseMsg)
-                                  //                          {
-                                  //                              if (error)
-                                  //                                  this.log.log('log','Failed to close channel',channel.establish.channelNumber,error.message);
-                                  //                              
-                                  //                          }.bind(this));
+                    var channel = new RxScanMode({
+                        log: rootVM.settingVM.logging() || false,
+                        channelId: {
+                            deviceNumber: 0,
+                            //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
+                            deviceType: 0,
+                            transmissionType: 0
+                        },
+                        onPage: onPage
+                    });
 
-                              }.bind(antUI.host);
+                    hostInitCB = function (error) {
+                        // console.trace();
+                        //  console.profileEnd();
+                        if (error && this.log.logging)
+                            this.log.log('error', "ANT host - NOT - initialized, cannot establish channel on device ", error.message, error.stack);
+                        else {
+                            if (this.log.logging)
+                                this.log.log('log', "ANT host initialized");
 
+                            if (typeof this.usb.getDeviceWatcher === 'function' && this.log.logging)
+                                this.log.log('log', 'Host environment offers device watching capability, e.g windows 8.1');
 
+                            // console.profile('Establish channel');
 
-                              var channel = new RxScanMode({
-                                  log: rootVM.settingVM.logging() || false,
-                                  channelId: {
-                                      deviceNumber: 0,
-                                      //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
-                                      deviceType: 0,
-                                      transmissionType: 0
-                                  },
-                                  onPage: onPage
-                              });
+                            this.establishChannel({
+                                channelNumber: 0,
+                                networkNumber: 0,
+                                // channelPeriod will be ignored for RxScanMode channel
+                                channelPeriod: TEMPprofile.prototype.CHANNEL_PERIOD_ALTERNATIVE, // 0.5 Hz - every 2 seconds
+                                configurationName: 'slave only',
+                                channel: channel,
+                                open: true
+                            }, onChannelEstablished);
 
-                              hostInitCB = function (error) {
-                                  // console.trace();
-                                  //  console.profileEnd();
-                                  if (error && this.log.logging)
-                                      this.log.log('error', "ANT host - NOT - initialized, cannot establish channel on device ", error.message, error.stack);
-                                  else {
-                                      if (this.log.logging)
-                                          this.log.log('log', "ANT host initialized");
+                        }
+                    }.bind(this.host);
 
-                                      if (typeof this.usb.getDeviceWatcher === 'function' && this.log.logging)
-                                          this.log.log('log', 'Host environment offers device watching capability, e.g windows 8.1');
+                    this.host.init(hostOptions, hostInitCB);
+                }
 
-                                      // console.profile('Establish channel');
+            }
 
-                                      this.establishChannel({
-                                          channelNumber: 0,
-                                          networkNumber: 0,
-                                          channelPeriod: TEMPprofile.prototype.CHANNEL_PERIOD_ALTERNATIVE, // 0.5 Hz - every 2 seconds
-                                          configurationName: 'slave only',
-                                          channel: channel,
-                                          open: true
-                                      }, onChannelEstablished);
+        if (this.isWindowsHost())
+            USBHostModuleId = 'usb/USBWindows'
+        else if (this.isChromeHost())
+            USBHostModuleId = 'usb/USBChrome';
 
-                                  }
-                              }.bind(antUI.host);
+        if (!USBHostModuleId) {
+            // Log no USB host module defined
+            return;
+        }
 
-                              antUI.host.init(hostOptions, hostInitCB);
-                          }
-
-                      });
+        require(['anthost', USBHostModuleId, 'profiles/environment/deviceProfile_ENVIRONMENT', 'profiles/RxScanMode'], initUSBHost.bind(this));
 
     };
 
-    var ui = new ANTMonitorUI();
-
-    function exitAndResetDevice(callback) {
-
+    ANTMonitorUI.prototype.exitAndResetDevice = function (callback) {
         var _onExit = function () {
             if (this.log.logging) this.log.log('log', 'Exited ANT device. I/O should be released for other applications now.');
             if (typeof callback === 'function')
@@ -1463,7 +1398,8 @@
         }
         else
             host.exit(_onExit);
-
     }
 
-})();
+    void new ANTMonitorUI();
+
+})(); // Enclose in separate lexical environment by convention (to not interfere with the global object/environment)

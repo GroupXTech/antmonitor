@@ -9,6 +9,14 @@ define(['require', 'module', 'exports', 'logger'], function (require, module, ex
       
     }
 
+    // Keys for localstorage - minimize chance for accessing wrong key
+    Storage.prototype.key = {
+        temperaturemode: "temperaturemode",
+        show24hMaxMin: "show24MaxMin",
+        defaultDeviceId: "defaultDeviceId"
+
+    };
+
     Storage.prototype.get = function (key) {
         throw new Error('Override in specialized object');
 

@@ -172,6 +172,8 @@
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="packages.config" />
     <Content Include="scripts\converter\temperatureConverter.js" />
+    <Content Include="scripts\db\storage.js" />
+    <Content Include="scripts\db\storageWindows.js" />
     <Content Include="scripts\default.js" />
     <Content Include="scripts\highcharts\highcharts.js" />
     <Content Include="scripts\highcharts\highcharts.src.js" />
@@ -180,8 +182,6 @@
     <Content Include="scripts\knockout-3.0.0.js" />
     <Content Include="scripts\require.js" />
     <None Include="TemperatureMonitor_StoreKey.pfx" />
-    <Content Include="scripts\storage.js" />
-    <Content Include="scripts\storageWindows.js" />
     <Content Include="scripts\viewmodel\deviceVM.js" />
     <Content Include="scripts\viewmodel\footpodVM.js" />
     <Content Include="scripts\viewmodel\genericVM.js" />
