@@ -1,8 +1,10 @@
 ﻿#appRoot {
     margin: 5px;
+
+    /* Set to block when knockout databinding are applied (with applyBindings on #appRoot), to avoid clutter at page load */
+    
     display : none;
     
-/* Turn on when knockout databinding are applied, to avoid clutter */
 }
 
 #divMAXMIN {
@@ -112,6 +114,11 @@ input[type=radio], input[type=checked] {
 
     margin-bottom : 10px;
     height : 95vh;
+}
+
+#uiFrame {
+    height : 100vh;
+    width: 100vw;
 }
 
 #ulMeasurements {

@@ -58,6 +58,8 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="scripts\ui.js" />
+    <Content Include="ui.html" />
     <Content Include="bower_components\libant\.bower.json" />
     <Content Include="bower_components\libant\.gitattributes" />
     <Content Include="bower_components\libant\.gitignore" />
@@ -174,7 +176,7 @@
     <Content Include="scripts\converter\temperatureConverter.js" />
     <Content Include="scripts\db\storage.js" />
     <Content Include="scripts\db\storageWindows.js" />
-    <Content Include="scripts\default.js" />
+    <Content Include="scripts\hostenvironment.js" />
     <Content Include="scripts\highcharts\highcharts.js" />
     <Content Include="scripts\highcharts\highcharts.src.js" />
     <Content Include="scripts\highcharts\standalone-framework.src.js" />

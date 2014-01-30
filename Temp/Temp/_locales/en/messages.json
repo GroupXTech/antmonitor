@@ -1,0 +1,10 @@
+{
+    "appName": {
+        "message": "ANT+ Monitor",
+        "description": "Gather information from multiple ANT+ sensors. Windows/WINUSB use utility at http://zadig.akeo.ie"
+    },
+    "appDescription": {
+        "message": "Gather information from multiple ANT+ sensors. Windows/WINUSB use utility at http://zadig.akeo.ie",
+        "description": "Uses the ANT+ profiles and continous scanning for gathering data"
+    }
+}

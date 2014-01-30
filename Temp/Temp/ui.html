@@ -1,0 +1,397 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    
+
+    <link href="/css/default.css" rel="stylesheet" />
+
+    
+
+    <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
+
+    <script src="/scripts/knockout-3.0.0.debug.js"></script>
+    <!--<script src="/scripts/knockout-3.0.0.js"></script>-->
+    <!-- Some icons by Yusuke Kamiyamane http://creativecommons.org/licenses/by/3.0/  https://github.com/yusukekamiyamane/fugue-icons -->
+    <!--  Highcharts adapter -->
+
+    <script src="/scripts/highcharts/standalone-framework.src.js"></script>
+
+    <!--  Highcharts -->
+    <!--<script src="/scripts/highcharts/highcharts.js"></script>-->
+    <script src="/scripts/highcharts/highcharts.src.js"></script>
+
+    <!-- Requirejs https://github.com/jrburke/requirejs/blob/master/LICENSE -->
+
+    <script src="/scripts/require.js"></script>
+    <!--<script src="/Scripts/require.min.js"></script>-->
+
+    <script src="/scripts/ui.js"></script>
+
+   
+</head>
+<body>
+    <div id="appRoot">
+
+        <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
+
+        <script type="text/html" id="temperature-template">
+            <li>
+                <div id="flexDiv">
+                    <div id="flexIcon">
+                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: location, attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId+' '+location()) }" />
+                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !location, attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
+
+                    </div>
+
+                    <div id="flexMeasurement">
+
+                        <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
+                        <!--<label data-bind="visible: $root.settingVM.show24H">Min</label>-->
+                        <span class="temperature24H" data-bind="html: formattedLow24H, visible: $root.settingVM.show24H, style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" title="Low 24 hour temperature"></span>
+                        <!--<label data-bind="visible: $root.settingVM.show24H">Max</label>-->
+                        <span class="temperature24H" data-bind="html: formattedHigh24H, visible: $root.settingVM.show24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" title="High 24 hour temperature"></span>
+
+                        <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" title="Location" />
+
+                        <span class="timestamp" data-bind="text: formattedTimestamp" title="Last update time"></span>
+                    </div>
+                </div>
+
+                <!-- Background pages -->
+
+                <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+
+                    <div style="display:inline" data-bind="if: _page.broadcast.RSSI !== undefined && _page.broadcast.RSSI.measurementType === 0x20">
+                        <span data-bind="text: 'RSSI '+_page.broadcast.RSSI.RSSIValue+' dBm'"></span>
+                        <meter min="-127" max="128" data-bind="attr: {value: _page.broadcast.RSSI.RSSIValue }"></meter>
+                        <div style="display: inline" data-bind="if: _page.broadcast.RSSI.thresholdConfigurationValue === -128">
+                            <span>Threshold OFF </span>
+                        </div>
+                        <div style="display: inline" data-bind="if: _page.broadcast.RSSI.thresholdConfigurationValue !== -128">
+
+                            <span data-bind="text: 'Threshold '+_page.broadcast.RSSI.thresholdConfigurationValue+' dBm'"></span>
+                        </div>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img src="icon/battery-full.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img src="icon/battery.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img src="icon/battery-low.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img src="icon/battery-empty.png" />
+                        </div>
+
+                        <span data-bind="text: batteryStatusString"></span>
+                    </div>
+
+                </div>
+
+                <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+
+
+            </li>
+
+        </script>
+
+        <script type="text/html" id="footpod-template">
+            <li>
+                <div id="flexMeasurement">
+                    <img class="icon" src="icon/footpod.png" alt="Footpod" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
+
+                    <span data-bind="text: formattedSpeed"></span>
+                    <span data-bind="text: formattedCumulativeDistance"></span>
+                    <span data-bind="text: formattedCadence()+' spm'"></span>
+                    <!--<span data-bind="text: distance"></span>-->
+                    <span data-bind="text: cumulativeStrides"></span>
+
+
+
+
+                    <span data-bind="text: status.UseStateFriendly(), visible: status.UseState() === 0"></span>
+                    <span data-bind="text: formattedTimestamp"></span>
+                </div>
+
+                <!-- Background pages -->
+
+                <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+
+                    <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img src="icon/battery-full.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img src="icon/battery.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img src="icon/battery-low.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img src="icon/battery-empty.png" />
+                        </div>
+
+                        <span data-bind="text: batteryStatusString"></span>
+
+
+
+                    </div>
+
+                    <div style="display: inline">
+                        <span data-bind="text: 'Time '+time()+' s'"></span>
+                        <span data-bind="text: 'Stride '+strideCount()"></span>
+                        <span data-bind="text: 'Use '+status.UseStateFriendly()"></span>
+                        <span data-bind="text: 'Health '+status.SDMHealthFriendly()"></span>
+                        <span data-bind="text: 'Location '+status.SDMLocationFriendly()"></span>
+                        <span data-bind="text: 'Latency '+ updateLatency()+ 's'"></span>
+                    </div>
+
+                </div>
+
+                <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+
+            </li>
+        </script>
+
+        <script type="text/html" id="spdcad-template">
+            <li>
+                <div id="flexDiv">
+
+                    <div id="flexIcon">
+                        <img class="icon" src="icon/spdcad.png" alt="SPDCAD" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
+
+                    </div>
+
+
+                    <div id="flexMeasurement">
+
+                        <span class="largeNumber" data-bind="text: formattedSpeed" title="Speed"></span>
+                        <span class="largeNumber" data-bind="text: formattedCadence" title="Cadence"></span>
+                        <span data-bind="text: formattedCumulativeDistance" title="Distance"></span>
+                        <input id="wheelCircumference" data-bind="value: wheelCircumference" title="Wheel circumference" />
+
+                        <span data-bind="text: formattedTimestamp" title="Last update time"></span>
+                    </div>
+
+                </div>
+
+                <!-- Background pages -->
+
+                <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+
+                    <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img src="icon/battery-full.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img src="icon/battery.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img src="icon/battery-low.png" />
+                        </div>
+
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img src="icon/battery-empty.png" />
+                        </div>
+
+                        <span data-bind="text: batteryStatusString"></span>
+
+
+                    </div>
+
+                    <div style="display: inline">
+                        <span data-bind="text: 'Time '+time()+' s'"></span>
+                        <span data-bind="text: 'Stride '+strideCount()"></span>
+                        <span data-bind="text: 'Use '+status.UseStateFriendly()"></span>
+                        <span data-bind="text: 'Health '+status.SDMHealthFriendly()"></span>
+                        <span data-bind="text: 'Location '+status.SDMLocationFriendly()"></span>
+                        <span data-bind="text: 'Latency '+ updateLatency()+ 's'"></span>
+                    </div>
+
+                </div>
+
+            </li>
+        </script>
+
+        <script type="text/html" id="HRM-template">
+            <li>
+
+                <div id="flexDiv">
+                    <div id="flexIcon">
+
+                        <img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+_page.broadcast.channelId.sensorId) }" />
+                    </div>
+                    <div id="flexMeasurement">
+
+
+                        <div style="display: inline" data-bind="if: computedHeartRate !== 0x00">
+                            <span class="computedHeartRate" data-bind="text: computedHeartRate"></span>
+                        </div>
+
+                        <div style="display: inline" data-bind="if: computedHeartRate === 0x00">
+                            <span class="computedHeartRate">---</span>
+                        </div>
+
+                        <!--<span data-bind="text: RRInterval"></span>-->
+
+                    </div>
+
+                    <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                        <!-- HRM page 2-->
+                        <div style="display:inline" data-bind="if: manufacturerID() !== undefined ">
+                            <div style="display:inline" data-bind="if: (serialNumber() >> 16) === 0">
+                                <span data-bind="text: 'Manufacturer '+manufacturerID() +' SN '+serialNumber()"></span>
+                            </div>
+                            <div style="display:inline" data-bind="if: (serialNumber() >> 16) !== 0">
+                                <span data-bind="text: 'Manufacturer '+manufacturerID() +' SN '+serialNumber()+' ('+_page.broadcast.channelId.deviceNumber+')'"></span>
+                            </div>
+                        </div>
+
+                        <!-- HRM page 3 -->
+
+                        <div style="display:inline" data-bind="if: softwareVersion() !== undefined ">
+                            <span data-bind="text: 'HW '+hardwareVersion() +' SW '+softwareVersion()+' Model '+modelNumber()"></span>
+                        </div>
+
+
+                        <!-- HRM page 1 -->
+
+                        <div>
+                            <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                                <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--<div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+_page.broadcast.channelId.sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+                </div>
+            </li>
+        </script>
+
+        <!-- Top level menu -->
+
+        <nav id="appToolbar">
+
+
+            <div id="flexTemperatureMode">
+
+                <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
+                <a data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor">ANT+ Monitor</a>
+
+                <div id="divTemperatureMode">
+                    <label class="lblTemperatureMode">&deg;C</label>
+                    <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
+                    <span id="spanSpace"></span>
+                    <label class="lblTemperatureMode">&deg;F</label>
+                    <input class="inpTemperatureMode" type="radio" value="fahrenheit" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
+                </div>
+
+                <div id="divMAXMIN">
+                    <label id="lblMAXMIN">MIN&darr;/MAX&uarr;</label>
+                    <input type="checkbox" data-bind="checked: settingVM.show24H">
+                </div>
+
+                <div id="divInfo">
+                    <img src="icon/info.png" data-bind="click: settingVM.toggleShowAdditionalInfo" alt="Information" title="Additional information (i.e operating time)" />
+                    <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
+                </div>
+
+                <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
+
+                <div id="divENUMERATEDDEVICE">
+
+                    <div data-bind="if: deviceVM.enumeratedDevice().length > 1">
+                        <img src="icon/ant_usb.png" alt="Device" title="ANT devices" />
+                        <select data-bind="options: deviceVM.enumeratedDevice, optionsText: 'name', value: deviceVM.selectedDevice, optionsCaption: 'Device...', enable:  deviceVM.enumeratedDevice().length > 1"></select>
+                    </div>
+
+                    <div data-bind="if: deviceVM.enumeratedDevice().length ===  1">
+                        <img src="icon/ant_usb.png" alt="ANT USB Device" title="ANT device" />
+                        <span data-bind="text: deviceVM.enumeratedDevice()[0].name"></span>
+                    </div>
+
+                    <div data-bind="if: deviceVM.enumeratedDevice().length ===  0 && deviceVM.enumerationCompleted()">
+                        <img src="icon/no_ant_usb.png" alt="No ANT device" title="No ANT device" />
+                        <span>No ANT device found</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+        <div data-bind="visible: settingVM.showCredits" id="divCredits">
+            <span>This work was enabled by Javascript and</span>
+
+            <a href="http://wwww.highcharts.com" title="Great graphing library" target="_blank">Highcharts</a>
+            <a href="http://knockoutjs.com/index.html" title="Great databinding library" target="_blank">Knockoutjs</a>
+            <a href="http://requirejs.org/" title="Great script loading library" target="_blank">Requirejs</a>
+            <a href="https://github.com/yusukekamiyamane/fugue-icons" title="Most icons are from fugue icons" target="_blank">Fugue Icons</a>
+            <a href="http://www.visualpharm.com" title="Temperature icon" target="_blank">Visual Pharm</a>
+
+        </div>
+
+        <div id="main">
+
+            <ul id="ulMeasurements" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.measurement}"></ul>
+
+            <!-- Integrated chart with measurements from all sensors -->
+
+            <div id="sensorChart-integrated">
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

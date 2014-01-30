@@ -69,6 +69,8 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
 
           this.location = ko.observable();
           var loc;
+         // TO DO : Fix dependecy on storage here
+         if (!window.chrome)
           loc = window.localStorage[configuration.sensorId + '-location'];
         // configuration.storage.get(configuration.sensorId + '-location');
           if (loc)
