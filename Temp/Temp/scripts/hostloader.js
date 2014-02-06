@@ -4,7 +4,8 @@
 (function HostLoaderIIFE() {
     "use strict";
 
-    // Determine execution environment and load the appropiate host
+    // Determine execution environment and load the appropiate host 
+
     function HostLoader() {
 
         var requirejsConfiguration,
@@ -51,18 +52,20 @@
 
         };
 
+        console.info('Requirejs configuration', requirejsConfiguration);
+
+
         requirejs.config(requirejsConfiguration);
 
        
 
     }
 
+    // It seems like the app.start must take place in the HostLoader object - cannot move it into hostWin81.js
     HostLoader.prototype.initWin81LifeCycle = function ()
     {
         var app = WinJS.Application,
             activation = Windows.ApplicationModel.Activation;
-
-
 
         app.onactivated = function (args) {
 
@@ -120,7 +123,7 @@
                // console.log(Date.now(),'require finished')
                 this.logger = new Logger(true);
                 this.host = new Host({ log: true });
-                if (this.isChromeHost())
+                if (this.isChromeHost()) // Win81 host is initialized in app.onlaunched handler
                     this.host.init();
             }.bind(this));
 
@@ -131,8 +134,6 @@
         MS: 'ms-appx:',
         CHROME: 'chrome-extension:'
     };
-
-
 
     // Host environment must hava a UI frame in the document
     HostLoader.prototype.isUIFramePresent = function () {

@@ -270,12 +270,16 @@
 
             chrome.runtime.getBackgroundPage(function (bgWindow) {
 
+                var loadStr;
+
                 this.backgroundPageWindow = bgWindow;
 
-                bgWindow.console.info(Date.now(), this.name+' has a reference to the background page window');
+                loadStr = this.name+' loaded by '+window.location.pathname;
+
+                bgWindow.console.info(Date.now(), loadStr);
 
                 if (this.logger && this.logger.logging)
-                    this.logger.log('info', this.name+' has a reference to the background page window');
+                    this.logger.log('info', loadStr);
 
             }.bind(this));
 
