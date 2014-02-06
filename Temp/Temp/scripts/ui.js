@@ -15,7 +15,7 @@
     {
         var requirejsConfiguration;
 
-        this.name = 'ANT+ Monitor UI frame';
+        this.name = 'UI frame';
 
         this.hostEnvironmentReady = false;
 
@@ -23,9 +23,9 @@
 
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
-                if (this.logger && this.logger.logging) this.logger.log('error', 'Has not received ready from host environment - cannot send messages to host');
+                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready from host environment - messages will probably not reach host');
             }
-        }.bind(this), 1000);
+        }.bind(this), 3000);
 
         console.info(this.name+' location: ' + window.location.href);
 
@@ -48,8 +48,6 @@
         };
 
         requirejs.config(requirejsConfiguration);
-
-        
 
         requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'logger', 'converter/temperatureConverter'],
             function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,Logger,TempConverter) {
@@ -76,32 +74,37 @@
 
     ANTMonitorUI.prototype.onmessage = function (event)
     {
-        
-        var sourceWindow = event.source,
-            data = event.data;
+        try {
 
-        //// Skip unknown protocols if available
-        //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME)) {
-        //    if (this.logger && this.logger.logging) {
-        //        this.logger.log('error', 'Received message event from source with a protocol that cannot be handled');
-        //        return;
-        //    }
 
-        //}
+            var sourceWindow = event.source,
+                data = event.data;
 
-        if (this.logger && this.logger.logging) this.logger.log('info', this.name + ' received message event', event);
+            //// Skip unknown protocols if available
+            //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME)) {
+            //    if (this.logger && this.logger.logging) {
+            //        this.logger.log('error', 'Received message event from source with a protocol that cannot be handled');
+            //        return;
+            //    }
 
-        if (data === 'ready')
-        {
-            this.hostEnvironmentReady = true;
+            //}
+
+            if (this.logger && this.logger.logging) this.logger.log('info', this.name+' received message event', event);
+
+            if (data === 'ready') {
+                this.hostEnvironmentReady = true;
+                if (this.logger && this.logger.logging)
+                    this.logger.log('log', this.name+' ready to process messages');
+            } else if (data && data.page) {
+                if (this.logger && this.logger.logging)
+                    this.logger.log('log', this.name+' received page', data.page);
+
+                this.onpage(data.page);
+            }
+
+        } catch (e) { // Maybe a dataclone error
             if (this.logger && this.logger.logging)
-                this.logger.log('log', 'Host environment ready to process messages');
-        } else if (data && data.page)
-        {
-            if (this.logger && this.logger.logging)
-                this.logger.log('log', this.name + ' received page', data.page);
-
-            this.onpage(data.page);
+                this.logger.log('error', ' error', 'Event', event, e);
         }
         
 
@@ -119,9 +122,11 @@
 
         var rootVM; // Root viewmodel, contains all the other sub-view models
         var tempModeKey;
+        var sensorChart;
 
         // Holds chart instances
         this.sensorChart = {};
+        sensorChart = this.sensorChart;
 
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
@@ -153,6 +158,24 @@
 
                 temperatureModes: TemperatureVM.prototype.MODES,
 
+                showSensors: {
+
+                    HRM: ko.observable(false),
+                    
+                    SPDCAD: ko.observable(false),
+
+                    ENVIRONMENT: ko.observable(false),
+
+                },
+
+                tracking: {
+
+                    liveTracking: false,
+
+                    startTime: Date.now() + this.timezoneOffsetInMilliseconds,
+
+                    
+                }
             },
 
             // Holds an array on viewmodels for the sensors that are discovered
@@ -162,16 +185,179 @@
             deviceVM: {
 
                 enumerationCompleted: ko.observable(false),
+
                 enumeratedDevice: ko.observableArray(),
+
                 // User selected default device id.
 
                 selectedDevice: ko.observable(),
+
+            },
+
+            timerVM: {
 
             }
 
         };
 
         rootVM = this.viewModel.rootVM;
+
+        rootVM.settingVM.refreshChart = function () {
+            var currentSeries,
+               seriesNr,
+               len,
+               chart,
+               dateTimeAxis;
+              
+
+            if (sensorChart && sensorChart.integrated) {
+
+                rootVM.settingVM.tracking.liveTracking = false;
+
+                chart = sensorChart.integrated.chart;
+
+                // Remove plot lines
+
+                dateTimeAxis = chart.get('datetime-axis');
+                if (dateTimeAxis) {
+
+                        dateTimeAxis.removePlotLine(); // undefined id will delete all plotlines (using id === undefined)
+
+                }
+
+                // Remove series data
+
+                for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
+
+                    currentSeries = chart.series[seriesNr];
+
+                    currentSeries.setData([], false);
+                }
+
+            }
+               
+        }.bind(this);
+
+        rootVM.settingVM.startTimer = function ()
+        {
+            // Reset series
+
+            if (rootVM.settingVM.tracking.liveTracking)
+                return;
+
+            var chart,
+              
+                dateTimeAxis,
+                id;
+
+            if (sensorChart && sensorChart.integrated) {
+                chart = sensorChart.integrated.chart;
+
+                //for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
+
+                //    currentSeries = chart.series[seriesNr];
+
+                //    currentSeries.setData([], false);
+                //}
+
+                rootVM.settingVM.tracking.liveTracking = true;
+                rootVM.settingVM.tracking.startTime = Date.now() + this.timezoneOffsetInMilliseconds;
+
+                dateTimeAxis = chart.get('datetime-axis');
+                if (dateTimeAxis) {
+                    //id = 'plotline-'+rootVM.settingVM.tracking.plotLines.length;
+                   dateTimeAxis.addPlotLine({
+                       // id : id, 
+                        color: 'green',
+                        dashStyle: 'dash',
+                        width: 2,
+                        value: rootVM.settingVM.tracking.startTime
+                   });
+
+                  // rootVM.settingVM.tracking.plotLines.push(id);
+                }
+
+            }
+
+            }.bind(this);
+
+        rootVM.settingVM.stopTimer = function () {
+
+            var chart,
+                dateTimeAxis,
+                id;
+
+            if (!rootVM.settingVM.tracking.liveTracking)
+                return;
+
+            rootVM.settingVM.tracking.stopTime = Date.now() + this.timezoneOffsetInMilliseconds;
+            rootVM.settingVM.tracking.liveTracking = false;
+
+            if (sensorChart && sensorChart.integrated) {
+                chart = sensorChart.integrated.chart;
+
+                dateTimeAxis = chart.get('datetime-axis');
+                if (dateTimeAxis) {
+                    //id = 'plotline-' + rootVM.settingVM.tracking.plotLines.length
+                      dateTimeAxis.addPlotLine({
+                       // id: id,
+                        color: 'red',
+                        dashStyle: 'dash',
+                        width: 2,
+                        value: rootVM.settingVM.tracking.stopTime
+                    });
+
+                   //   rootVM.settingVM.tracking.plotLines.push(id);
+
+                }
+            }
+        }.bind(this);
+
+        rootVM.settingVM.newLap = function ()
+        {
+
+        }
+
+        // Function is also called during applyBindings at initialization
+        rootVM.settingVM.showSensors.toggle = function (sensorType) {
+
+            rootVM.settingVM.showSensors[sensorType](!rootVM.settingVM.showSensors[sensorType]());
+
+            var visible = rootVM.settingVM.showSensors[sensorType](),
+                chart,
+                currentSeries,
+                seriesNr,
+                len;
+
+            // Toggle series visibility for device type, i.e hrm
+
+            if (this.sensorChart && this.sensorChart.integrated && this.sensorChart.integrated.chart) {
+                chart = this.sensorChart.integrated.chart;
+
+                for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
+
+                    currentSeries = chart.series[seriesNr];
+
+                    if (currentSeries.options.id.indexOf(sensorType) !== -1) {
+
+                        if (visible && !currentSeries.visible) {
+
+                            currentSeries.show();
+
+                        }
+
+                        else if (currentSeries.visible) {
+                          
+                                currentSeries.hide();
+                            }
+                    }
+
+                }
+            }
+
+
+
+        }.bind(this);
 
         rootVM.settingVM.toggleShowCredits = function (data, event) {
             rootVM.settingVM.showCredits(!rootVM.settingVM.showCredits());
@@ -282,7 +468,7 @@
 
         // Activate knockoutjs on our root viewmodel
 
-        var rootElement = document.getElementById('appRoot');
+        var rootElement = document.getElementById('appRootVM');
 
         ko.applyBindings(rootVM, rootElement);
 
@@ -297,11 +483,16 @@
     ANTMonitorUI.prototype.createIntegratedChart = function () {
 
         var rootVM = this.viewModel.rootVM,
-            antUI = this;
+            antUI = this,
+            integratedChart;
 
-        
+        this.sensorChart.integrated = {
+            options: {}
+        };
+       
+        integratedChart = this.sensorChart.integrated;
 
-        this.sensorChart.integrated = {};
+       
         this.sensorChart.integrated.chart = new Highcharts.Chart({
 
             chart: {
@@ -325,7 +516,9 @@
                     title: {
                         text: 'Temperature',
                         style: {
-                            color: 'yellow'
+                            color: 'yellow',
+                            fontSize: '14px',
+                            fontWeight : 'bold'
                         }
                     },
 
@@ -369,9 +562,6 @@
                         }
                     }
 
-
-
-
                 },
 
                 {
@@ -379,7 +569,9 @@
                     title: {
                         text: 'Heart rate',
                         style: {
-                            color: 'red'
+                            color: 'red',
+                            fontSize: '14px',
+                            fontWeight: 'bold'
                         }
                     },
 
@@ -418,7 +610,9 @@
                      title: {
                          text: 'Footpod speed',
                          style: {
-                             color: 'green'
+                             color: 'green',
+                             fontSize: '14px',
+                             fontWeight: 'bold'
                          }
                      },
 
@@ -502,7 +696,9 @@
                      title: {
                          text: 'Cadence',
                          style: {
-                             color: 'magenta'
+                             color: 'magenta',
+                             fontSize: '14px',
+                             fontWeight: 'bold'
                          }
                      },
 
@@ -544,7 +740,9 @@
                       title: {
                           text: 'RR',
                           style: {
-                              color: 'gray'
+                              color: 'gray',
+                              fontSize: '14px',
+                              fontWeight: 'bold'
                           }
                       },
 
@@ -588,8 +786,6 @@
 
                 id: 'datetime-axis',
 
-
-
                 type: 'datetime',
 
                 // Turn off X-axis line
@@ -609,6 +805,7 @@
                             fontSize: '14px',
 
                         },
+                        
                         y: 18
                     },
 
@@ -656,7 +853,45 @@
 
         });
 
+        // Get default x-Axis formatter;
+
+        var xAxis = this.sensorChart.integrated.chart.get('datetime-axis');
+
+        this.sensorChart.integrated.options.defaultxAxisLabelFormatter = xAxis.labelFormatter; // Keep reference to avoid possible garbage collection of formatter
+        this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter = function () {
+           
+            if (!rootVM.settingVM.tracking.liveTracking) 
+               return integratedChart.options.defaultxAxisLabelFormatter.call(this); // Highcharts.Axis.prototype.defaultLabelFormatter
+           
+            var startTime = rootVM.settingVM.tracking.startTime;
+
+            if (startTime > this.value)
+                return undefined;
+
+
+                // Based on http://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript
+                var totalSec = (this.value - startTime) / 1000;
+                var hours = Math.floor(totalSec / 3600 % 24);
+                var minutes = Math.floor(totalSec / 60 % 60);
+                var seconds = Math.floor(totalSec % 60);
+
+               
+
+                var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+                return result;
+          
+        };
+
+        // Override default formatter with our new live tracking formatter
+        xAxis.labelFormatter = this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter;
+
         this.startRedrawInterval(1000);
+
+        // TEST change formatter on x-Axis 
+        // setInterval(function () {
+        //    integratedChart.options.liveTracking = !integratedChart.options.liveTracking;
+        //}, 5000);
 
     };
 
@@ -672,7 +907,7 @@
         addedSeries = this.sensorChart.integrated.chart.addSeries(
             {
                 name: 'Temperature ' + sensorId,
-                id: 'temperature-current-' + sensorId,
+                id: 'ENVIRONMENT-current-' + sensorId,
                 color: 'yellow',
                 data: [], // tuples [timestamp,value]
                 type: 'spline',
@@ -700,7 +935,9 @@
 
         deviceTypeVM.updateFromPage(page);
 
-        rootVM.sensorVM.measurement.push(deviceTypeVM);
+        rootVM.sensorVM.devices.ENVIRONMENT.push(deviceTypeVM);
+
+        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
 
 
         if (page.currentTemp !== undefined) {
@@ -732,7 +969,7 @@
         addedSeries = this.sensorChart.integrated.chart.addSeries(
           {
               name: 'Heartrate ' + sensorId,
-              id: 'heartrate-current-' + sensorId,
+              id: 'HRM-current-' + sensorId,
               color: 'red',
               data: [], // tuples [timestamp,value]
               type: 'spline',
@@ -766,9 +1003,11 @@
 
         this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
 
+        rootVM.sensorVM.devices.HRM.push(deviceTypeVM);
+
         deviceTypeVM.updateFromPage(page);
 
-        rootVM.sensorVM.measurement.push(deviceTypeVM);
+        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
 
 
         if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
@@ -783,7 +1022,7 @@
         addedSeries = this.sensorChart.integrated.chart.addSeries(
           {
               name: 'RR ' + sensorId,
-              id: 'rr-' + sensorId,
+              id: 'RR-' + sensorId,
               color: 'gray',
               data: [], // tuples [timestamp,value]
               type: 'spline',
@@ -831,7 +1070,7 @@
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
                name: 'Cadence ' + sensorId,
-               id: 'spdcad-cadence-' + sensorId,
+               id: 'SPDCAD-cadence-' + sensorId,
                color: 'magenta',
                data: [], // tuples [timestamp,value]
                type: 'spline',
@@ -867,7 +1106,9 @@
 
         deviceTypeVM.updateFromPage(page);
 
-        rootVM.sensorVM.measurement.push(deviceTypeVM);
+        rootVM.sensorVM.devices.SPDCAD.push(deviceTypeVM);
+
+        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
 
         if (page.cadence !== undefined) {
 
@@ -877,7 +1118,7 @@
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
                name: 'Speed ' + sensorId,
-               id: 'spdcad-speed-' + sensorId,
+               id: 'SPDCAD-speed-' + sensorId,
                color: 'blue',
                data: [], // tuples [timestamp,value]
                type: 'spline',
@@ -963,7 +1204,7 @@
 
         deviceTypeVM.updateFromPage(page);
 
-        rootVM.sensorVM.measurement.push(deviceTypeVM);
+        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
 
         if (page.speed !== undefined) {
 
@@ -992,7 +1233,7 @@
         // If aggregated RR data is available process it (buffered data in deviceProfile)
 
         if (page.aggregatedRR) {
-            currentSeries = this.sensorChart.integrated.chart.get('rr-' + sensorId);
+            currentSeries = this.sensorChart.integrated.chart.get('RR-' + sensorId);
             currentTimestamp = page.timestamp + this.timezoneOffsetInMilliseconds;
             // Start with the latest measurement and go back in time
             for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
@@ -1039,7 +1280,7 @@
                 else {
                     if (deviceTypeVM instanceof TemperatureVM && page.currentTemp !== undefined) {
 
-                        currentSeries = this.sensorChart.integrated.chart.get('temperature-current-' + sensorId);
+                        currentSeries = this.sensorChart.integrated.chart.get('ENVIRONMENT-current-' + sensorId);
 
                         if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
                             currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)]);
@@ -1064,7 +1305,7 @@
                     this.addHRMSeries(page);
                 else {
                     if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
-                        currentSeries = this.sensorChart.integrated.chart.get('heartrate-current-' + sensorId);
+                        currentSeries = this.sensorChart.integrated.chart.get('HRM-current-' + sensorId);
                         currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false,
                             //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
                              // currentSeries.data.length > 5,
@@ -1089,14 +1330,14 @@
                     this.addSPDCADSeries(page);
                 else {
                     if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
-                        currentSeries = this.sensorChart.integrated.chart.get('spdcad-cadence-' + sensorId);
+                        currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-cadence-' + sensorId);
                         currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false,
                             //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
                              // currentSeries.data.length > 5,
                              false,
                             false);
                     } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
-                        currentSeries = this.sensorChart.integrated.chart.get('spdcad-speed-' + sensorId);
+                        currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-speed-' + sensorId);
                         currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
                             //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
                              // currentSeries.data.length > 5,

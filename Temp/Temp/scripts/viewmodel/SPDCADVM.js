@@ -12,6 +12,10 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
         this._page = undefined;
 
+        this.sensorId = ko.observable();
+
+        this.number = ko.observable();
+
         this.timestamp = ko.observable();
 
         this.formattedTimestamp = ko.computed({
@@ -133,6 +137,13 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
         // Update view model
 
+        if (page.broadcast && page.broadcast.channelId)
+            this.sensorId(page.broadcast.channelId.sensorId);
+
+
+        if (page.number !== undefined)
+            this.number(page.number);
+
         if (page.timestamp)
             this.timestamp(page.timestamp);
 
@@ -142,8 +153,10 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         if (page.cadence !== undefined)
             this.cadence(page.cadence);
 
-        if (page.profile.hasCommonPages)
-            this.updateCommonPage(page);
+        //if (page.profile.hasCommonPages)
+        //    this.updateCommonPage(page);
+
+
     };
 
     SPDCADVM.prototype.getTemplateName = function (item) {

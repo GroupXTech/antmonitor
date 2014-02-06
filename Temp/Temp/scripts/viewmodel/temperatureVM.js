@@ -8,12 +8,14 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
          
          GenericVM.call(this, configuration);
 
+         this.sensorId = ko.observable();
+
          this.tempConverter = new TemperatureConverter();
           
          // Idea: Hook up temperatureMode observable to settingsVM
          this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
          
-            this.number = ko.observable();
+         this.number = ko.observable();
          
           // Current temperature
          this.currentTemp = ko.observable();
@@ -144,6 +146,11 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
 
          // Update view model
 
+         if (page.broadcast && page.broadcast.channelId)
+             this.sensorId(page.broadcast.channelId.sensorId);
+
+         if (page.number !== undefined)
+             this.number(page.number);
 
          if (page.currentTemp)
              this.currentTemp(page.currentTemp);

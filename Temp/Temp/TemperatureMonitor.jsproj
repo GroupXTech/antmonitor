@@ -58,6 +58,15 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="icon\refresh.png" />
+    <Content Include="icon\lap.png" />
+    <Content Include="icon\stop.png" />
+    <Content Include="icon\start.png" />
+    <Content Include="icon\spdcad.png" />
+    <Content Include="scripts\generichostenvironment.js" />
+    <Content Include="scripts\hostChrome.js" />
+    <Content Include="scripts\hostloader.js" />
+    <Content Include="scripts\hostWin81.js" />
     <Content Include="scripts\ui.js" />
     <Content Include="ui.html" />
     <Content Include="bower_components\libant\.bower.json" />
@@ -160,7 +169,6 @@
     <Content Include="icon\battery-low.png" />
     <Content Include="icon\battery.png" />
     <Content Include="icon\footpod.png" />
-    <Content Include="icon\spdcad.png" />
     <Content Include="icon\graph.png" />
     <Content Include="icon\heart.png" />
     <Content Include="icon\info.png" />

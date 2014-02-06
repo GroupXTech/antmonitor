@@ -1,7 +1,7 @@
-﻿#appRoot {
+﻿#appRootVM {
     margin: 5px;
 
-    /* Set to block when knockout databinding are applied (with applyBindings on #appRoot), to avoid clutter at page load */
+    /* Set to block when knockout databinding are applied (with applyBindings on #appRootVM), to avoid clutter at page load */
     
     display : none;
     
@@ -65,6 +65,14 @@
 
 }
 
+#flexShortSensorInfo {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    align-items : center;
+   
+}
+
 #flexBackground {
     display: flex;
     flex-flow: row no-wrap;
@@ -121,6 +129,30 @@ input[type=radio], input[type=checked] {
     width: 100vw;
 }
 
+#ulHRMshort {
+    list-style-type: none;
+    padding: 0;
+    overflow : auto;
+    width : 100px;
+    height : 70px;
+}
+
+#ulENVIRONMENTshort {
+     list-style-type: none;
+    padding: 0;
+    overflow : auto;
+    width : 140px;
+    height : 70px;
+}
+
+#ulSPDCADshort {
+     list-style-type: none;
+    padding: 0;
+    overflow : auto;
+    width : 140px;
+    height : 80px;
+}
+
 #ulMeasurements {
     list-style-type: none;
     padding: 0;
@@ -135,14 +167,20 @@ input[type=radio], input[type=checked] {
 
 .temperature, .largeNumber {
   
-    font-size: xx-large;
+    font-size: 300%;
     font-weight: bold;
     width : 90px;
 }
 
+.quiteLargeNumber {
+   font-size : 150%;
+   font-weight : bold;
+   width : 90px;
+}
+
 .temperature24H {
   
-    font-size: xx-large;
+    font-size: 300%;
     margin-left: 10px;
     font-weight: bold;
     width : 100px;
@@ -209,7 +247,8 @@ input[type=radio], input[type=checked] {
 }
 
 .computedHeartRate {
-   font-size : xx-large;
+   /*font-size :xx-large;*/
+   font-size : 300%;
    font-weight:bold;
 }
 

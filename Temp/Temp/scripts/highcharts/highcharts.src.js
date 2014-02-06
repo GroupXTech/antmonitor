@@ -2670,8 +2670,11 @@ SVGElement.prototype = {
 			erase(wrapper.renderer.alignedObjects, wrapper);
 		}
 
+		var result;
+
 		for (key in wrapper) {
-			delete wrapper[key];
+		    result = delete wrapper[key];
+		  
 		}
 
 		return null;

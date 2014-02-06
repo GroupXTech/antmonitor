@@ -58,9 +58,9 @@
 
         setTimeout(function () {
             if (!this.uiFrameReady) {
-                if (this.logger && this.logger.logging) this.logger.log('error', 'Has not received ready from ui frame - cannot send messages from host environment');
+                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready from ui frame - messages will probably not reach ui frame');
             }
-        }.bind(this), 1000);
+        }.bind(this), 3000);
 
         
         // Important that the startup code runs immediately, otherwise Windows App will not start (i.e cannot move this code inside the requirejs callback)
@@ -70,10 +70,16 @@
 
         console.info(this.name + ' location: ' + window.location.href);
 
-        if (this.isWindowsHost())
+        console.info('Browser', window.navigator.userAgent, window.navigator.platform);
+
+        if (this.isWindowsHost()) {
+            console.info(this.name + ' is a windows host');
             this.startWinApp();
-        else if (this.isChromeHost())
+        }
+        else if (this.isChromeHost()) {
+            console.info(this.name + ' is a chrome host',window.navigator.userAgent,window.navigator.platform);
             this.start(); // Life-cycle events, i.e onLaunched is handled in background.js
+        }
         else {
             console.error('Unable to determine host execution environment - currently supported Win 8 and Chrome Packaged App');
 
@@ -146,7 +152,7 @@
              
         //}
 
-        if (this.logger && this.logger.logging) this.logger.log('info', this.name + ' received message event', event);
+        if (this.logger && this.logger.logging) this.logger.log('info', ' received message event', event);
 
         // UI frame ready 
         if (data === 'ready')
@@ -169,9 +175,22 @@
         if (this.logger && this.logger.logging)
             this.logger.log('log', this.name+' received page', page);
         
-        this.pageFromDeviceProfile.page = page;
-
-        this.uiFrame.postMessage(this.pageFromDeviceProfile, '*');
+        if (typeof page.clone === 'function')
+            this.pageFromDeviceProfile.page = page.clone();
+        else
+          this.pageFromDeviceProfile.page = page;
+        // Possible exception here DataCloneError -> try catch block ? IE 11
+        try {
+            //setTimeout(function () {
+            //for (var i = 0; i <= 10000;i++)
+            window.pageFromDeviceProfile = page; // FOR DEBUGGING dataclone error (misses local variabels during debugging in IE 11/VS 2013);
+                this.uiFrame.postMessage(this.pageFromDeviceProfile, '*');
+           // }.bind(this), 0);
+        } catch (e)
+        {
+            if (this.logger && this.logger.logging)
+                this.logger.log('error', ' error', error, 'page from device profile', this.pageFromDeviceProfile);
+        }
     }
 
     // Host environment must hava a UI frame in the document
@@ -201,6 +220,40 @@
 
     }
 
+    HostEnvironment.prototype.logToChromeBackgroundPage = function ()
+    {
+        if (!this.backgroundPageWindow)
+        {
+            if (this.logger && this.logger.logging)
+                this.logger.log('error', this.name+' has no reference to the chrome background page window, cannot log any information');
+        }
+    }
+
+    // Handle chrome onClosed event
+    HostEnvironment.prototype.onAppWindowClosed = function ()
+    {
+        
+        //logBackgroundPage('info', "User requested close of application");
+        //var resetSystemMsg = new ResetSystemMessage();
+        //resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
+
+        //resetSystemMsg.usb = host.usb; // Attach usb object for connectionHandle and interfaceNumber
+
+        //// Device watcher gives DOMException
+        //resetSystemMsg.usb.options.deviceWatcher = undefined;
+
+        //// logBackgroundPage('log','Reset System Message',resetSystemMsg);
+
+        //try {
+        //    backgroundPageWindow.postMessage({ 'reset': resetSystemMsg }, '*');
+        //} catch (e) // In case of e.g DOMException - An object could not be cloned
+        //{
+        //    logBackgroundPage('error', e);
+        //}
+
+        //window.removeEventListener('message', messageHandler);
+    }
+
     // Require ANT host and USB and start initialization
     HostEnvironment.prototype.start = function ()
     {
@@ -214,6 +267,22 @@
             USBModuleId = 'usb/USBWindows';
         }
         else if (this.isChromeHost()) {
+
+            chrome.runtime.getBackgroundPage(function (bgWindow) {
+
+                this.backgroundPageWindow = bgWindow;
+
+                bgWindow.console.info(Date.now(), this.name+' has a reference to the background page window');
+
+                if (this.logger && this.logger.logging)
+                    this.logger.log('info', this.name+' has a reference to the background page window');
+
+            }.bind(this));
+
+            this.appWindow = chrome.app.window.current();
+
+            this.appWindow.onClosed.addListener(this.onAppWindowClosed.bind(this));
+                
             storageModuleId = 'db/storageChrome';
             USBModuleId = 'usb/USBChrome';
         }
@@ -229,179 +298,7 @@
 
     }
 
-    // Initialization of ANT host and USB
-    HostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, TEMPprofile, RxScanMode, Storage, Logger)
-    {
-       
-
-        //   var rootVM = this.viewModel.rootVM;
-
-        this.storage = new Storage();
-
-            this.host = new ANTHost();
-
-            var USBoptions = {
-
-                log:  true,
-
-                // Requested transfer size 512 bytes - allows reading of driver buffered data
-
-                length: { in: 64 * 8 },
-
-                // Windows 8 USB: Subscribe to events from device watcher in the USB subsystem
-
-                deviceWatcher: {
-
-                    onAdded: function (deviceInformation) {
-                        var host = this.host;
-
-                        //rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
-                        //// rootVM.deviceVM.enumeratedDevice.push(deviceInformation);
-                        ////rootVM.deviceVM.enumeratedDevice.push({ name: 'TEST USB', id: 'testid' });
-
-                        //if (deviceInformation.id === host.usb.options.deviceId) {
-                        //    // Keep local storage synchronized (i.e deviceId was undefined during enumeration,
-                        //    // but found among the known devices.
-
-                        //    this.storage.set(this.storage.__proto__.key.defaultDeviceId, deviceInformation.id);
-
-                        //    // Update selection with the specific device please, if the select drop-down is used
-
-                        //    rootVM.deviceVM.selectedDevice(deviceInformation);
-                        //}
-
-                    }.bind(this),
-
-                    onRemoved: function (deviceInformation) {
-                        //// Remove from UI
-                        //rootVM.deviceVM.enumeratedDevice.remove(
-                        //    // predicate - compares underlying array value with a condition
-                        //    // http://knockoutjs.com/documentation/observableArrays.html #remove and removeAll
-                        //    function (value) { return value.id === deviceInformation.id; });
-
-                    }.bind(this.host),
-
-                    onEnumerationCompleted: function () {
-
-                        var host = this.host;
-
-                        //rootVM.deviceVM.enumerationCompleted(true);
-
-                        //// In case deviceId is updated, during enumeration
-                        //if (host.usb.options.deviceId)
-                        //    this.storage.set(this.storage.__proto__.key.defaultDeviceId, host.usb.options.deviceId);
-
-                        ////
-                        //var devInfo;
-                        //for (var devNum = 0; devNum < rootVM.deviceVM.enumeratedDevice().length; devNum++) {
-                        //    devInfo = rootVM.deviceVM.enumeratedDevice()[devNum];
-                        //    if (host.usb.options.deviceId === devInfo.id) {
-                        //        rootVM.deviceVM.selectedDevice(devInfo);
-                        //        break;
-                        //    }
-                        //}
-
-                    }.bind(this),
-
-                    onStopped: function () { }.bind(this.host),
-
-                    onUpdated: function () { }.bind(this.host)
-
-                }
-            };
-
-            this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
-
-                USBoptions.deviceId = db[this.storage.__proto__.key.defaultDeviceId];
-                configureUSB.bind(this)();
-            }.bind(this));
-
-            function configureUSB() {
-
-                var usb = new USBHost(USBoptions),
-                    hostOptions,
-                    hostInitCB;
-
-                hostOptions = {
-
-                    usb: usb,
-
-                    // Reset device during init
-                    reset: true,
-
-                    // Append extended data
-                    libconfig: 'channelid,rxtimestamp,rssi',
-
-                    //maxTransferRetries : 5, // Default = 5
-
-                    // Increased to 2 seconds to allow for handling buffered data (typically broadcasts) by driver (WINUSB)
-                    // at start without any resending
-                    transferProcessingLatency: 2000, // Default = 10 ms
-
-                    log:  true
-                };
-
-                var onChannelEstablished = function (error, _pchannel) {
-                    //console.profileEnd();
-
-                    if (!error && this.log.logging)
-                        this.log.log('log', 'Channel established', _pchannel);
-                    else if (this.log.logging)
-                        this.log.log('log', 'Failed to establish channel', error.message);
-
-                    //        this.closeChannel(channel.establish.channelNumber, function (error,responseMsg)
-                    //                          {
-                    //                              if (error)
-                    //                                  this.log.log('log','Failed to close channel',channel.establish.channelNumber,error.message);
-                    //                              
-                    //                          }.bind(this));
-
-                }.bind(this.host);
-
-                var channel = new RxScanMode({
-                    log:  false,
-                    channelId: {
-                        deviceNumber: 0,
-                        //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
-                        deviceType: 0,
-                        transmissionType: 0
-                    },
-                    onPage: this.onpage.bind(this)
-                });
-
-                hostInitCB = function (error) {
-                    // console.trace();
-                    //  console.profileEnd();
-                    if (error &&  this.logger && this.logger.logging)
-                        this.logger.log('error', "ANT host - NOT - initialized, cannot establish channel on device ", error.message, error.stack);
-                    else {
-                        if (this.logger && this.logger.logging)
-                            this.logger.log('log', "ANT host initialized");
-
-                        if (typeof this.host.usb.getDeviceWatcher === 'function' && this.logger && this.logger.logging)
-                            this.logger.log('log', 'Host environment offers device watching capability, e.g windows 8.1');
-
-                        // console.profile('Establish channel');
-
-                        this.host.establishChannel({
-                            channelNumber: 0,
-                            networkNumber: 0,
-                            // channelPeriod will be ignored for RxScanMode channel
-                            channelPeriod: TEMPprofile.prototype.CHANNEL_PERIOD_ALTERNATIVE, // 0.5 Hz - every 2 seconds
-                            configurationName: 'slave only',
-                            channel: channel,
-                            open: true
-                        }, onChannelEstablished);
-
-                    }
-                }.bind(this);
-
-                this.host.init(hostOptions, hostInitCB);
-            }
-
-        
-    }
-
+   
     // Start as a windows app
     HostEnvironment.prototype.startWinApp = function () {
 
