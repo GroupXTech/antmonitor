@@ -264,7 +264,7 @@
             // }.bind(this), 0);
         } catch (e) {
             if (this.logger && this.logger.logging)
-                this.logger.log('error', ' error', error, 'page from device profile', this.pageFromDeviceProfile);
+                this.logger.log('error', 'Error', e, 'page from device profile', this.pageFromDeviceProfile);
         }
     }
     return GenericHostEnvironment;

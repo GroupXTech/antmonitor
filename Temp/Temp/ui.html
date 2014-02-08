@@ -440,21 +440,36 @@
 
                 <div id="flexShortSensorInfo">
 
-                    <div  data-bind="if: settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0">
+                    <!-- Don't render DOM if sensors for a device type is not available by using ko directive inside comment -->
+
+                    <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
+                    
+                    <div >
                         <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
                         <ul id="ulHRMshort" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
                     </div>
 
-                    <div data-bind="if: settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0">
+                    <!-- /ko -->
+
+                    <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
+
+                    <div >
                         <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
                         <ul id="ulSPDCADshort" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
                     </div>
+
+                    <!-- /ko -->
+
+                    <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
 
                     <div  data-bind="if: settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0">
                         <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
                         <ul id="ulENVIRONMENTshort" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
                     </div>
 
+                    <!-- /ko -->
+
+                    
                    
                 </div>
                

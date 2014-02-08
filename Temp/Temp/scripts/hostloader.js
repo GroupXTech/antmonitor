@@ -75,10 +75,8 @@
 
                     default:
                       
-                        if (this.host)
-                            this.host.init();
-                        else
-                            console.error('Failed to initialize win81 host - no host object available - most likely requirejs load timing issues')
+                        this.loadAndInit();
+                       
 
                         break;
                 }
@@ -103,11 +101,24 @@
 
     }
 
-    HostLoader.prototype.init = function ()
-
-
+    HostLoader.prototype.loadAndInit = function ()
     {
         var deps = ['logger'];
+
+        deps.push(this.hostEnvironmentModuleId);
+
+        requirejs(deps, function (Logger, Host) {
+            // console.log(Date.now(),'require finished')
+            this.logger = new Logger(true);
+            this.host = new Host({ log: true });
+           
+                this.host.init();
+        }.bind(this));
+    }
+
+    HostLoader.prototype.init = function ()
+   {
+       
 
         if (this.hostEnvironmentModuleId) {
 
@@ -115,18 +126,9 @@
 
             if (this.isWindowsHost())
                 this.initWin81LifeCycle();
-           
-
-            deps.push(this.hostEnvironmentModuleId);
-
-            requirejs(deps, function (Logger, Host) {
-               // console.log(Date.now(),'require finished')
-                this.logger = new Logger(true);
-                this.host = new Host({ log: true });
-                if (this.isChromeHost()) // Win81 host is initialized in app.onlaunched handler
-                    this.host.init();
-            }.bind(this));
-
+            else
+                this.loadAndInit();
+          
         }
     }
 

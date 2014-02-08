@@ -145,7 +145,7 @@
 
         }.bind(this);
 
-        chrome.app.window.create('../default.html', { 'minWidth': 200, 'minHeight': 160, 'bounds': { 'width': 630, 'height': 450 } }, appWinCreated);
+        chrome.app.window.create('../default.html', { 'minWidth': 200, 'minHeight': 160, 'bounds': { 'width': 630, 'height': 580 } }, appWinCreated);
 
 
     };

@@ -64,10 +64,11 @@
     <Content Include="icon\start.png" />
     <Content Include="icon\spdcad.png" />
     <Content Include="scripts\generichostenvironment.js" />
-    <Content Include="scripts\hostChrome.js" />
     <Content Include="scripts\hostloader.js" />
     <Content Include="scripts\hostWin81.js" />
+    <Content Include="scripts\timer.js" />
     <Content Include="scripts\ui.js" />
+    <Content Include="scripts\viewmodel\timerVM.js" />
     <Content Include="ui.html" />
     <Content Include="bower_components\libant\.bower.json" />
     <Content Include="bower_components\libant\.gitattributes" />

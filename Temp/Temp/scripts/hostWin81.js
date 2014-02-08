@@ -1,6 +1,6 @@
 ﻿// Depends upon requirejs
 
-define(['root/generichostenvironment'], function _requireDefine (GenericHostEnvironment) {
+define(['root/generichostenvironment'], function _requireDefineHostWin81 (GenericHostEnvironment) {
     'use strict';
 
     function HostWin81(options) {

@@ -1,10 +1,10 @@
 ﻿// Depends upon requirejs
 
-define(['root/generichostenvironment'], function _requireDefine(GenericHostEnvironment) {
+define(['root/generichostenvironment'], function _requireDefineHostChrome(GenericHostEnvironment) {
     'use strict';
 
-    function HostChrome() {
-        GenericHostEnvironment.call(this);
+    function HostChrome(options) {
+        GenericHostEnvironment.call(this,options);
         this.name = "hostChrome";
 
         this.moduleId.storage = 'db/storageChrome';
@@ -38,8 +38,60 @@ define(['root/generichostenvironment'], function _requireDefine(GenericHostEnvir
         
     }
 
+    
+
+    // Logs to the background page
+    HostChrome.prototype.logBackgroundPage = function ()
+    {
+        var myArgs = [],
+            type;
+
+        if (!this.logger) {
+            return;
+        }
+
+        if (!this.backgroundPageWindow)
+        {
+            if (this.logger.logging)
+                this.logger.log('warn', 'Has no reference to the background window object - cannot log to background page');
+            return;
+        }
+           
+        var previousConsole = this.logger.console;
+
+        if (!previousConsole) {
+            if (this.logger.logging)
+                this.logger.log('warn','Current console is undefined - cannot log to background page');
+        }
+
+        this.logger.changeConsole(this.backgroundPageWindow.console);
+
+        if (this.logger.logging && arguments.length) {
+            //debugger;
+            //this.logger.log(arguments[0],arguments.slice(1));
+            //console.log("slice", arguments.slice(1));
+            // arguments inherit from Object.prototype, and has a length property which is the number of actual arguments passed to the function
+            //this.logger.log(arguments[0], 'testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+           
+            myArgs.push(arguments[0]); // type info,error etc.
+
+            for (var argNr = 1, len = arguments.length; argNr < len; argNr++)
+            {
+                myArgs.push(arguments[argNr]);
+            }
+
+            this.logger.log.apply(this.logger, myArgs);
+        }
+
+        this.logger.changeConsole(previousConsole);
+       
+
+    }
+
     HostChrome.prototype.init = function ()
     {
+
+
         chrome.runtime.getBackgroundPage(function (bgWindow) {
             var loadStr;
 
@@ -47,12 +99,7 @@ define(['root/generichostenvironment'], function _requireDefine(GenericHostEnvir
 
             loadStr = this.name+' loaded by '+window.location.pathname;
 
-            this.backgroundPageWindow = bgWindow;
-
-            bgWindow.console.info(Date.now(),loadStr);
-
-            if (this.logger && this.logger.logging)
-                this.logger.log('info', loadStr);
+            this.logBackgroundPage('info',loadStr);
 
         }.bind(this));
 
@@ -60,7 +107,7 @@ define(['root/generichostenvironment'], function _requireDefine(GenericHostEnvir
 
         this.appWindow.onClosed.addListener(this.onAppWindowClosed.bind(this));
 
-        this.loadSubSystems();
+        this.loadSubSystems(); // USB and storage
     }
 
     return HostChrome;

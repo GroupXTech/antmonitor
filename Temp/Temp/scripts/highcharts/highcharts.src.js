@@ -12643,6 +12643,7 @@ Point.prototype = {
 			chart.legend.destroyItem(point);
 		}
 
+		point.destroy = null; // Don't attempt further destroy operations on this point // shadows property from prototype
 		for (prop in point) {
             if (point.hasOwnProperty(prop))
 			  point[prop] = null;
@@ -13365,6 +13366,7 @@ Series.prototype = {
 		// destroy old points
 		i = (oldData && oldData.length) || 0;
 		while (i--) {
+		    console.log("i=", i);
 			if (oldData[i] && oldData[i].destroy) {
 				oldData[i].destroy();
 			}

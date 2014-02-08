@@ -49,8 +49,8 @@
 
         requirejs.config(requirejsConfiguration);
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'logger', 'converter/temperatureConverter'],
-            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,Logger,TempConverter) {
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'logger', 'converter/temperatureConverter'],
+            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,Logger,TempConverter) {
 
                 this.logger = new Logger(true);
 
@@ -63,7 +63,7 @@
 
                 this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
 
-                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, Logger, TempConverter);
+                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Logger, TempConverter);
 
     
 
@@ -118,7 +118,7 @@
        window.parent.postMessage('ready', '*');
     }
 
-    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, Logger, TemperatureConverter) {
+    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Logger, TemperatureConverter) {
 
         var rootVM; // Root viewmodel, contains all the other sub-view models
         var tempModeKey;
@@ -131,11 +131,14 @@
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
 
+        // Viewmodel constructors
+
         this.viewModel.SensorVM = SensorVM;
         this.viewModel.TemperatureVM = TemperatureVM;
         this.viewModel.FootpodVM = FootpodVM;
         this.viewModel.HRMVM = HRMVM;
         this.viewModel.SPDCADVM = SPDCADVM;
+        this.viewModel.timerVM = TimerVM;
 
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
 
@@ -173,6 +176,8 @@
                     liveTracking: false,
 
                     startTime: Date.now() + this.timezoneOffsetInMilliseconds,
+
+                    stopTime : undefined
 
                     
                 }
@@ -863,9 +868,10 @@
             if (!rootVM.settingVM.tracking.liveTracking) 
                return integratedChart.options.defaultxAxisLabelFormatter.call(this); // Highcharts.Axis.prototype.defaultLabelFormatter
            
-            var startTime = rootVM.settingVM.tracking.startTime;
+            var startTime = rootVM.settingVM.tracking.startTime,
+                stopTime = rootVM.settingVM.tracking.stopTime;
 
-            if (startTime > this.value)
+            if (startTime > this.value || stopTime < this.value)
                 return undefined;
 
 
@@ -875,9 +881,14 @@
                 var minutes = Math.floor(totalSec / 60 % 60);
                 var seconds = Math.floor(totalSec % 60);
 
-               
+                var hoursStr;
 
-                var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                if (hours === 0)
+                    hoursStr = ''; 
+                else
+                    hoursStr = (hours < 10 ? "0" + hours : hours) +':';
+
+                var result = hoursStr + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
 
                 return result;
           

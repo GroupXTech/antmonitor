@@ -1,10 +1,10 @@
 {
     "appName": {
         "message": "ANT+ Monitor",
-        "description": "Gather information from ANT+ sensors. Windows driver :  http://zadig.akeo.ie"
+        "description": "Monitors and visualize data from ANT+ sensors"
     },
     "appDescription": {
-        "message": "Gather information from ANT+ sensors.",
-        "description": "Uses the ANT+ profiles and continous scanning for gathering data. Windows driver :  http://zadig.akeo.ie"
+        "message": "Monitors and visualize data from ANT+ sensors",
+        "description": "Uses the ANT+ profiles and continous scanning for gathering data."
     }
 }

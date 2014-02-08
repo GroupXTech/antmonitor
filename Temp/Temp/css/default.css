@@ -1,8 +1,11 @@
 ﻿#appRootVM {
-    margin: 5px;
+   
+     /*margin: 5px;*/
 
     /* Set to block when knockout databinding are applied (with applyBindings on #appRootVM), to avoid clutter at page load */
     
+    height : 100%;
+    width : 100%;
     display : none;
     
 }
@@ -70,6 +73,8 @@
     flex-flow: row wrap;
     justify-content: space-around;
     align-items : center;
+    margin-top : 5px;
+    margin-bottom : 5px;
    
 }
 
@@ -118,10 +123,11 @@ input[type=radio], input[type=checked] {
     margin: 0 auto;*/
 
   
-    margin-top: 10px;
+    /*margin-top: 10px;
 
-    margin-bottom : 10px;
-    height : 95vh;
+    margin-bottom : 10px;*/
+
+    /*height : 95vh;*/
 }
 
 #uiFrame {
