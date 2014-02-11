@@ -1,8 +1,20 @@
 ﻿/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true */
 
+// Requirejs
+
+// https://github.com/jrburke/requirejs/blob/master/LICENSE
+
+// Knockoutjs
+
+// http://opensource.org/licenses/mit-license.php
+
+// Highcharts
+
+// http://creativecommons.org/licenses/by-nc/3.0/
+
 
 (function HostLoaderIIFE() {
-    "use strict";
+    'use strict';
 
     // Determine execution environment and load the appropiate host 
 

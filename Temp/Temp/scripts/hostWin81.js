@@ -35,6 +35,9 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
 
             //rootVM.deviceVM.enumeratedDevice.removeAll();
 
+
+
+
             this.host.closeChannel(0, function _closedSent(err, msg) {
                 // host.usb.ANTdevice.close();
                 if (err && this.log.logging)

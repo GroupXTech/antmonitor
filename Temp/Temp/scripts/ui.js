@@ -41,6 +41,8 @@
 
                 vm: '../../scripts/viewmodel',
 
+                scripts : '../../scripts',
+
                 converter : '../../scripts/converter'
                 
             },
@@ -49,8 +51,8 @@
 
         requirejs.config(requirejsConfiguration);
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'logger', 'converter/temperatureConverter'],
-            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,Logger,TempConverter) {
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
+            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,Timer,Logger,TempConverter) {
 
                 this.logger = new Logger(true);
 
@@ -63,7 +65,7 @@
 
                 this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
 
-                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Logger, TempConverter);
+                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Timer,Logger, TempConverter);
 
     
 
@@ -118,11 +120,13 @@
        window.parent.postMessage('ready', '*');
     }
 
-    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Logger, TemperatureConverter) {
+    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Timer, Logger, TemperatureConverter) {
 
         var rootVM; // Root viewmodel, contains all the other sub-view models
         var tempModeKey;
         var sensorChart;
+        
+        this.timer = new Timer({ log: true });
 
         // Holds chart instances
         this.sensorChart = {};
@@ -169,18 +173,9 @@
 
                     ENVIRONMENT: ko.observable(false),
 
-                },
-
-                tracking: {
-
-                    liveTracking: false,
-
-                    startTime: Date.now() + this.timezoneOffsetInMilliseconds,
-
-                    stopTime : undefined
-
-                    
                 }
+
+               
             },
 
             // Holds an array on viewmodels for the sensors that are discovered
@@ -199,25 +194,28 @@
 
             },
 
-            timerVM: {
-
-            }
+            timerVM: new TimerVM()
 
         };
 
         rootVM = this.viewModel.rootVM;
 
-        rootVM.settingVM.refreshChart = function () {
+        rootVM.settingVM.resetChart = function () {
             var currentSeries,
                seriesNr,
                len,
                chart,
                dateTimeAxis;
               
+            if (!this.timer.reset())
+                return;
 
             if (sensorChart && sensorChart.integrated) {
 
-                rootVM.settingVM.tracking.liveTracking = false;
+                
+                rootVM.timerVM.reset(); // The design now is that the timer is not included as state in the viewModel -> maybe move into viewmodel? Pro: Does not depend upon a particular timer
+
+                clearInterval(this.timerID.interval['updateElapsedTime']);
 
                 chart = sensorChart.integrated.chart;
 
@@ -245,83 +243,44 @@
 
         rootVM.settingVM.startTimer = function ()
         {
-            // Reset series
-
-            if (rootVM.settingVM.tracking.liveTracking)
+        
+            if (!this.timer.start())
                 return;
 
-            var chart,
-              
-                dateTimeAxis,
-                id;
+            this.timerID.interval['updateElapsedTime'] = setInterval(function () {
+                rootVM.timerVM.totalElapsedTime(this.timer.getTotalElapsedTime());
+                rootVM.timerVM.lapElapsedTime(this.timer.getLapElapsedTime());
+            }.bind(this), 1000);
 
-            if (sensorChart && sensorChart.integrated) {
-                chart = sensorChart.integrated.chart;
+            this.addPlotLine('green',this.timer.startTime[this.timer.startTime.length - 1] + this.timezoneOffsetInMilliseconds);
+           
+        }.bind(this);
 
-                //for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
-
-                //    currentSeries = chart.series[seriesNr];
-
-                //    currentSeries.setData([], false);
-                //}
-
-                rootVM.settingVM.tracking.liveTracking = true;
-                rootVM.settingVM.tracking.startTime = Date.now() + this.timezoneOffsetInMilliseconds;
-
-                dateTimeAxis = chart.get('datetime-axis');
-                if (dateTimeAxis) {
-                    //id = 'plotline-'+rootVM.settingVM.tracking.plotLines.length;
-                   dateTimeAxis.addPlotLine({
-                       // id : id, 
-                        color: 'green',
-                        dashStyle: 'dash',
-                        width: 2,
-                        value: rootVM.settingVM.tracking.startTime
-                   });
-
-                  // rootVM.settingVM.tracking.plotLines.push(id);
-                }
-
-            }
-
-            }.bind(this);
 
         rootVM.settingVM.stopTimer = function () {
 
-            var chart,
-                dateTimeAxis,
-                id;
-
-            if (!rootVM.settingVM.tracking.liveTracking)
+            if (!this.timer.stop())
                 return;
 
-            rootVM.settingVM.tracking.stopTime = Date.now() + this.timezoneOffsetInMilliseconds;
-            rootVM.settingVM.tracking.liveTracking = false;
+            clearInterval(this.timerID.interval['updateElapsedTime']);
 
-            if (sensorChart && sensorChart.integrated) {
-                chart = sensorChart.integrated.chart;
-
-                dateTimeAxis = chart.get('datetime-axis');
-                if (dateTimeAxis) {
-                    //id = 'plotline-' + rootVM.settingVM.tracking.plotLines.length
-                      dateTimeAxis.addPlotLine({
-                       // id: id,
-                        color: 'red',
-                        dashStyle: 'dash',
-                        width: 2,
-                        value: rootVM.settingVM.tracking.stopTime
-                    });
-
-                   //   rootVM.settingVM.tracking.plotLines.push(id);
-
-                }
-            }
+            this.addPlotLine('red', this.timer.stopTime[this.timer.stopTime.length - 1] + this.timezoneOffsetInMilliseconds);
+       
         }.bind(this);
 
-        rootVM.settingVM.newLap = function ()
-        {
+        rootVM.settingVM.newLap = function () {
+            var chart,
+               dateTimeAxis,
+               id;
 
-        }
+            if (!this.timer.lap())
+                return;
+
+            rootVM.timerVM.lapElapsedTime(0);
+            rootVM.timerVM.lapNr(this.timer.lapTime.length);
+
+            this.addPlotLine('gray', this.timer.lapTime[this.timer.lapTime.length - 1] + this.timezoneOffsetInMilliseconds);
+        }.bind(this);
 
         // Function is also called during applyBindings at initialization
         rootVM.settingVM.showSensors.toggle = function (sensorType) {
@@ -393,6 +352,33 @@
         this.configureKnockout();
 
     };
+
+    ANTMonitorUI.prototype.addPlotLine = function (color, time)
+    {
+        var chart,
+            dateTimeAxis,
+            id,
+            sensorChart = this.sensorChart;
+
+        if (sensorChart && sensorChart.integrated) {
+            chart = sensorChart.integrated.chart;
+
+            dateTimeAxis = chart.get('datetime-axis');
+            if (dateTimeAxis) {
+                //id = 'plotline-' + rootVM.settingVM.tracking.plotLines.length
+                dateTimeAxis.addPlotLine({
+                    // id: id,
+                    color: color,
+                    dashStyle: 'dash',
+                    width: 1,
+                    value: time
+                });
+
+                //   rootVM.settingVM.tracking.plotLines.push(id);
+
+            }
+        }
+    }
 
     ANTMonitorUI.prototype.configureKnockout = function () {
 
@@ -863,39 +849,109 @@
         var xAxis = this.sensorChart.integrated.chart.get('datetime-axis');
 
         this.sensorChart.integrated.options.defaultxAxisLabelFormatter = xAxis.labelFormatter; // Keep reference to avoid possible garbage collection of formatter
-        this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter = function () {
-           
-            if (!rootVM.settingVM.tracking.liveTracking) 
-               return integratedChart.options.defaultxAxisLabelFormatter.call(this); // Highcharts.Axis.prototype.defaultLabelFormatter
-           
-            var startTime = rootVM.settingVM.tracking.startTime,
-                stopTime = rootVM.settingVM.tracking.stopTime;
 
-            if (startTime > this.value || stopTime < this.value)
-                return undefined;
+        
+
+        
+        this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter = function _liveTrackingxAxisLabelFormatter(tickConfiguration) {
+
+            var offset = this.timezoneOffsetInMilliseconds,
+                value = tickConfiguration.value - offset, // UTC
+                newTickLabel,
+                startTime,
+                stopTime,
+                segment,
+                len,
+                segmentElapsedTime = 0,
+                firstSegmentStartTime,
+                lastSegmentStopTime,
+                defaultFormatter = integratedChart.options.defaultxAxisLabelFormatter;
+
+            // Timer not running or not available - use default
+
+            if (!this.timer || (this.timer.state === this.timer.__proto__.STATE.INIT))
+                return defaultFormatter.call(tickConfiguration); // Highcharts.Axis.prototype.defaultLabelFormatter
+
+         
+                if (this.logger && this.logger.logging)
+                    this.logger.log('info', 'Tick positions local time', tickConfiguration.axis.tickPositions)
+
+                this.sensorChart.integrated.elapsedTime = 0;
+
+                firstSegmentStartTime = this.timer.startTime[0];
+                lastSegmentStopTime = this.timer.stopTime[this.timer.stopTime.length - 1];
 
 
-                // Based on http://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript
-                var totalSec = (this.value - startTime) / 1000;
-                var hours = Math.floor(totalSec / 3600 % 24);
-                var minutes = Math.floor(totalSec / 60 % 60);
-                var seconds = Math.floor(totalSec % 60);
+                //if (value < firstSegmentStartTime || value > lastSegmentStopTime)
+                //    return defaultFormatter.call(tickConfiguration);
 
-                var hoursStr;
 
-                if (hours === 0)
-                    hoursStr = ''; 
-                else
-                    hoursStr = (hours < 10 ? "0" + hours : hours) +':';
+                for (segment = 0, len = this.timer.startTime.length; segment < len; segment++) {
 
-                var result = hoursStr + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                    startTime = this.timer.startTime[segment];
+                    stopTime = this.timer.stopTime[segment];
 
-                return result;
-          
-        };
+                    if (value >= startTime && (stopTime === undefined))
+                        return "Inside";
+
+                    if (this.logger && this.logger.logging)
+                        this.logger.log('info', 'Segment', segment, 'elapsed time', this.sensorChart.integrated.elapsedTime, 'segment elapsed time', segmentElapsedTime,'starttime',startTime,'value',value,'stoptime',stopTime);
+
+                }
+         
+
+              
+            //    // Tick is before first segment and after the last segment
+
+            //    if (value < startTime && segment === 0 || segment === len-1 && value > stopTime)
+            //    {
+            //        //newTickLabel = integratedChart.options.defaultxAxisLabelFormatter.call(tickConfiguration);
+            //       // newTickLabel = undefined;
+            //        break;
+            //    } 
+
+            //    // Tick is associated with segment where the timer is running - the last segment - [startTime,undefined]
+
+            //    else if (value >= startTime && stopTime === undefined) { 
+            //        newTickLabel = rootVM.timerVM.timeFormatter.format(this.sensorChart.integrated.elapsedTime + value - startTime);
+            //        break;
+
+            //        }  
+                
+            //    // Tick is associated with a particular segment n [startTime,stopTime]
+
+            //    else if (value >= startTime && value <= stopTime)  
+            //    {
+            //        segmentElapsedTime = stopTime - startTime;
+
+            //        newTickLabel = rootVM.timerVM.timeFormatter.format(this.sensorChart.integrated.elapsedTime + value - startTime);
+
+            //        this.sensorChart.integrated.elapsedTime += segmentElapsedTime;
+
+                 
+
+            //       break;
+
+            //    }
+
+               
+
+            //}
+
+            //return newTickLabel;
+
+        }.bind(this);
+
+        // highcharts call this function with a this object literal and sends no arguments -> antUI closure variable used instead  to keep a reference to our this
+
+        var antUI = this;
+        this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatterWrapper = function _liveTrackingxAxisLabelFormatterWrapper()
+        {
+           return antUI.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter.call(antUI,this);
+        }
 
         // Override default formatter with our new live tracking formatter
-        xAxis.labelFormatter = this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter;
+        xAxis.labelFormatter = this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatterWrapper;
 
         this.startRedrawInterval(1000);
 
@@ -1417,10 +1473,9 @@
             }
         }.bind(this);
 
-        var id = setInterval(redrawHandler, delay);
-
         // to do: maybe use array instead? clearInterval on suspend/shutdown?
-        this.timerID.interval[id] = true;
+        this.timerID.interval['redrawIntegratedChart'] = setInterval(redrawHandler, delay);
+
     }
 
    

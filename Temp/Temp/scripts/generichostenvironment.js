@@ -259,8 +259,11 @@
         try {
             //setTimeout(function () {
             //for (var i = 0; i <= 10000;i++)
-            window.pageFromDeviceProfile = page; // FOR DEBUGGING dataclone error (misses local variabels during debugging in IE 11/VS 2013);
-            this.uiFrame.postMessage(this.pageFromDeviceProfile, '*');
+            //window.pageFromDeviceProfile = page; // FOR DEBUGGING dataclone error (misses local variabels during debugging in IE 11/VS 2013);
+            if (this.uiFrame) // 'ready' must be received from uiFrame before its available (from window.frames[0])
+                this.uiFrame.postMessage(this.pageFromDeviceProfile, '*');
+            else if (this.logger && this.logger.logging)
+                this.logger.log('warn', 'Received page from device profile, but ui frame message handler is not ready for it', this.pageFromDeviceProfile);
             // }.bind(this), 0);
         } catch (e) {
             if (this.logger && this.logger.logging)

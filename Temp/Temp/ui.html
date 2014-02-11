@@ -354,7 +354,7 @@
                 <div id="flexTemperatureMode">
 
                     <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
-                    <a data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor">ANT+ Monitor</a>
+                    <img title="ANT+ Monitor" alt="ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-16.png" />
 
                     <div>
 
@@ -393,11 +393,16 @@
                     <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
 
                     <div id="liveTrackingControl" >
-                        <button title="Refresh chart" data-bind="click: settingVM.refreshChart"><img src="icon/refresh.png" alt="Refresh chart" title="Refresh chart" /></button>
+                        <button title="Reset timer and chart" data-bind="click: settingVM.resetChart"><img src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button>
                         <button title="Start timer" data-bind="click: settingVM.startTimer"><img src="icon/start.png" alt="Start timer" title="Start timer" /></button>
                         <button title="Lap" data-bind="click: settingVM.newLap"><img src="icon/lap.png" alt="Lap" title="Lap" /></button>
                         <button title="Stop timer" data-bind="click: settingVM.stopTimer"><img src="icon/stop.png" alt="Stop timer" /></button>
                         
+                    </div>
+
+                    <div id="divTimeInfo">
+                        <span class="largeNumber" id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span>
+                        <span class="largeNumber" id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span>
                     </div>
 
                     <div id="divENUMERATEDDEVICE">

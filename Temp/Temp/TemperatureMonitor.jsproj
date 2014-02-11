@@ -63,6 +63,8 @@
     <Content Include="icon\stop.png" />
     <Content Include="icon\start.png" />
     <Content Include="icon\spdcad.png" />
+    <Content Include="images\icon-16.png" />
+    <Content Include="scripts\converter\timeFormatter.js" />
     <Content Include="scripts\generichostenvironment.js" />
     <Content Include="scripts\hostloader.js" />
     <Content Include="scripts\hostWin81.js" />
