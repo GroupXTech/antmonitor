@@ -354,7 +354,7 @@
                 <div id="flexTemperatureMode">
 
                     <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
-                    <img title="ANT+ Monitor" alt="ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-16.png" />
+                    <img class="icon" title="ANT+ Monitor" alt="ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
 
                     <div>
 
@@ -428,16 +428,39 @@
 
             </nav>
 
-            <div data-bind="visible: settingVM.showCredits" id="divCredits">
-                <span>This work was enabled by Javascript and</span>
+        <div data-bind="visible: settingVM.showCredits" id="divCredits">
+            <h2>ANT+ Monitor</h2>
+            <p>The application sets the ANT USB stick into a scanning mode searching on the ANT+ frequency 2457Mhz for broadcasts sent by various sensor types, e.g a heart rate monitor.<p>
+            <p>A big thanks to the effort and creativity in dependant libraries and icons.</p>
+            <h3>Libraries</h3>
 
-                <a href="http://wwww.highcharts.com" title="Great graphing library" target="_blank">Highcharts</a>
-                <a href="http://knockoutjs.com/index.html" title="Great databinding library" target="_blank">Knockoutjs</a>
-                <a href="http://requirejs.org/" title="Great script loading library" target="_blank">Requirejs</a>
-                <a href="https://github.com/yusukekamiyamane/fugue-icons" title="Most icons are from fugue icons" target="_blank">Fugue Icons</a>
-                <a href="http://www.visualpharm.com" title="Temperature icon" target="_blank">Visual Pharm</a>
+            <ul>
+                <li>
+                    Charting <a href="http://wwww.highcharts.com" title="Great graphing library" target="_blank">Highcharts</a>
+                </li>
+                <li>
+                    Data-binding <a href="http://knockoutjs.com/index.html" title="Great databinding library" target="_blank">Knockoutjs</a>
+                </li>
+                <li>
+                    Script loading <a href="http://requirejs.org/" title="Great script loading library" target="_blank">Requirejs</a>
+                </li>
+                <li>
+                    ANT library <a href="https://github.com/hkskoglund/libant" title="Library for interfacing with ANT USB hardware" target="_blank">Libant</a>
+                </li>
+            </ul>
+            <h3>Icons</h3>
 
-            </div>
+            <ul>
+                <li>
+                    Fugue icons <a href="https://github.com/yusukekamiyamane/fugue-icons" title="Most icons are from fugue icons" target="_blank">Fugue Icons</a>
+                </li>
+                <li>
+                    Visual pharm <a href="http://www.visualpharm.com" title="Temperature icon" target="_blank">Visual Pharm</a>
+                </li>
+            </ul>
+            <p>The application is entierly developed in Javascript. A key goal has been to provide multiple os execution environment support. Its a hybrid between a win81 store app and a chrome packaged app.</p>
+            <p>Developed by Henning Knut Skoglund, 2013 - 2014</p>
+        </div>
 
 
 
