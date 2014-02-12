@@ -249,6 +249,14 @@ input[type=radio], input[type=checked] {
 
 
 
+.btnTimer {
+   width : 100px;
+}
+
+#innerDivCredits {
+    margin: 5px;
+}
+
 #divCredits {
     position : fixed;
     /*margin-top : 3px;*/
