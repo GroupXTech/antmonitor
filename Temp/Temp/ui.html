@@ -353,7 +353,7 @@
             <div id="flexTemperatureMode">
 
                 <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
-                <img class="icon" title="ANT+ Monitor" alt="ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
+                <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
 
                 <div>
 
@@ -394,9 +394,9 @@
                 <div id="liveTrackingControl">
                     <ul>
                         <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: settingVM.resetChart">RESET <img src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
-                        <li><button class="btnTimer" title="Start timer" data-bind="click: settingVM.startTimer">START <img src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
-                        <li><button class="btnTimer" title="Lap" data-bind="click: settingVM.newLap">LAP <img src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
-                        <li><button class="btnTimer" title="Stop timer" data-bind="click: settingVM.stopTimer">STOP <img src="icon/stop.png" alt="Stop timer" /></button></li>
+                        <li><button class="btnTimer" title="Start timer" data-bind="click: timerVM.start">START <img src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
+                        <li><button class="btnTimer" title="Lap" data-bind="click: timerVM.lap">LAP <img src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
+                        <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop">STOP <img src="icon/stop.png" alt="Stop timer" /></button></li>
                     </ul>
 
                 </div>
@@ -463,7 +463,8 @@
                     </li>
                 </ul>
                 <p>The application is entierly developed in Javascript. A key goal has been to provide multiple os execution environment support. Its a hybrid between a win81 store app and a chrome packaged app.</p>
-                <p>Developed by Henning Knut Skoglund, 2013 - 2014</p>
+                <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
+                <p>Developed by Henning Knut Skoglund, <time datetime="2013/2014">2013&ndash;2014</time></p>
             </div>
         </div>
 

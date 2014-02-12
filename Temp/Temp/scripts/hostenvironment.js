@@ -123,7 +123,7 @@
         
         requirejs(deps, function (Logger) {
 
-            this.logger = new Logger(true);
+            this.logger = new Logger({ log: true });
 
         }.bind(this));
 

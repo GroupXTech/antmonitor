@@ -4,7 +4,7 @@
     // Timer - UTC time - remember to add timezone offset for UI
     function Timer(options) {
 
-        this.logger = new Logger(options.log);
+        this.logger = new Logger(options);
 
         // Pro : More control of get/set operations 
         // Con: More elaborate setup of property and introduces another "private" property, performance degradation?
@@ -57,6 +57,20 @@
         this.event = [];
 
         this.state = this.STATE.INIT;
+    }
+
+    Timer.prototype.getLatestStartTime = function ()
+    {
+        return this.startTime[this.startTime.length - 1];
+    }
+
+    Timer.prototype.getLatestStopTime = function ()
+    {
+        return this.stopTime[this.stopTime.length - 1];
+    }
+
+    Timer.prototype.getLatestLapTime = function () {
+        return this.lapTime[this.lapTime.length - 1];
     }
 
     Timer.prototype.start = function () {

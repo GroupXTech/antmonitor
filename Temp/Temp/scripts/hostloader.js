@@ -121,7 +121,7 @@
 
         requirejs(deps, function (Logger, Host) {
             // console.log(Date.now(),'require finished')
-            this.logger = new Logger(true);
+            this.logger = new Logger({ log: true });
             this.host = new Host({ log: true });
            
                 this.host.init();

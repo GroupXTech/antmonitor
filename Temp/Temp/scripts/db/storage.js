@@ -5,7 +5,7 @@ define(['require', 'module', 'exports', 'logger'], function (require, module, ex
     'use strict';
 
     function Storage(configuration) {
-       // this._logger = new Logger(configuration.log);
+       // this._logger = new Logger(configuration);
       
     }
 

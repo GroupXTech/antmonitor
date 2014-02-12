@@ -54,7 +54,7 @@
         requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
             function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,Timer,Logger,TempConverter) {
 
-                this.logger = new Logger(true);
+                this.logger = new Logger({ log: true });
 
                 this.sendReadyEvent();
 
@@ -194,94 +194,17 @@
 
             },
 
-            timerVM: new TimerVM()
+            timerVM: new TimerVM({ log: true }),
+
+            ui: this, // For referencing ui.prototype functions inside viewmodel callbacks,
+
+            sensorChart : sensorChart
 
         };
 
         rootVM = this.viewModel.rootVM;
 
-        rootVM.settingVM.resetChart = function () {
-            var currentSeries,
-               seriesNr,
-               len,
-               chart,
-               dateTimeAxis;
-              
-            if (!this.timer.reset())
-                return;
-
-            if (sensorChart && sensorChart.integrated) {
-
-                
-                rootVM.timerVM.reset(); // The design now is that the timer is not included as state in the viewModel -> maybe move into viewmodel? Pro: Does not depend upon a particular timer
-
-                clearInterval(this.timerID.interval['updateElapsedTime']);
-
-                chart = sensorChart.integrated.chart;
-
-                // Remove plot lines
-
-                dateTimeAxis = chart.get('datetime-axis');
-                if (dateTimeAxis) {
-
-                        dateTimeAxis.removePlotLine(); // undefined id will delete all plotlines (using id === undefined)
-
-                }
-
-                // Remove series data
-
-                for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
-
-                    currentSeries = chart.series[seriesNr];
-
-                    currentSeries.setData([], false);
-                }
-
-            }
-               
-        }.bind(this);
-
-        rootVM.settingVM.startTimer = function ()
-        {
-        
-            if (!this.timer.start())
-                return;
-
-            this.timerID.interval['updateElapsedTime'] = setInterval(function () {
-                rootVM.timerVM.totalElapsedTime(this.timer.getTotalElapsedTime());
-                rootVM.timerVM.lapElapsedTime(this.timer.getLapElapsedTime());
-            }.bind(this), 1000);
-
-            this.addPlotLine('green',this.timer.startTime[this.timer.startTime.length - 1] + this.timezoneOffsetInMilliseconds);
-           
-        }.bind(this);
-
-
-        rootVM.settingVM.stopTimer = function () {
-
-            if (!this.timer.stop())
-                return;
-
-            clearInterval(this.timerID.interval['updateElapsedTime']);
-
-            this.addPlotLine('red', this.timer.stopTime[this.timer.stopTime.length - 1] + this.timezoneOffsetInMilliseconds);
-       
-        }.bind(this);
-
-        rootVM.settingVM.newLap = function () {
-            var chart,
-               dateTimeAxis,
-               id;
-
-            if (!this.timer.lap())
-                return;
-
-            rootVM.timerVM.lapElapsedTime(0);
-            rootVM.timerVM.lapNr(this.timer.lapTime.length);
-
-            this.addPlotLine('gray', this.timer.lapTime[this.timer.lapTime.length - 1] + this.timezoneOffsetInMilliseconds);
-        }.bind(this);
-
+      
         // Function is also called during applyBindings at initialization
         rootVM.settingVM.showSensors.toggle = function (sensorType) {
 

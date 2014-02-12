@@ -5,8 +5,8 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page'], function (re
     'use strict';
 
     function GenericVM(configuration) {
-        // this._logger = new Logger(configuration.log);
-        this._logger = configuration.logger || new Logger(configuration.log); // Use sensorVM logger, or create a new one
+        // this._logger = new Logger(configuration);
+        this._logger = configuration.logger || new Logger(configuration); // Use sensorVM logger, or create a new one
 
         // Common page 80 - Manufacturer info.
 

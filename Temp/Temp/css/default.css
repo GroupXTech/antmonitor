@@ -260,7 +260,7 @@ input[type=radio], input[type=checked] {
 #divCredits {
     position : fixed;
     /*margin-top : 3px;*/
-    top : 5%;
+    top : 10%;
     left : 10%;
     right : 10%;
     background-color : lightgray;

@@ -6,7 +6,7 @@ define(['require', 'module', 'exports', 'logger','db/storage'], function (requir
     'use strict';
 
     function StorageWindows(configuration) {
-        // this._logger = new Logger(configuration.log);
+        // this._logger = new Logger(configuration);
 
     }
 
