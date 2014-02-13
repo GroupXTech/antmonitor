@@ -51,8 +51,8 @@
 
         requirejs.config(requirejsConfiguration);
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
-            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,Timer,Logger,TempConverter) {
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'vm/SettingVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
+            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,Timer,Logger,TempConverter) {
 
                 this.logger = new Logger({ log: true });
 
@@ -65,7 +65,7 @@
 
                 this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
 
-                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Timer,Logger, TempConverter);
+                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, Timer,Logger, TempConverter);
 
     
 
@@ -120,7 +120,7 @@
        window.parent.postMessage('ready', '*');
     }
 
-    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, Timer, Logger, TemperatureConverter) {
+    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, Timer, Logger, TemperatureConverter) {
 
         var rootVM; // Root viewmodel, contains all the other sub-view models
         var tempModeKey;
@@ -142,7 +142,8 @@
         this.viewModel.FootpodVM = FootpodVM;
         this.viewModel.HRMVM = HRMVM;
         this.viewModel.SPDCADVM = SPDCADVM;
-        this.viewModel.timerVM = TimerVM;
+        this.viewModel.TimerVM = TimerVM;
+        this.viewModel.SettingVM = SettingVM;
 
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
 
@@ -155,28 +156,7 @@
 
         this.viewModel.rootVM = {
 
-            settingVM: {
-
-                logging: ko.observable(true),     // Enable logging to console  - will decrease performance
-
-                showAdditionalInfo: ko.observable(false),
-
-                showCredits: ko.observable(false),
-
-                temperatureModes: TemperatureVM.prototype.MODES,
-
-                showSensors: {
-
-                    HRM: ko.observable(false),
-                    
-                    SPDCAD: ko.observable(false),
-
-                    ENVIRONMENT: ko.observable(false),
-
-                }
-
-               
-            },
+            settingVM: new SettingVM({log : true}),
 
             // Holds an array on viewmodels for the sensors that are discovered
             sensorVM: undefined,
@@ -203,56 +183,6 @@
         };
 
         rootVM = this.viewModel.rootVM;
-
-      
-        // Function is also called during applyBindings at initialization
-        rootVM.settingVM.showSensors.toggle = function (sensorType) {
-
-            rootVM.settingVM.showSensors[sensorType](!rootVM.settingVM.showSensors[sensorType]());
-
-            var visible = rootVM.settingVM.showSensors[sensorType](),
-                chart,
-                currentSeries,
-                seriesNr,
-                len;
-
-            // Toggle series visibility for device type, i.e hrm
-
-            if (this.sensorChart && this.sensorChart.integrated && this.sensorChart.integrated.chart) {
-                chart = this.sensorChart.integrated.chart;
-
-                for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
-
-                    currentSeries = chart.series[seriesNr];
-
-                    if (currentSeries.options.id.indexOf(sensorType) !== -1) {
-
-                        if (visible && !currentSeries.visible) {
-
-                            currentSeries.show();
-
-                        }
-
-                        else if (currentSeries.visible) {
-                          
-                                currentSeries.hide();
-                            }
-                    }
-
-                }
-            }
-
-
-
-        }.bind(this);
-
-        rootVM.settingVM.toggleShowCredits = function (data, event) {
-            rootVM.settingVM.showCredits(!rootVM.settingVM.showCredits());
-        };
-
-        rootVM.settingVM.toggleShowAdditionalInfo = function (data, event) {
-            rootVM.settingVM.showAdditionalInfo(!rootVM.settingVM.showAdditionalInfo());
-        };
 
         //tempModeKey = this.storage.__proto__.key.temperaturemode;
 
@@ -428,10 +358,10 @@
                     id: 'temperature-axis',
 
                     title: {
-                        text: 'Temperature',
+                        text: 'TEMPERATURE',
                         style: {
                             color: 'yellow',
-                            fontSize: '14px',
+                            fontSize: '16px',
                             fontWeight : 'bold'
                         }
                     },
@@ -472,7 +402,7 @@
                         style: {
                             //color: '#6D869F',
                             fontWeight: 'bold',
-                            fontSize: '14px'
+                            fontSize: '16px'
                         }
                     }
 
@@ -481,10 +411,10 @@
                 {
                     id: 'heartrate-axis',
                     title: {
-                        text: 'Heart rate',
+                        text: 'HEART RATE',
                         style: {
                             color: 'red',
-                            fontSize: '14px',
+                            fontSize: '16px',
                             fontWeight: 'bold'
                         }
                     },
@@ -513,7 +443,7 @@
                         style: {
                             //color: '#6D869F',
                             fontWeight: 'bold',
-                            fontSize: '14px'
+                            fontSize: '16px'
                         }
                     }
 
@@ -525,7 +455,7 @@
                          text: 'Footpod speed',
                          style: {
                              color: 'green',
-                             fontSize: '14px',
+                             fontSize: '16px',
                              fontWeight: 'bold'
                          }
                      },
@@ -556,7 +486,7 @@
                         style: {
                             //color: '#6D869F',
                             fontWeight: 'bold',
-                            fontSize: '14px'
+                            fontSize: '16px'
                         }
                     }
 
@@ -566,9 +496,11 @@
                  {
                      id: 'bike-speed-axis',
                      title: {
-                         text: 'Speed',
+                         text: 'SPEED',
                          style: {
-                             color: 'blue'
+                             color: 'blue',
+                             fontWeight: 'bold',
+                             fontSize: '16px'
                          }
                      },
 
@@ -598,7 +530,7 @@
                         style: {
                             //color: '#6D869F',
                             fontWeight: 'bold',
-                            fontSize: '14px'
+                            fontSize: '16px'
                         }
                     }
 
@@ -608,10 +540,10 @@
                  {
                      id: 'bike-cadence-axis',
                      title: {
-                         text: 'Cadence',
+                         text: 'CADENCE',
                          style: {
                              color: 'magenta',
-                             fontSize: '14px',
+                             fontSize: '16px',
                              fontWeight: 'bold'
                          }
                      },
@@ -642,7 +574,7 @@
                         style: {
                             //color: '#6D869F',
                             fontWeight: 'bold',
-                            fontSize: '14px'
+                            fontSize: '16px'
                         }
                     }
 
@@ -655,7 +587,7 @@
                           text: 'RR',
                           style: {
                               color: 'gray',
-                              fontSize: '14px',
+                              fontSize: '16px',
                               fontWeight: 'bold'
                           }
                       },
@@ -686,7 +618,7 @@
                          style: {
                              //color: '#6D869F',
                              fontWeight: 'bold',
-                             fontSize: '14px'
+                             fontSize: '16px'
                          }
                      }
 
@@ -716,7 +648,7 @@
                         style: {
                             //color: '#6D869F',
                             fontWeight: 'bold',
-                            fontSize: '14px',
+                            fontSize: '16px',
 
                         },
                         
@@ -749,7 +681,7 @@
             //    //        style: {
             //    //            //color: '#6D869F',
             //    //            fontWeight: 'bold',
-            //    //            fontSize: '14px',
+            //    //            fontSize: '16px',
 
             //    //        },
             //    //        y: 18

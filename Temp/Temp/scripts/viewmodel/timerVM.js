@@ -23,15 +23,16 @@
         this.state = ko.observable();
 
         // Behaviour/Controller
-        // Callbacks from declarative ui binded by knockoutjs, its the root viewmodel thats passed as a viewmodel in the first argument
-
-        this.start = TimerVM.prototype.start.bind(this);
+        // Callbacks from declarative ui binded by knockoutjs, its the root viewmodel (used in ko.applyBindings) thats passed as a viewmodel in the first argument
+        
+        this.start = TimerVM.prototype.start.bind(this); // Create new func with our this (binding directly on prototype will bind this to global window object)
 
         this.stop = TimerVM.prototype.stop.bind(this);
 
         this.lap = TimerVM.prototype.lap.bind(this);
 
         this.reset = TimerVM.prototype.reset.bind(this);
+       
     }
 
     TimerVM.prototype.stop = function _stop(viewModel, event) {

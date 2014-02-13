@@ -58,18 +58,23 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="icon\timer.png" />
     <Content Include="icon\refresh.png" />
     <Content Include="icon\lap.png" />
     <Content Include="icon\stop.png" />
     <Content Include="icon\start.png" />
     <Content Include="icon\spdcad.png" />
     <Content Include="images\icon-128.png" />
+    <Content Include="images\SplashScreen.scale-100.png" />
+    <Content Include="images\SplashScreen.scale-140.png" />
+    <Content Include="images\SplashScreen.scale-180.png" />
     <Content Include="scripts\converter\timeFormatter.js" />
     <Content Include="scripts\generichostenvironment.js" />
     <Content Include="scripts\hostloader.js" />
     <Content Include="scripts\hostWin81.js" />
     <Content Include="scripts\timer.js" />
     <Content Include="scripts\ui.js" />
+    <Content Include="scripts\viewmodel\settingVM.js" />
     <Content Include="scripts\viewmodel\timerVM.js" />
     <Content Include="ui.html" />
     <Content Include="bower_components\libant\.bower.json" />

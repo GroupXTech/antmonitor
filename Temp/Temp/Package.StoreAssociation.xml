@@ -349,10 +349,11 @@
     <Language Code="zu-za" InMinimumRequirementSet="false" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>64959HenningKnutSkoglund.TemperatureMonitor</MainPackageIdentityName>
+    <MainPackageIdentityName>64959HenningKnutSkoglund.ANTMonitor</MainPackageIdentityName>
     <ReservedNames>
       <ReservedName>TemperatureMonitor</ReservedName>
-    </ReservedNames>
+      <ReservedName>ANT+ Monitor</ReservedName>
+  </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames />
   <PackageInfoList LandingUrl="https://appdev.microsoft.com:443/StorePortals/Developer/Catalog/ReleaseAnchor/e11aa1fe-c367-4f32-a811-3964a70511f0">

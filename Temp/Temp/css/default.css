@@ -168,6 +168,12 @@ input[type=radio], input[type=checked] {
     overflow : auto;
 }
 
+/* Horizontal list */
+#ulTimer li {
+    list-style-type: none;
+    display: inline;
+}
+
 #sensorChart-integrated {
     height: 76vh;
 }
@@ -251,6 +257,7 @@ input[type=radio], input[type=checked] {
 
 .btnTimer {
    width : 100px;
+   vertical-align : middle;
 }
 
 #innerDivCredits {
@@ -275,11 +282,6 @@ input[type=radio], input[type=checked] {
    font-weight:bold;
 }
 
-
-@media (max-width : 620px)
-    {
-    #liveTrackingControl  { display : none; }
-}
 
 
 @media (max-width : 590px)
