@@ -6,7 +6,8 @@ define(['require','module','exports','logger','vm/HRMVM','vm/temperatureVM'], fu
     
     function SensorVM(configuration) 
     {
-        this._logger = new Logger(configuration);                 
+        this._logger = new Logger(configuration);
+
         this.deviceTypeVM = ko.observableArray();
 
             this.devices = {

@@ -159,7 +159,7 @@
             settingVM: new SettingVM({log : true}),
 
             // Holds an array on viewmodels for the sensors that are discovered
-            sensorVM: undefined,
+            sensorVM: new SensorVM({ log: false }),
 
             // Contains all enumerated devices that fullfill the USB selector
             deviceVM: {
@@ -171,6 +171,25 @@
                 // User selected default device id.
 
                 selectedDevice: ko.observable(),
+
+                //rootVM.deviceVM.selectedDevice.subscribe(function (deviceInformation) {
+
+                //    //    var storedDefaultDeviceId;
+
+                //    //    this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
+                //    //        storedDefaultDeviceId = db[this.storage.__proto__.key.defaultDeviceId];
+
+                //    //        if (deviceInformation && (storedDefaultDeviceId !== deviceInformation.id)) {
+                //    //            this.storage.set(this.storage.__proto__.key.defaultDeviceId, deviceInformation.id);
+                //    //            this.exitAndResetDevice(function _initANT() {
+                //    //                // Remove previous state
+                //    //                rootVM.deviceVM.enumeratedDevice.removeAll();
+                //    //                this._initANTHost(pageHandler);
+                //    //            }.bind(this));
+                //    //        }
+                //    //    }.bind(this));
+
+                //    //}.bind(this));
 
             },
 
@@ -202,7 +221,15 @@
 
         //}.bind(this));
 
-        this.configureKnockout();
+        // Activate knockoutjs on our root viewmodel
+
+        var rootElement = document.getElementById('appRootVM');
+
+        ko.applyBindings(rootVM, rootElement);
+
+        rootElement.style.display = "block";
+
+        this.createIntegratedChart();
 
     };
 
@@ -232,97 +259,6 @@
             }
         }
     }
-
-    ANTMonitorUI.prototype.configureKnockout = function () {
-
-        var rootVM = this.viewModel.rootVM;
-
-        // Subscribe to changes
-
-        //rootVM.settingVM.show24H.subscribe(function (show24h) {
-        //    this.storage.set(this.storage.__proto__.key.show24hMaxMin, show24h);
-        //}.bind(this));
-
-        rootVM.deviceVM.selectedDevice.subscribe(function (deviceInformation) {
-
-            var storedDefaultDeviceId;
-
-            this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
-                storedDefaultDeviceId = db[this.storage.__proto__.key.defaultDeviceId];
-
-                if (deviceInformation && (storedDefaultDeviceId !== deviceInformation.id)) {
-                    this.storage.set(this.storage.__proto__.key.defaultDeviceId, deviceInformation.id);
-                    this.exitAndResetDevice(function _initANT() {
-                        // Remove previous state
-                        rootVM.deviceVM.enumeratedDevice.removeAll();
-                        this._initANTHost(pageHandler);
-                    }.bind(this));
-                }
-            }.bind(this));
-
-        }.bind(this));
-
-        //rootVM.settingVM.temperatureMode.subscribe(function (newMode) {
-
-        //    var temperatureAxis = this.sensorChart.integrated.chart.yAxis[0],
-        //        seriesData,
-        //        TemperatureVM = this.viewModel.TemperatureVM;
-
-        //    this.storage.set(this.storage.__proto__.key.temperaturemode, newMode);
-
-        //    for (var serieNr = 0; serieNr < this.sensorChart.integrated.chart.series.length; serieNr++) {
-
-        //        if (this.sensorChart.integrated.chart.series[serieNr].name.indexOf('Temperature') !== -1) {
-        //            seriesData = this.sensorChart.integrated.chart.series[serieNr].options.data;
-
-        //            // Convert y-point to requested temperature mode
-
-        //            for (var point = 0; point < seriesData.length; point++) {
-        //                if (newMode === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-
-        //                    seriesData[point][1] = this.tempConverter.fromCelciusToFahrenheit(seriesData[point][1]);
-
-
-        //                } else if (newMode === TemperatureVM.prototype.MODE.CELCIUS) {
-        //                    seriesData[point][1] = this.tempConverter.fromFahrenheitToCelcius(seriesData[point][1]);
-
-        //                    temperatureAxis.setExtremes(-20, null, false);
-        //                }
-
-        //            }
-
-        //            if (newMode === TemperatureVM.prototype.MODE.FAHRENHEIT)
-        //                temperatureAxis.setExtremes(-4, null, false);
-        //            else if (newMode === TemperatureVM.prototype.MODE.CELCIUS)
-        //                temperatureAxis.setExtremes(-20, null, false);
-
-        //            this.sensorChart.integrated.chart.series[serieNr].setData(this.sensorChart.integrated.chart.series[serieNr].options.data, false, false);
-
-        //        }
-
-        //    }
-
-        //    this.redrawIntegratedChart();
-
-        //}.bind(this));
-
-        rootVM.sensorVM = new this.viewModel.SensorVM({ log: rootVM.settingVM.logging() });
-
-        // window.addEventListener('message', pageHandler);
-
-        // Activate knockoutjs on our root viewmodel
-
-        var rootElement = document.getElementById('appRootVM');
-
-        ko.applyBindings(rootVM, rootElement);
-
-        rootElement.style.display = "block";
-
-        this.createIntegratedChart();
-
-        //// bind sets the internal BoundThis property of this.PageHandler to this
-        //this._initANTHost(this.onpage.bind(this));
-    };
 
     ANTMonitorUI.prototype.createIntegratedChart = function () {
 
@@ -1191,6 +1127,7 @@
         deviceTypeVM = this.viewModel.sensorDictionary[sensorId];
 
         // Refresh viewmodel with new page data from sensor
+
         if (deviceTypeVM)
             deviceTypeVM.updateFromPage(page);
 

@@ -361,11 +361,11 @@
                         <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length"></sub>
                     </div>
 
-                    <div style="display: inline" data-bind="if: sensorVM.devices.SPDCAD().length, style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
+                    <div style="display: inline; margin-left:3px" data-bind="if: sensorVM.devices.SPDCAD().length, style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
                         <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
                     </div>
 
-                    <div style="display: inline" data-bind="if: sensorVM.devices.ENVIRONMENT().length, style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
+                    <div style="display: inline; margin-left: 3px" data-bind="if: sensorVM.devices.ENVIRONMENT().length, style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
                         <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub title="Number of ENVIRONMENT sensors discovered" data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>
                     </div>
 
@@ -391,23 +391,6 @@
 
                 <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
 
-                <div id="divTimer" data-bind="visible : settingVM.showTimer">
-                    <ul id="ulTimer">
-                        <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: timerVM.reset">RESET <img src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
-                        <li><button class="btnTimer" title="Start timer" data-bind="click: timerVM.start">START <img src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
-                        <li><button class="btnTimer" title="Lap" data-bind="click: timerVM.lap">LAP <img src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
-                        <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop">STOP <img src="icon/stop.png" alt="Stop timer" /></button></li>
-                    </ul>
-
-                    <div id="divTimeInfo">
-                        <span class="largeNumber" id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span>
-                        <span class="largeNumber" id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span>
-                    </div>
-
-                </div>
-
-                
-                <img class="icon" src="icon/timer.png" data-bind="click: settingVM.toggleShowTimer" />
 
                 <div id="divENUMERATEDDEVICE">
 
@@ -428,7 +411,28 @@
 
                 </div>
 
+                <div id="divTimer" class="flexverticalcenter">
+
+                    <ul id="ulTimer">
+                        <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: timerVM.reset"><span class="spanTimer" style='vertical-align: middle'>RESET</span> <img style='vertical-align: middle' src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
+                        <li><button class="btnTimer" title="Start timer" data-bind="click: timerVM.start"><span class="spanTimer" style='vertical-align: middle'>START</span> <img style='vertical-align: middle' src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
+                        <li><button class="btnTimer" title="Lap" data-bind="click: timerVM.lap"><span class="spanTimer" style='vertical-align: middle'>LAP</span> <img style='vertical-align: middle' src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
+                        <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop"><span class="spanTimer" style='vertical-align: middle'>STOP</span> <img style='vertical-align: middle' src="icon/stop.png" alt="Stop timer" /></button></li>
+                    </ul>
+
+                    <div id="divTimeInfo">
+                        <div id="divTotalElapsedTime" class="flexverticalcenter"><span class="spanElapsedTimer" style="margin-left : 3px;margin-right: 5px">TOTAL</span><span class="largeNumber" id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span></div>
+
+                        <div id="divLapElapsedTime" class="flexverticalcenter" style="margin-left : 5px"><span class="spanElapsedTimer" style="margin-right: 5px">LAP</span><span class="largeNumber" id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span></div>
+                    </div>
+
+                </div>
+
             </div>
+
+
+
+
 
         </nav>
 
@@ -451,10 +455,9 @@
                     <li>
                         Script loading <a href="http://requirejs.org/" title="Great script loading library" target="_blank">Requirejs</a>
                     </li>
-                    <li>
-                        ANT library <a href="https://github.com/hkskoglund/libant" title="Library for interfacing with ANT USB hardware" target="_blank">Libant</a>
-                    </li>
+
                 </ul>
+
                 <h3>Icons</h3>
 
                 <ul>
@@ -466,7 +469,7 @@
                     </li>
                 </ul>
                 <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
-                <p>The application is entierly developed in Javascript by Henning Knut Skoglund, <time datetime="2013/2014">2013&ndash;2014</time></p>
+                <p>The application and the ANT USB library <a href="https://github.com/hkskoglund/libant" title="Library for interfacing with ANT USB hardware" target="_blank">Libant</a> is entierly developed in Javascript by Henning Knut Skoglund, <time datetime="2013/2014">2013&ndash;2014</time></p>
             </div>
         </div>
 

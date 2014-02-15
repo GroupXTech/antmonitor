@@ -1,6 +1,6 @@
 ﻿// Depends upon requirejs
 
-define(['root/generichostenvironment'], function _requireDefineHostChrome(GenericHostEnvironment) {
+define(['root/generichostenvironment','messages/ResetSystemMessage'], function _requireDefineHostChrome(GenericHostEnvironment, ResetSystemMessage) {
     'use strict';
 
     function HostChrome(options) {
@@ -16,23 +16,27 @@ define(['root/generichostenvironment'], function _requireDefineHostChrome(Generi
 
     HostChrome.prototype.onAppWindowClosed = function () {
        
-            //logBackgroundPage('info', "User requested close of application");
-            //var resetSystemMsg = new ResetSystemMessage();
-            //resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
+           this.backgroundPageWindow.console.info("User closed app window",this);
+            var resetSystemMsg = new ResetSystemMessage();
+            resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
 
-            //resetSystemMsg.usb = host.usb; // Attach usb object for connectionHandle and interfaceNumber
+            resetSystemMsg.usb = this.host.usb; // Attach usb object for connectionHandle and interfaceNumber
 
-            //// Device watcher gives DOMException
-            //resetSystemMsg.usb.options.deviceWatcher = undefined;
+            // Device watcher gives DOMException
+            resetSystemMsg.usb.options.deviceWatcher = undefined;
+
+            resetSystemMsg.usb.log = undefined;
 
             //// logBackgroundPage('log','Reset System Message',resetSystemMsg);
 
-            //try {
-            //    backgroundPageWindow.postMessage({ 'reset': resetSystemMsg }, '*');
-            //} catch (e) // In case of e.g DOMException - An object could not be cloned
-            //{
-            //    logBackgroundPage('error', e);
-            //}
+        try {
+            
+                this.backgroundPageWindow.postMessage({ 'reset': resetSystemMsg }, '*');
+            } catch (e) // In case of e.g DOMException - An object could not be cloned
+            {
+                this.backgroundPageWindow.console.error('Data clone error', e);
+                //this.logBackgroundPage('error', e);
+            }
 
             //window.removeEventListener('message', messageHandler);
         
@@ -80,6 +84,8 @@ define(['root/generichostenvironment'], function _requireDefineHostChrome(Generi
                 myArgs.push(arguments[argNr]);
             }
 
+            
+
             this.logger.log.apply(this.logger, myArgs);
         }
 
@@ -91,14 +97,14 @@ define(['root/generichostenvironment'], function _requireDefineHostChrome(Generi
     HostChrome.prototype.init = function ()
     {
 
-
         chrome.runtime.getBackgroundPage(function (bgWindow) {
             var loadStr;
 
             this.backgroundPageWindow = bgWindow;
 
-            loadStr = this.name+' loaded by '+window.location.pathname;
+            loadStr = this.name + ' loaded by ' + window.location.pathname;
 
+   
             this.logBackgroundPage('info',loadStr);
 
         }.bind(this));
