@@ -10,6 +10,29 @@
     
 }
 
+.flex {
+    display: flex;
+}
+
+.rownowrap {
+    flex-flow : row no-wrap;
+}
+.rowwrap {
+    flex-flow : row wrap;
+}
+
+.spacearound {
+    justify-content: space-around;
+}
+
+.centeritems {
+  align-items : center;
+}
+
+.flexstart {
+    justify-content: flexstart;
+}
+
 #divMAXMIN {
     display : flex;
     flex-flow : row no-wrap;
@@ -19,30 +42,12 @@
   
 }
 
-#divInfo {
-    display : flex;
-    flex-flow : row no-wrap;
-     justify-content: space-around;
-     align-items : center;
-}
-
-#divTemperatureMode, #divGraph {
-   
-     display : flex;
-    flex-flow : row no-wrap;
-     justify-content: space-around;
-     align-items : center;
-}
-
 #divENUMERATEDDEVICE {
     margin-left : 15px;
 }
 
 #flexTemperatureMode {
-    display : flex;
-    flex-flow : row wrap;
-     justify-content: space-around;
-     align-items : center;
+ 
      /*background-color: lightslategrey;*/
      background-color : darkgray;
      /*height : 35px;*/
@@ -53,30 +58,23 @@
     display : none;
 }
 
-#flexDiv {
-   display: flex;
-    flex-flow: row no-wrap;
-    justify-content: space-around;
-    align-items : center;
+.fontlarge {
     font-size : large;
+ }
+
+.displaynone {
+    display: none;
 }
 
+
 #flexMeasurement {
-    display: flex;
-    flex-flow: row no-wrap;
-    justify-content: space-around;
-    align-items : center;
-    font-size : large;
+   
     width : 94%;
     
-
 }
 
 #flexShortSensorInfo {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-around;
-    align-items : center;
+   
     margin-top : 10px;
     margin-bottom : 5px;
     height: 120px;
@@ -84,16 +82,10 @@
 }
 
 #flexBackground {
-    display: flex;
-    flex-flow: row no-wrap;
-    justify-content: space-around;
-    align-items : center;
+  
     font-size : smaller;
 
 }
-
-
-
 
 
 .lblTemperatureMode, #lblMAXMIN, #spanSpace {
@@ -140,36 +132,35 @@ input[type=radio], input[type=checked] {
     width: 100vw;
 }
 
-#ulHRMshort {
+.liststylenone {
     list-style-type: none;
     padding: 0;
     overflow : auto;
+}
+
+#ulHRMshort {
+    
     width : 100px;
     height : 70px;
 }
 
 #ulENVIRONMENTshort {
-     list-style-type: none;
-    padding: 0;
-    overflow : auto;
+     
     width : 140px;
     height : 70px;
 }
 
 #ulSPDCADshort {
-     list-style-type: none;
-    padding: 0;
-    overflow : auto;
+     
     width : 140px;
     height : 80px;
 }
 
 #ulMeasurements {
-    list-style-type: none;
-    padding: 0;
+   
     /*height : 100%;*/
     /*height : 15%;*/
-    overflow : auto;
+   
 }
 
 
@@ -278,9 +269,7 @@ input[type=radio], input[type=checked] {
 }
 
 #divTimeInfo {
-    display: flex;
-    justify-content: flex-start;
-
+   
 }
 
 
@@ -306,12 +295,7 @@ input[type=radio], input[type=checked] {
     display: inline;
 }
 
-.flexverticalcenter {
-    display: flex;
-    justify-content : space-around;
-    align-items: center;
-    flex-flow : row wrap
-}
+
 
 @media (min-width : 1080px) {  /*min = '>=' */
     .spanTimer {

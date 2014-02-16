@@ -51,7 +51,9 @@
 
         requirejs.config(requirejsConfiguration);
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/TimerVM', 'vm/SettingVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
+        // Linux filenames are case sensitive -> can get resource loading problems if module id does not match filename exactly
+
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
             function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,Timer,Logger,TempConverter) {
 
                 this.logger = new Logger({ log: true });
@@ -102,6 +104,9 @@
                     this.logger.log('log', this.name+' received page', data.page);
 
                 this.onpage(data.page);
+            } else if (data === 'clearTimers')
+            {
+                this.clearTimers();
             }
 
         } catch (e) { // Maybe a dataclone error

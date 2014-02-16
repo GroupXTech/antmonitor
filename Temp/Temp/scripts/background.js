@@ -40,7 +40,7 @@
     Background.prototype.releaseInterfaceAndCloseDevice = function(TXinformation)
     {
         var logger = this.logger,
-            CLOSE_BP_DELAY = 1000,
+            CLOSE_BP_DELAY = 20000; 
             WAIT_FOR_RESET_DELAY = 500;
 
         if (TXinformation.resultCode !== 0) {

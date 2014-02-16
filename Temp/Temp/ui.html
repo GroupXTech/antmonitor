@@ -70,14 +70,14 @@
 
         <script type="text/html" id="temperature-template">
             <li>
-                <div id="flexDiv">
+                <div class="flex rownowrap spacearound centeritems fontlarge">
                     <div id="flexIcon">
                         <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: location, attr: {title: ('Sensor id. : '+sensorId+' '+location()) }" />
                         <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !location, attr: {title: ('Sensor id. : '+sensorId) }" />
 
                     </div>
 
-                    <div id="flexMeasurement">
+                    <div id="flexMeasurement" class="flex rownowrap spacearound centeritems fontlarge">
 
                         <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
                         <!--<label data-bind="visible: $root.settingVM.show24H">Min</label>-->
@@ -93,7 +93,7 @@
 
                 <!-- Background pages -->
 
-                <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                <div id="flexBackground" class="flex rownowrap spacearound centeritems"  data-bind="if: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
                     <!--<div style="display:inline" data-bind="if: _page.broadcast.RSSI !== undefined && _page.broadcast.RSSI.measurementType === 0x20">
                         <span data-bind="text: 'RSSI '+_page.broadcast.RSSI.RSSIValue+' dBm'"></span>
@@ -350,7 +350,7 @@
         <nav id="appToolbar">
 
 
-            <div id="flexTemperatureMode">
+            <div id="flexTemperatureMode" class="flex rowwrap spacearound centeritems" >
 
                 <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
                 <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
@@ -371,7 +371,7 @@
 
                 </div>
 
-                <div id="divTemperatureMode">
+                <div class="flex rownowrap spacearound centeritems">
                     <label class="lblTemperatureMode">&deg;C</label>
                     <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
                     <span id="spanSpace"></span>
@@ -384,7 +384,7 @@
                     <input type="checkbox" data-bind="checked: settingVM.show24H">
                 </div>
 
-                <div id="divInfo">
+                <div class="flex rownowrap spacearound centeritems">
                     <img src="icon/info.png" data-bind="click: settingVM.toggleShowAdditionalInfo" alt="Information" title="Additional information (i.e operating time)" />
                     <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
                 </div>
@@ -411,7 +411,7 @@
 
                 </div>
 
-                <div id="divTimer" class="flexverticalcenter">
+                <div id="divTimer" class="flex spacearound centeritems rowwrap">
 
                     <ul id="ulTimer">
                         <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: timerVM.reset"><span class="spanTimer" style='vertical-align: middle'>RESET</span> <img style='vertical-align: middle' src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
@@ -420,19 +420,15 @@
                         <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop"><span class="spanTimer" style='vertical-align: middle'>STOP</span> <img style='vertical-align: middle' src="icon/stop.png" alt="Stop timer" /></button></li>
                     </ul>
 
-                    <div id="divTimeInfo">
-                        <div id="divTotalElapsedTime" class="flexverticalcenter"><span class="spanElapsedTimer" style="margin-left : 3px;margin-right: 5px">TOTAL</span><span class="largeNumber" id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span></div>
+                    <div id="divTimeInfo" class="flex flexstart">
+                        <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap"><span class="spanElapsedTimer" style="margin-left : 3px;margin-right: 5px">TOTAL</span><span class="largeNumber" id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span></div>
 
-                        <div id="divLapElapsedTime" class="flexverticalcenter" style="margin-left : 5px"><span class="spanElapsedTimer" style="margin-right: 5px">LAP</span><span class="largeNumber" id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span></div>
+                        <div id="divLapElapsedTime" class="flex spacearound centeritems rowwrap" style="margin-left : 5px"><span class="spanElapsedTimer" style="margin-right: 5px">LAP</span><span class="largeNumber" id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span></div>
                     </div>
 
                 </div>
 
             </div>
-
-
-
-
 
         </nav>
 
@@ -477,14 +473,14 @@
 
         <div id="main">
 
-            <div id="flexShortSensorInfo">
+            <div id="flexShortSensorInfo" class="flex rowwrap spacearound centeritems">
 
                 <!-- Don't render DOM if sensors for a device type is not available by using ko directive inside comment -->
                 <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
 
                 <div>
                     <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
-                    <ul id="ulHRMshort" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
+                    <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
                 </div>
 
                 <!-- /ko -->
@@ -492,7 +488,7 @@
 
                 <div>
                     <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
-                    <ul id="ulSPDCADshort" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
+                    <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
                 </div>
 
                 <!-- /ko -->
@@ -500,7 +496,7 @@
 
                 <div data-bind="if: settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0">
                     <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
-                    <ul id="ulENVIRONMENTshort" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
+                    <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
                 </div>
 
                 <!-- /ko -->
@@ -510,7 +506,7 @@
             </div>
 
 
-            <ul style="display: none" id="ulMeasurements" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.deviceTypeVM}"></ul>
+            <ul  id="ulMeasurements" class="liststylenone displaynone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.deviceTypeVM}"></ul>
 
             <!-- Integrated chart with measurements from all sensors -->
 
