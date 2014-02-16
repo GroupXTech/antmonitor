@@ -128,7 +128,7 @@
             this.logger.log('log', 'App-life cycle event : onRestarted');
 
         this.createChromeAppWindow();
-    }
+    };
 
     // On win8 is seems like the timeout for setting the "inactive" flag in the extension overview chrome://extensions is 15 seconds
     Background.prototype.onSuspend = function ()
@@ -136,12 +136,12 @@
        
         if (this.logger && this.logger.logging)
             this.logger.log('log', 'App-life cycle event : onSuspend');
-    }
+    };
 
     Background.prototype.onSuspendCanceled = function () {
         if (this.logger && this.logger.logging)
             this.logger.log('log', 'App-life cycle event : onSuspendCanceled');
-    }
+    };
 
     Background.prototype.onLaunched = function (launchData)
     {
@@ -159,7 +159,7 @@
             this.logger.log('log', 'App-life cycle event : onRestarted');
         
         this.createChromeAppWindow();
-    }
+    };
 
     // Chrome background page handles app life cycles events, i.e onLaunched
     Background.prototype.handleChromeLifeCycleEvents = function () {

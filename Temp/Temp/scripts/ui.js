@@ -60,7 +60,7 @@
 
                 this.timerID = {
                     interval: {},
-                    timer: {}
+                    timeout: {}
                 };
 
                 this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
@@ -1268,6 +1268,36 @@
         // to do: maybe use array instead? clearInterval on suspend/shutdown?
         this.timerID.interval['redrawIntegratedChart'] = setInterval(redrawHandler, delay);
 
+    }
+
+    // Clear all timeout and intervals
+    ANTMonitorUI.prototype.clearTimers = function ()
+    {
+        var timerName;
+
+        if (!this.timerID)
+            return;
+
+        // Timeouts
+
+        for (timerName in this.timerID.timeout)
+        {
+            clearTimeout(this.timerID.timeout[timerName]);
+            if (this.logger && this.logger.logging)
+                this.logger.log('log', 'Cleared timeout ' + timerName + ' id/handle ' + this.timerID.timeout[timerName]);
+            
+        }
+
+        // Intervals
+
+        for (timerName in this.timerID.interval) {
+            clearInterval(this.timerID.interval[timerName]);
+            if (this.logger && this.logger.logging)
+                this.logger.log('log', 'Cleared interval' + timerName + ' id/handle ' + this.timerID.interval[timerName]);
+        }
+
+
+        
     }
 
    

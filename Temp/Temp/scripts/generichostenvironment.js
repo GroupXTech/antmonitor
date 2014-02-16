@@ -8,7 +8,7 @@
         this.options = options;
 
         if (options && options.log)
-            this.logger = new Logger(true);
+            this.logger = new Logger(options.log);
         else
             this.logger = new Logger();
 
@@ -59,20 +59,20 @@
 
         }
 
-    }
+    };
 
 
 
     GenericHostEnvironment.prototype.init = function ()
     {
-        throw new Error('Generic Init should be overridden/shadowed in descendant objects')
-    }
+        throw new Error('Generic Init should be overridden/shadowed in descendant objects');
+    };
 
     GenericHostEnvironment.prototype.loadSubSystems = function ()
     {
         require(['anthost', this.moduleId.usb, 'profiles/environment/deviceProfile_ENVIRONMENT', 'profiles/RxScanMode', this.moduleId.storage, 'logger'],
             this.onSubsystemLoaded.bind(this));
-    }
+    };
 
     // Initialization of ANT host and USB
     GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, TEMPprofile, RxScanMode, Storage, Logger) {
@@ -244,7 +244,7 @@
         }
 
 
-    }
+    };
 
     // Receives page from device profile and forwards it to the UI frame
     GenericHostEnvironment.prototype.onpage = function (page) {
@@ -269,6 +269,7 @@
             if (this.logger && this.logger.logging)
                 this.logger.log('error', 'Error', e, 'page from device profile', this.pageFromDeviceProfile);
         }
-    }
+    };
+
     return GenericHostEnvironment;
 });

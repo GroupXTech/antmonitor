@@ -15,38 +15,35 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
     HostChrome.constructor = HostChrome;
 
     HostChrome.prototype.onAppWindowClosed = function () {
-       
-           this.backgroundPageWindow.console.info("User closed app window",this);
-            var resetSystemMsg = new ResetSystemMessage();
-            resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
 
-            resetSystemMsg.usb = this.host.usb; // Attach usb object for connectionHandle and interfaceNumber
+        this.logBackgroundPage('info',"User closed app window", this);
+        var resetSystemMsg = new ResetSystemMessage();
+        resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
 
-            // Device watcher gives DOMException
-            resetSystemMsg.usb.options.deviceWatcher = undefined;
+        resetSystemMsg.usb = this.host.usb; // Attach usb object for connectionHandle and interfaceNumber
 
-            resetSystemMsg.usb.log = undefined;
+        // Device watcher gives DOMException
+        resetSystemMsg.usb.options.deviceWatcher = undefined;
 
-            //// logBackgroundPage('log','Reset System Message',resetSystemMsg);
+        resetSystemMsg.usb.log = undefined;
+
+        //// logBackgroundPage('log','Reset System Message',resetSystemMsg);
 
         try {
-            
-                this.backgroundPageWindow.postMessage({ 'reset': resetSystemMsg }, '*');
-            } catch (e) // In case of e.g DOMException - An object could not be cloned
-            {
-                this.backgroundPageWindow.console.error('Data clone error', e);
-                //this.logBackgroundPage('error', e);
-            }
 
-            //window.removeEventListener('message', messageHandler);
-        
-    }
+            this.backgroundPageWindow.postMessage({ 'reset': resetSystemMsg }, '*');
+        } catch (e) // In case of e.g DOMException - An object could not be cloned
+        {
+            this.logBackgroundPage('error','Data clone error', e);
+         
+        }
 
-    
+        //window.removeEventListener('message', messageHandler);
 
-    // Logs to the background page
-    HostChrome.prototype.logBackgroundPage = function ()
-    {
+    };
+
+    // Logs to the background page - changes default console source
+    HostChrome.prototype.logBackgroundPage = function () {
         var myArgs = [],
             type;
 
@@ -54,18 +51,17 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
             return;
         }
 
-        if (!this.backgroundPageWindow)
-        {
+        if (!this.backgroundPageWindow) {
             if (this.logger.logging)
                 this.logger.log('warn', 'Has no reference to the background window object - cannot log to background page');
             return;
         }
-           
+
         var previousConsole = this.logger.console;
 
         if (!previousConsole) {
             if (this.logger.logging)
-                this.logger.log('warn','Current console is undefined - cannot log to background page');
+                this.logger.log('warn', 'Current console is undefined - cannot log to background page');
         }
 
         this.logger.changeConsole(this.backgroundPageWindow.console);
@@ -76,36 +72,28 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
             //console.log("slice", arguments.slice(1));
             // arguments inherit from Object.prototype, and has a length property which is the number of actual arguments passed to the function
             //this.logger.log(arguments[0], 'testing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-           
-            myArgs.push(arguments[0]); // type info,error etc.
 
-            for (var argNr = 1, len = arguments.length; argNr < len; argNr++)
-            {
+            for (var argNr = 0, len = arguments.length; argNr < len; argNr++) {
                 myArgs.push(arguments[argNr]);
             }
-
-            
 
             this.logger.log.apply(this.logger, myArgs);
         }
 
         this.logger.changeConsole(previousConsole);
-       
 
-    }
+    };
 
-    HostChrome.prototype.init = function ()
-    {
+    HostChrome.prototype.init = function () {
 
-        chrome.runtime.getBackgroundPage(function (bgWindow) {
+        chrome.runtime.getBackgroundPage(function _getBackgroundPage(bgWindow) {
             var loadStr;
 
             this.backgroundPageWindow = bgWindow;
 
             loadStr = this.name + ' loaded by ' + window.location.pathname;
 
-   
-            this.logBackgroundPage('info',loadStr);
+            this.logBackgroundPage('info', loadStr);
 
         }.bind(this));
 
@@ -114,7 +102,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
         this.appWindow.onClosed.addListener(this.onAppWindowClosed.bind(this));
 
         this.loadSubSystems(); // USB and storage
-    }
+    };
 
     return HostChrome;
 
