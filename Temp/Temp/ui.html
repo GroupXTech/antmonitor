@@ -361,19 +361,19 @@
                    
                     <!-- ko if: (sensorVM.devices.HRM().length)  -->
                         <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
-                            <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length"></sub>
+                            <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length, attr: { title: sensorVM.devices.HRM().length + ' heart rate monitor(s) discovered'}"></sub>
                         </div>
                     <!-- /ko -->
 
                     <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
                         <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
-                            <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
+                            <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length, attr: { title: sensorVM.devices.SPDCAD().length + ' speed and cadence sensor(s) discovered'}"></sub>
                         </div>
                     <!-- /ko -->
 
                     <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
                         <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
-                            <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub title="Number of ENVIRONMENT sensors discovered" data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>
+                            <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub  data-bind="text: sensorVM.devices.ENVIRONMENT().length, attr: { title: sensorVM.devices.ENVIRONMENT().length + ' environment sensor(s) discovered'}"></sub>
                         </div>
                     <!-- /ko -->
 
