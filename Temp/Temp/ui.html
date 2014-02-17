@@ -355,21 +355,31 @@
                 <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
                 <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
 
-                <div>
+                <!-- ko if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length) -->
+                <div class="flex rownowrap centeritems flexstart">
+                    <label style="margin-right: 3px"><b>Sensors</b></label>
+                   
+                    <!-- ko if: (sensorVM.devices.HRM().length)  -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
+                            <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length"></sub>
+                        </div>
+                    <!-- /ko -->
 
-                    <div style="display: inline" data-bind="if: sensorVM.devices.HRM().length, style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
-                        <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length"></sub>
-                    </div>
+                    <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
+                            <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
+                        </div>
+                    <!-- /ko -->
 
-                    <div style="display: inline; margin-left:3px" data-bind="if: sensorVM.devices.SPDCAD().length, style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
-                        <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
-                    </div>
-
-                    <div style="display: inline; margin-left: 3px" data-bind="if: sensorVM.devices.ENVIRONMENT().length, style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.1 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
-                        <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub title="Number of ENVIRONMENT sensors discovered" data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>
-                    </div>
+                    <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
+                            <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub title="Number of ENVIRONMENT sensors discovered" data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>
+                        </div>
+                    <!-- /ko -->
 
                 </div>
+
+                <!-- /ko -->
 
                 <div class="flex rownowrap spacearound centeritems">
                     <label class="lblTemperatureMode">&deg;C</label>
@@ -476,35 +486,43 @@
             <div id="flexShortSensorInfo" class="flex rowwrap spacearound centeritems">
 
                 <!-- Don't render DOM if sensors for a device type is not available by using ko directive inside comment -->
+                
                 <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
 
-                <div>
-                    <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
-                    <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
-                </div>
+                    <div>
+                        <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
+                        <div id="divHRMshort">
+                            <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
+                        </div>
+                    </div>
 
                 <!-- /ko -->
+
                 <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
 
-                <div>
-                    <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
-                    <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
-                </div>
+                    <div>
+                        <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
+                        <div id="divSPDCADshort">
+                            <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
+                        </div>
+
+                    </div>
 
                 <!-- /ko -->
+
                 <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
 
-                <div data-bind="if: settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0">
-                    <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
-                    <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
-                </div>
+                    <div data-bind="if: settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0">
+                        <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
+                        <div id="divENVIRONMENTshort">
+                            <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
+                        </div>
+                    
+                    </div>
 
                 <!-- /ko -->
 
-
-
             </div>
-
 
             <ul  id="ulMeasurements" class="liststylenone displaynone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.deviceTypeVM}"></ul>
 

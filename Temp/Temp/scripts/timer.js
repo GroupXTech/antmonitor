@@ -167,6 +167,9 @@
 
     Timer.prototype.reset = function () {
 
+        if (this.state === Timer.prototype.STATE.INIT) // Timer not used yet
+            return true;
+
         var resetTime = Date.now();
 
         if (this.state !== Timer.prototype.STATE.STOPPED)

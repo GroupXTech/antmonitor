@@ -33,6 +33,11 @@
     justify-content: flexstart;
 }
 
+.inlineml {
+    display: inline;
+    margin-left: 3px;
+}
+
 #divMAXMIN {
     display : flex;
     flex-flow : row no-wrap;
@@ -138,22 +143,45 @@ input[type=radio], input[type=checked] {
     overflow : auto;
 }
 
+#divHRMshort {
+     width : 100px;
+    height : 75px;
+    overflow : hidden;
+}
+
 #ulHRMshort {
     
-    width : 100px;
+    width :inherit;
     height : 70px;
+    padding-right: 20px;
+}
+
+/* Hide scrollbar by padding-right and and div wrapper with overflow hidden, based on http://jsfiddle.net/5GCsJ/4/ http://stackoverflow.com/questions/16670931/hide-scroll-bar-but-still-being-able-to-scroll */
+/* It seems like the padding-right moves the scrollbar beyond the max width on the container div which has overflow hidden */
+#divENVIRONMENTshort {
+     width : 140px;
+    height : 70px;
+    overflow : hidden;
 }
 
 #ulENVIRONMENTshort {
      
-    width : 140px;
-    height : 70px;
+    width : inherit;
+    height : 65px;
+    padding-right : 20px;
+}
+
+#divSPDCADshort {
+     width : 140px;
+    height : 90px;
+    overflow : hidden;
 }
 
 #ulSPDCADshort {
      
-    width : 140px;
-    height : 80px;
+    width : inherit;
+    height : 85px;
+    padding-right : 20px;
 }
 
 #ulMeasurements {

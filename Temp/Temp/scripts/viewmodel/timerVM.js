@@ -78,7 +78,8 @@
            seriesNr,
            len,
            chart,
-           dateTimeAxis;
+           dateTimeAxis,
+           updateElapsedTimeID = this._timerID.interval['updateElapsedTime'];
 
         if (!this._timer.reset())
             return;
@@ -88,7 +89,8 @@
             this.totalElapsedTime(0);
             this.lapElapsedTime(0);
                
-            clearInterval(this._timerID.interval['updateElapsedTime']);
+            if (updateElapsedTimeID !== undefined)
+                clearInterval(updateElapsedTimeID);
 
             chart = viewModel.sensorChart.integrated.chart;
 
