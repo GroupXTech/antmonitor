@@ -1,14 +1,12 @@
 ﻿/* global define: true */
 
 // Main viewmodel class
-define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (require, module, exports, Logger, GenericPage, GenericVM, deviceProfileSPDCAD) {
+define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Logger, GenericPage, GenericVM, deviceProfileSPDCAD) {
     'use strict';
 
     function SPDCADVM(configuration) {
 
         GenericVM.call(this, configuration);
-
-        
 
         this._page = undefined;
 
@@ -19,6 +17,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         this.timestamp = ko.observable();
 
         this.formattedTimestamp = ko.computed({
+
             read: function () {
                 if (this.timestamp && this.timestamp())
                     return (new Date(this.timestamp())).toLocaleTimeString();
@@ -33,7 +32,9 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         this.wheelCircumference = ko.observable(deviceProfileSPDCAD.prototype.WHEEL_CIRCUMFERENCE); // meters
 
         this.cadence = ko.observable();
+
         this.formattedCadence = ko.computed({
+
             read: function () {
                 if (this.cadence() !== undefined)
                     return this.cadence().toFixed(1);
@@ -51,8 +52,8 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         // Distance mode metric/mile
         this.distanceMode = ko.observable(SPDCADVM.prototype.DISTANCE_MODE.METRIC);
 
-
         this.formattedCumulativeDistance = ko.computed({
+
             read: function () {
                 var distStr = '-';
 
@@ -80,6 +81,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         this.speedMode = ko.observable(SPDCADVM.prototype.SPEED_MODE.SPEED);
 
         this.formattedSpeed = ko.computed({
+
             read: function () {
                 var speedStr = '-', speed = this.speed();
 
@@ -114,8 +116,6 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
     SPDCADVM.prototype.SPEED_MODE = {
         TEMPO: 1, // min/km, min/mi
         SPEED: 2 // km/h, mi/h
-
-
     };
 
     SPDCADVM.prototype.DISTANCE_MODE = {
@@ -126,7 +126,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
     SPDCADVM.prototype.CONVERSION_FACTOR = {
         INTERNATIONAL: 1609.344,
-        US: 1609.347219
+      //  US: 1609.347219
     }
 
 
@@ -139,7 +139,6 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
         if (page.broadcast && page.broadcast.channelId)
             this.sensorId(page.broadcast.channelId.sensorId);
-
 
         if (page.number !== undefined)
             this.number(page.number);
@@ -164,6 +163,6 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         return "spdcad-template";
     };
 
-    module.exports = SPDCADVM;
-    return module.exports;
+   return SPDCADVM;
+   
 });

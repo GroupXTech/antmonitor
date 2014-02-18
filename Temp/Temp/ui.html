@@ -356,28 +356,29 @@
                 <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
 
                 <!-- ko if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length) -->
-                <div class="flex rownowrap centeritems flexstart">
-                    <label style="margin-right: 3px"><b>Sensors</b></label>
+               
+                     <div class="flex rownowrap centeritems flexstart">
+                        <label style="margin-right: 3px"><b>Sensors</b></label>
                    
-                    <!-- ko if: (sensorVM.devices.HRM().length)  -->
-                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
-                            <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length, attr: { title: sensorVM.devices.HRM().length + ' heart rate monitor(s) discovered'}"></sub>
-                        </div>
-                    <!-- /ko -->
+                        <!-- ko if: (sensorVM.devices.HRM().length)  -->
+                            <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
+                                <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length, attr: { title: sensorVM.devices.HRM().length + ' heart rate monitor(s) discovered'}"></sub>
+                            </div>
+                        <!-- /ko -->
 
-                    <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
-                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
-                            <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length, attr: { title: sensorVM.devices.SPDCAD().length + ' speed and cadence sensor(s) discovered'}"></sub>
-                        </div>
-                    <!-- /ko -->
+                        <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
+                            <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
+                                <img class="icon" src="icon/spdcad.png" title="Speed and cadence sensors" alt="SPDCAD sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length, attr: { title: sensorVM.devices.SPDCAD().length + ' speed and cadence sensor(s) discovered'}"></sub>
+                            </div>
+                        <!-- /ko -->
 
-                    <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
-                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
-                            <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub  data-bind="text: sensorVM.devices.ENVIRONMENT().length, attr: { title: sensorVM.devices.ENVIRONMENT().length + ' environment sensor(s) discovered'}"></sub>
-                        </div>
-                    <!-- /ko -->
+                        <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
+                            <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
+                                <img class="icon" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" /><sub  data-bind="text: sensorVM.devices.ENVIRONMENT().length, attr: { title: sensorVM.devices.ENVIRONMENT().length + ' environment sensor(s) discovered'}"></sub>
+                            </div>
+                        <!-- /ko -->
 
-                </div>
+                    </div>
 
                 <!-- /ko -->
 
@@ -400,7 +401,6 @@
                 </div>
 
                 <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
-
 
                 <div id="divENUMERATEDDEVICE">
 
@@ -443,7 +443,9 @@
         </nav>
 
         <div data-bind="visible: settingVM.showCredits" id="divCredits">
+
             <div id="innerDivCredits">
+
                 <!-- http://stackoverflow.com/questions/3106290/align-icons-with-text -->
                 <h2><img class="icon" src='images/icon-128.png' style='vertical-align: middle' /><span style="vertical-align: middle; margin-left : 3px">ANT+ Monitor</span></h2>
 
@@ -477,9 +479,8 @@
                 <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
                 <p>The application and the ANT USB library <a href="https://github.com/hkskoglund/libant" title="Library for interfacing with ANT USB hardware" target="_blank">Libant</a> is entierly developed in Javascript by Henning Knut Skoglund, <time datetime="2013/2014">2013&ndash;2014</time></p>
             </div>
+
         </div>
-
-
 
         <div id="main">
 

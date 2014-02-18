@@ -16,7 +16,7 @@
 (function HostLoaderIIFE() {
     'use strict';
 
-    // Determine execution environment and load the appropiate host 
+    // Determine execution environment and load the appropiate host module
 
     function HostLoader() {
 
@@ -49,14 +49,12 @@
 
         requirejsConfiguration = {
 
-            baseUrl: '../bower_components/libant',
+            baseUrl: '../bower_components/libant', // Relative to file directory
 
             paths: {
 
-                // Persistence
-
-                db: '../../scripts/db',
-                root: '../../scripts'
+                db: '../../scripts/db',  // Persistence
+                root: '../../scripts'   // Path names are releative to baseUrl and not file directory
 
             },
 
@@ -68,8 +66,6 @@
 
 
         requirejs.config(requirejsConfiguration);
-
-       
 
     }
 
@@ -117,9 +113,11 @@
     {
         var deps = ['logger'];
 
-        deps.push(this.hostEnvironmentModuleId);
+        // Maybe fix: would break optimization with r?
 
-        requirejs(deps, function (Logger, Host) {
+        deps.push(this.hostEnvironmentModuleId);
+       
+        requirejs(deps, function (Logger, Host,Events) {
             // console.log(Date.now(),'require finished')
             this.logger = new Logger({ log: true });
             this.host = new Host({ log: true });
