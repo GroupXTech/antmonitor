@@ -185,12 +185,29 @@
     Background.prototype.createChromeAppWindow = function () {
         var appWinCreated = function (appWindow) {
            
+            console.log(appWindow.contentWindow);
+
             if (this.logger && this.logger.logging)
                 this.logger.log('log', 'Created main window ' + appWindow.contentWindow.location.toString());
 
-        }.bind(this);
+        }.bind(this),
+            
+          height,
+          width,
+          minHeight,
+          minWidth;
 
-        chrome.app.window.create('../default.html', { 'minWidth': 200, 'minHeight': 160, 'bounds': { 'width': 1050, 'height': 750 } }, appWinCreated);
+        if (this.logger && this.logger.logging)
+            this.logger.log('info','Screen available', window.screen);
+       
+        height = Math.round( 0.75 * window.screen.height);
+        width = Math.round(0.75 * window.screen.width);
+
+        minWidth = Math.round(0.3 * window.screen.width);
+        minHeight = Math.round(0.3 * window.screen.height);
+
+
+        chrome.app.window.create('../default.html', { 'minWidth': minWidth, 'minHeight': minHeight, 'bounds': { 'width': width, 'height': height } }, appWinCreated);
 
     };
 

@@ -209,9 +209,10 @@
                     //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
                     deviceType: 0,
                     transmissionType: 0
-                },
-                onPage: this.onpage.bind(this)
+                }
             });
+
+            channel.addEventListener('page',this.onpage.bind(this))
 
             hostInitCB = function _hostInitCB(error) {
                 // console.trace();

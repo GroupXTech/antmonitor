@@ -21,7 +21,7 @@
                                     this._totalElapsedTime = newValue;
 
                                     if (this.logger && this.logger.logging)
-                                        this.logger.log('log', 'Timer ttotal elapsed time  - set -', this._totalElapsedTime);
+                                        this.logger.log('log', 'Timer total elapsed time  - set -', this._totalElapsedTime);
                                 }
                             });
 
