@@ -301,7 +301,7 @@
                     title: {
                         text: 'TEMPERATURE',
                         style: {
-                            color: 'yellow',
+                            color: 'black',
                             fontSize: '16px',
                             fontWeight : 'bold'
                         }
@@ -771,7 +771,7 @@
             {
                 name: 'Temperature ' + sensorId,
                 id: 'ENVIRONMENT-current-' + sensorId,
-                color: 'yellow',
+                color: 'black',
                 data: [], // tuples [timestamp,value]
                 type: 'spline',
 

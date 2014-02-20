@@ -23,17 +23,14 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
         var resetSystemMsg = new ResetSystemMessage();
         resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
 
-        resetSystemMsg.usb = this.host.usb; // Attach usb object for connectionHandle and interfaceNumber
+        resetSystemMsg.usb = this.host.usb.clone(); // Attach usb object for connectionHandle and interfaceNumber
 
-        // Device watcher gives DOMException
-        resetSystemMsg.usb.options.deviceWatcher = undefined;
-
-        resetSystemMsg.usb.log = undefined;
+       
 
         //// logBackgroundPage('log','Reset System Message',resetSystemMsg);
 
         try {
-
+            this.logBackgroundPage('info', resetSystemMsg);
             this.backgroundPageWindow.postMessage({ 'reset': resetSystemMsg }, '*');
         } catch (e) // In case of e.g DOMException - An object could not be cloned
         {

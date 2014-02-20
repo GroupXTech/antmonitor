@@ -40,7 +40,7 @@
     Background.prototype.releaseInterfaceAndCloseDevice = function(TXinformation)
     {
         var logger = this.logger,
-            CLOSE_BP_DELAY = 20000; 
+            CLOSE_BP_DELAY = 20000; // Give a chance for onSuspend to be called (its about 15 seconds)
             WAIT_FOR_RESET_DELAY = 500;
 
         if (TXinformation.resultCode !== 0) {
@@ -52,7 +52,8 @@
                 chrome.usb.releaseInterface(this.usb.connectionHandle,this.usb.deviceInterface.interfaceNumber, function () {
                     if (logger && logger.logging) logger.log('log','Released ANT interface after a post reset delay of '+WAIT_FOR_RESET_DELAY+' ms');
                     chrome.usb.closeDevice(this.usb.connectionHandle, function _closed () { 
-                        if (logger && logger.logging) logger.log('log','Closed ANT device',this.messageListener);
+                        if (logger && logger.logging) logger.log('log', 'Closed ANT device');
+
                         window.removeEventListener('message',this.messageListener);
                        
                         if (logger && logger.logging) logger.log('log',"Closing background page in "+CLOSE_BP_DELAY+ " ms");
@@ -74,11 +75,11 @@
 
         // It's impossible to do any async. calls in the ordinary appWindow onClose-callback, so the background page gets the resposibility instead
 
-        if (typeof usb === 'object' && usb.connectionHandle !== undefined && usb.deviceInterface !== undefined && usb.outEP !== undefined) {
+        if (typeof usb === 'object' && usb.connectionHandle !== undefined && usb.deviceInterface !== undefined) {
            
             TXinfo =  {
-                "direction": usb.outEP.direction,
-                "endpoint": usb.outEP.address,       
+                "direction": usb.deviceInterface.endpoints[1].direction,
+                "endpoint": usb.deviceInterface.endpoints[1].address,       
                 "data": event.data.reset.standardMessage.buffer
 
             };
@@ -185,8 +186,6 @@
     Background.prototype.createChromeAppWindow = function () {
         var appWinCreated = function (appWindow) {
            
-            console.log(appWindow.contentWindow);
-
             if (this.logger && this.logger.logging)
                 this.logger.log('log', 'Created main window ' + appWindow.contentWindow.location.toString());
 
