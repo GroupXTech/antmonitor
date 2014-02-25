@@ -148,6 +148,7 @@ input[type=radio], input[type=checked] {
 /* Turn off underline on links for tab */
 .tabItem {
     font-size : large;
+    font-weight : 700;
    text-decoration : none;
    color: black;
 }

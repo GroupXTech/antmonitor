@@ -355,11 +355,12 @@
                 <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
                 <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
 
+                <a class="tabItem" id="aMain" href="#tabMain" title="Show integrated chart visualizing data from all sensors"><span style="margin-right: 3px">Sensors</span></a>
+
                 <!-- ko if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length) -->
                
                      <div class="flex rownowrap centeritems flexstart">
-                         <a class="tabItem" href="#tabMain" title="Show integrated chart visualizing data from all sensors"><span style="margin-right: 3px"><b>Sensors</b></span></a>
-                   
+                        
                         <!-- ko if: (sensorVM.devices.HRM().length)  -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
                                 <img class="icon" src="icon/heart.png" title="Turn on/off visibility of Heart Rate Monitors" alt="Turn on/off visibility of Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length, attr: { title: sensorVM.devices.HRM().length + ' heart rate monitor(s) discovered'}"></sub>

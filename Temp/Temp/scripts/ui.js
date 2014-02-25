@@ -1,8 +1,6 @@
 ﻿(function _ANTMonitorUI() {
     'use strict';
 
-    
-
     function HostEnvironment()
     {}
 
@@ -225,6 +223,16 @@
         //    }.bind(this));
 
         //}.bind(this));
+
+        // Activate main tab by simulating a click on the link
+
+        var mouseClick = document.createEvent('MouseEvents');
+        mouseClick.initEvent('click', false, false); // Only on target
+
+        var aMain = document.getElementById('aMain');
+        if (this.logger && this.logger.logging)
+            this.logger.log('info', 'Sent click event to main tab to toggle visibility of short sensor info and sensor chart', aMain,mouseClick);
+        void aMain.dispatchEvent(mouseClick);
 
         // Activate knockoutjs on our root viewmodel
 
