@@ -29,6 +29,10 @@
   align-items : center;
 }
 
+.flexstartitems {
+  align-items : flex-start;
+}
+
 .flexstart {
     justify-content: flexstart;
 }
@@ -67,9 +71,18 @@
     font-size : large;
  }
 
-.displaynone {
+/* Turn on visual formatting if a link/tab is clicked by invoking href to tab on anchor*/
+.hidden:target  {
+    display : block;
+}
+
+.hidden {
     display: none;
 }
+
+/*#tabNav {
+   background-color :gray;
+}*/
 
 
 #flexMeasurement {
@@ -130,6 +143,26 @@ input[type=radio], input[type=checked] {
     margin-bottom : 10px;*/
 
     /*height : 95vh;*/
+}
+
+/* Turn off underline on links for tab */
+.tabItem {
+    font-size : large;
+   text-decoration : none;
+   color: black;
+}
+
+.tabItem:hover {
+    background-color : gray;
+    /*border : 1px solid black;*/
+}
+
+    .tabItem::after {
+        content : " >"
+    }
+
+h1.detailsHeading::before {
+    content: url("icon/temperature.png");
 }
 
 #uiFrame {
@@ -205,8 +238,14 @@ input[type=radio], input[type=checked] {
     display: inline;
 }
 
+.alignMiddle {
+  vertical-align :middle;
+}
+
 #sensorChart-integrated {
+    /*padding : 3px;*/
     height: 76vh;
+    width : 99vw;
 }
 
 .temperature, .largeNumber {
@@ -236,7 +275,7 @@ input[type=radio], input[type=checked] {
     max-width: 150px;
     /* Turn off border*/
     border: 0px solid;
-    color: white;
+    /*color: white;*/
     /* Inherited from flex container according to DOM explorer, but not applied, seems like it must be explicitly declared */
     font-size: large;
    

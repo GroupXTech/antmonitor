@@ -16,10 +16,16 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
 
     HostChrome.prototype.onAppWindowClosed = function () {
 
+        this.logBackgroundPage('info', "User closed app window", this);
+
         if (this.uiFrame)
             this.uiFrame.postMessage('clearTimers', '*');
 
-        this.logBackgroundPage('info',"User closed app window", this);
+        if (this.channel) {
+            this.logBackgroundPage('log', 'Stopping channel', this.channel);
+            this.channel.stop();
+        }
+         
         var resetSystemMsg = new ResetSystemMessage();
         resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
 

@@ -203,7 +203,7 @@
             }.bind(this.host);
 
             var channel = new RxScanMode({
-                log: false,
+                log: true,
                 channelId: {
                     deviceNumber: 0,
                     //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
@@ -211,6 +211,8 @@
                     transmissionType: 0
                 }
             });
+
+            this.channel = channel;
 
             channel.addEventListener('page',this.onpage.bind(this))
 

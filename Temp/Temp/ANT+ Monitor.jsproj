@@ -143,7 +143,6 @@
     <Content Include="bower_components\libant\messages\SetSerialNumChannelIdMessage.js" />
     <Content Include="bower_components\libant\messages\SetTransmitPowerMessage.js" />
     <Content Include="bower_components\libant\messages\UnAssignChannelMessage.js" />
-    <Content Include="bower_components\libant\package.json" />
     <Content Include="bower_components\libant\profiles\antfs\crc.js" />
     <Content Include="bower_components\libant\profiles\antfs\deviceProfile_ANTFS.js" />
     <Content Include="bower_components\libant\profiles\backgroundScanningChannel.js" />
@@ -164,7 +163,6 @@
     <Content Include="bower_components\libant\profiles\sdm\SDMPage2.js" />
     <Content Include="bower_components\libant\profiles\spdcad\deviceProfile_SPDCAD.js" />
     <Content Include="bower_components\libant\profiles\spdcad\SPDCADPage0.js" />
-    <Content Include="bower_components\libant\profiles\WebSocketManager.js" />
     <Content Include="bower_components\libant\README.md" />
     <Content Include="bower_components\libant\settings.js" />
     <Content Include="bower_components\libant\usb\USBChrome.js" />
