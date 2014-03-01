@@ -820,15 +820,17 @@
         if (page.currentTemp !== undefined) {
 
             if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], true, false, false);
+                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
 
             }
             else {
 
-                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], true, false, false);
+                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
 
 
             }
+
+            this.redrawIntegratedChart();
 
 
         }
@@ -1096,7 +1098,7 @@
     ANTMonitorUI.prototype.redrawIntegratedChart = function () {
         // Don't attempt redraw when tab is not scheduled for any layout
         // Otherwise layout will be cluttered (particularly the legend items in Highcharts) changing display to block again
-        if (this.tabMain.currentStyle.display !== 'none') {
+        if (window.getComputedStyle(this.tabMain).getPropertyValue('display') !== 'none') {
             this.sensorChart.integrated.lastRedrawTimestamp = Date.now(); // Last redraw time
             this.sensorChart.integrated.chart.redraw();
         }
@@ -1279,9 +1281,9 @@
             if (!this.sensorChart)
                 return;
 
-            if (this.tabMain.currentStyle.display === 'none')
+            if (window.getComputedStyle(this.tabMain).getPropertyValue('display') === 'none')
             {
-                console.warn('tabMain display none!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+               
                 return;
             }
 

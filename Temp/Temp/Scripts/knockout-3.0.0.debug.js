@@ -2198,6 +2198,7 @@ ko.exportSymbol('virtualElements.setDomNodeChildren', ko.virtualElements.setDomN
         'parseBindingsString': function(bindingsString, bindingContext, node, options) {
             try {
                 var bindingFunction = createBindingsStringEvaluatorViaCache(bindingsString, this.bindingCache, options);
+             
                 return bindingFunction(bindingContext, node);
             } catch (ex) {
                 ex.message = "Unable to parse bindings.\nBindings value: " + bindingsString + "\nMessage: " + ex.message;

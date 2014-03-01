@@ -10469,8 +10469,7 @@ Legend.prototype = {
 
 		// calculate the positions for the next line
 		bBox = li.getBBox();
-		console.info("!!!!!!!!!!!!!legend item bBox", bBox.height,bBox.width,bBox);
-
+		
 		itemWidth = item.legendItemWidth = 
 			options.itemWidth || item.legendItemWidth || symbolWidth + symbolPadding + bBox.width + itemDistance +
 			(showCheckbox ? 20 : 0);
@@ -13367,7 +13366,7 @@ Series.prototype = {
 		// destroy old points
 		i = (oldData && oldData.length) || 0;
 		while (i--) {
-		    console.log("i=", i);
+		    
 			if (oldData[i] && oldData[i].destroy) {
 				oldData[i].destroy();
 			}
