@@ -57,12 +57,12 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
 
         // Why not app.onresume ?
         Windows.UI.WebUI.WebUIApplication.addEventListener("resuming", app.onresume, false);
-    }
+    };
 
     HostWin81.prototype.init = function () {
         this.handleLifeCycleEvents();
         this.loadSubSystems(); // usb and storage
-    }
+    };
 
     return HostWin81;
 

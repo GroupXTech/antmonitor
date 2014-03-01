@@ -9,6 +9,8 @@
 
         this.showCredits = ko.observable(false),
 
+        this.show24HMaxMin = ko.observable(false);
+
         //this.temperatureModes: TemperatureVM.prototype.MODES,
 
         this.showSensors = {
@@ -19,13 +21,15 @@
 
             ENVIRONMENT : ko.observable(true),
 
-            };
+        };
+
+        this.showTimer = ko.observable(false);
 
        
         // Behavior
 
         this.toggleShowCredits = SettingVM.prototype.toggleShowCredits.bind(this);
-        this.toggleShowAdditionalInfo = SettingVM.prototype.toggleShowAdditionalInfo.bind(this);
+       
     
         this.toggleShowSensor = SettingVM.prototype.toggleShowSensor.bind(this); 
 
@@ -35,11 +39,7 @@
         this.showCredits(!this.showCredits());
     };
 
-    SettingVM.prototype.toggleShowAdditionalInfo = function (data, event) {
-        this.showAdditionalInfo(!this.showAdditionalInfo());
-    };
-
-   
+  
 
     // Function is also called during applyBindings at initialization
     SettingVM.prototype.toggleShowSensor = function (sensorType,viewModel,event) {

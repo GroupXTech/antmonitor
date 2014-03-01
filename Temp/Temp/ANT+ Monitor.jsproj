@@ -59,6 +59,8 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <Content Include="bower_components\libant\events.js" />
+    <Content Include="icon\sensorgraph.png" />
+    <Content Include="icon\temperature-icon-128.png" />
     <Content Include="icon\timer.png" />
     <Content Include="icon\refresh.png" />
     <Content Include="icon\lap.png" />

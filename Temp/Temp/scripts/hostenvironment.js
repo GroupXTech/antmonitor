@@ -152,7 +152,9 @@
              
         //}
 
-        if (this.logger && this.logger.logging) this.logger.log('info', ' received message event', event);
+        if (this.logger && this.logger.logging) this.logger.log('info', 'Host environment received message event', event);
+        if (!this.logger)
+            console.info(Date.now(), 'Host environment received message event', event);
 
         // UI frame ready 
         if (data === 'ready')
@@ -167,7 +169,7 @@
             
         }
 
-    }
+    };
 
     // Receives page from device profile and forwards it to the UI frame
     HostEnvironment.prototype.onpage = function (page)
@@ -191,7 +193,7 @@
             if (this.logger && this.logger.logging)
                 this.logger.log('error', ' error', error, 'page from device profile', this.pageFromDeviceProfile);
         }
-    }
+    };
 
     // Host environment must hava a UI frame in the document
     HostEnvironment.prototype.isUIFramePresent = function ()
@@ -201,7 +203,7 @@
             return false;
         else
             return true;
-    }
+    };
 
     // Determine app execution environment
     HostEnvironment.prototype.findExecutionEnvironment = function ()
@@ -218,7 +220,7 @@
             else
                 this.executionEnvironment = undefined;
 
-    }
+    };
 
     HostEnvironment.prototype.logToChromeBackgroundPage = function ()
     {
@@ -227,7 +229,7 @@
             if (this.logger && this.logger.logging)
                 this.logger.log('error', this.name+' has no reference to the chrome background page window, cannot log any information');
         }
-    }
+    };
 
     // Handle chrome onClosed event
     HostEnvironment.prototype.onAppWindowClosed = function ()
@@ -252,7 +254,7 @@
         //}
 
         //window.removeEventListener('message', messageHandler);
-    }
+    };
 
     // Require ANT host and USB and start initialization
     HostEnvironment.prototype.start = function ()
@@ -300,7 +302,7 @@
         require(['anthost', USBModuleId, 'profiles/environment/deviceProfile_ENVIRONMENT', 'profiles/RxScanMode', storageModuleId, 'logger'],
             this.onSubsystemLoaded.bind(this));
 
-    }
+    };
 
    
     // Start as a windows app

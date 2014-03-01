@@ -26,7 +26,7 @@
         }.bind(this), 3000);
 
         console.info(this.name+' location: ' + window.location.href);
-
+        
         requirejsConfiguration = {
 
             baseUrl: '../bower_components/libant',
@@ -113,7 +113,7 @@
         }
         
 
-    }
+    };
 
     ANTMonitorUI.prototype.sendReadyEvent = function () {
        
@@ -121,7 +121,7 @@
         // Only '* targetOrigin is supported in Chrome App, tried with '/', but got "Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('null') does not match the recipient window's origin ('chrome-extension://njnnocbhcjoigjfpfgkglahgjhppagmp')."
 
        window.parent.postMessage('ready', '*');
-    }
+    };
 
     ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, Timer, Logger, TemperatureConverter) {
 
@@ -216,7 +216,7 @@
 
         //    this.storage.get(show24hMaxMinKey, function _fetchShow24hMaxMin(db) {
 
-        //        rootVM.settingVM.show24H = ko.observable(db[show24hMaxMinKey] === "true" || false);
+        //        rootVM.settingVM.show24HMaxMin = ko.observable(db[show24hMaxMinKey] === "true" || false);
 
         //        this.configureKnockout();
 
@@ -242,6 +242,8 @@
 
         rootElement.style.display = "block";
 
+        this.tabMain = document.getElementById('tabMain');
+        
         this.createIntegratedChart();
 
     };
@@ -271,7 +273,7 @@
 
             }
         }
-    }
+    };
 
     ANTMonitorUI.prototype.createIntegratedChart = function () {
 
@@ -296,6 +298,10 @@
                 //width: 200,
                 //  spacing: [7, 7, 7, 7]
             },
+
+            //legend: {
+            //    itemWidth: 240
+            //},
 
             title: {
                 text: '',
@@ -748,11 +754,11 @@
 
         // highcharts call this function with a this object literal and sends no arguments -> antUI closure variable used instead  to keep a reference to our this
 
-        var antUI = this;
+       
         this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatterWrapper = function _liveTrackingxAxisLabelFormatterWrapper()
         {
            return antUI.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter.call(antUI,this);
-        }
+        };
 
         // Override default formatter with our new live tracking formatter
         xAxis.labelFormatter = this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatterWrapper;
@@ -1088,8 +1094,12 @@
     };
 
     ANTMonitorUI.prototype.redrawIntegratedChart = function () {
-        this.sensorChart.integrated.lastRedrawTimestamp = Date.now(); // Last redraw time
-        this.sensorChart.integrated.chart.redraw();
+        // Don't attempt redraw when tab is not scheduled for any layout
+        // Otherwise layout will be cluttered (particularly the legend items in Highcharts) changing display to block again
+        if (this.tabMain.currentStyle.display !== 'none') {
+            this.sensorChart.integrated.lastRedrawTimestamp = Date.now(); // Last redraw time
+            this.sensorChart.integrated.chart.redraw();
+        }
     };
 
     ANTMonitorUI.prototype.processRR = function (page) {
@@ -1224,29 +1234,29 @@
 
                 break;
 
-            case 124:
+            //case 124:
 
-                if (!deviceTypeVM)
-                    this.addFootpodSeries(page);
-                else {
+            //    if (!deviceTypeVM)
+            //        this.addFootpodSeries(page);
+            //    else {
 
-                    if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
-                        currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false,
-                            //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                            false,
-                            false);
+            //        if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
+            //            currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
+            //            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false,
+            //                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+            //                false,
+            //                false);
 
 
-                    }
+            //        }
 
-                    //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                    //    this.redrawIntegratedChart();
-                    //}
+            //        //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
+            //        //    this.redrawIntegratedChart();
+            //        //}
 
-                }
+            //    }
 
-                break;
+            //    break;
 
             default:
 
@@ -1259,7 +1269,7 @@
 
     ANTMonitorUI.prototype.getTimezoneOffsetInMilliseconds = function () {
         return (new Date()).getTimezoneOffset() * -60000; // 1000 ms pr second = 60000 ms / minute
-    }
+    };
 
     ANTMonitorUI.prototype.startRedrawInterval = function (delay) {
         var redrawHandler = function () {
@@ -1268,6 +1278,12 @@
 
             if (!this.sensorChart)
                 return;
+
+            if (this.tabMain.currentStyle.display === 'none')
+            {
+                console.warn('tabMain display none!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                return;
+            }
 
             for (serieNr = 0; serieNr < this.sensorChart.integrated.chart.series.length; serieNr++) {
 
@@ -1279,9 +1295,9 @@
         }.bind(this);
 
         // to do: maybe use array instead? clearInterval on suspend/shutdown?
-        this.timerID.interval['redrawIntegratedChart'] = setInterval(redrawHandler, delay);
+        this.timerID.interval.redrawIntegratedChart = setInterval(redrawHandler, delay);
 
-    }
+    };
 
     // Clear all timeout and intervals
     ANTMonitorUI.prototype.clearTimers = function ()
@@ -1311,7 +1327,7 @@
 
 
         
-    }
+    };
 
    
     void new ANTMonitorUI();

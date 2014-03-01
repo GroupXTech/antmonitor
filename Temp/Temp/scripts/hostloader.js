@@ -107,7 +107,7 @@
 
         app.start();
 
-    }
+    };
 
     HostLoader.prototype.loadAndInit = function ()
     {
@@ -124,7 +124,7 @@
            
                 this.host.init();
         }.bind(this));
-    }
+    };
 
     HostLoader.prototype.init = function ()
    {
@@ -140,7 +140,7 @@
                 this.loadAndInit();
           
         }
-    }
+    };
 
     HostLoader.prototype.PROTOCOL = {
         MS: 'ms-appx:',
@@ -154,7 +154,7 @@
             return false;
         else
             return true;
-    }
+    };
    
     // Is the execution environment windows?
     HostLoader.prototype.isWindowsHost = function () {
@@ -195,7 +195,7 @@
             this.hostEnvironmentModuleId = undefined;
         }
 
-    }
+    };
 
    
 

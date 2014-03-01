@@ -1,4 +1,4 @@
-﻿define(['logger'], function _requireDefine(Logger) {
+define(['logger'], function _requireDefine(Logger) {
     'use strict';
 
     function GenericHostEnvironment(options) {
@@ -18,10 +18,16 @@
 
         this.name = 'genericHost';
 
+        // String id of module
         this.moduleId = {
             storage: undefined,
             usb: undefined
         };
+        
+        // Constructor function to modules
+        this.module = {
+            
+        }
 
         // Setup receiver of message events
 
@@ -83,8 +89,23 @@
         this.storage = new Storage();
 
         this.host = new ANTHost();
+        
+        this.module.usb = USBHost;
+        this.module.rxscanmode = RxScanMode;
+       
+        
+        // Get default device specified by user
+        this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
+   
+            this.configureUSB(db[this.storage.__proto__.key.defaultDeviceId]);
+        }.bind(this));
+};
 
-        var USBoptions = {
+GenericHostEnvironment.prototype.configureUSB = function(deviceId) {
+     
+ var USBoptions = {
+     
+            deviceId : deviceId,
 
             log: true,
 
@@ -150,19 +171,10 @@
                 onStopped: function () { }.bind(this.host),
 
                 onUpdated: function () { }.bind(this.host)
+                }
+            };
 
-            }
-        };
-
-        this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
-
-            USBoptions.deviceId = db[this.storage.__proto__.key.defaultDeviceId];
-            configureUSB.bind(this)();
-        }.bind(this));
-
-        function configureUSB() {
-
-            var usb = new USBHost(USBoptions),
+            var usb = new this.module.usb(USBoptions),
                 hostOptions,
                 hostInitCB;
 
@@ -202,7 +214,7 @@
 
             }.bind(this.host);
 
-            var channel = new RxScanMode({
+            var channel = new this.module.rxscanmode({
                 log: true,
                 channelId: {
                     deviceNumber: 0,
@@ -214,7 +226,7 @@
 
             this.channel = channel;
 
-            channel.addEventListener('page',this.onpage.bind(this))
+            channel.addEventListener('page',this.onpage.bind(this));
 
             hostInitCB = function _hostInitCB(error) {
                 // console.trace();
@@ -234,7 +246,7 @@
                         channelNumber: 0,
                         networkNumber: 0,
                         // channelPeriod will be ignored for RxScanMode channel
-                        channelPeriod: TEMPprofile.prototype.CHANNEL_PERIOD_ALTERNATIVE, // 0.5 Hz - every 2 seconds
+                        //channelPeriod: TEMPprofile.prototype.CHANNEL_PERIOD_ALTERNATIVE, // 0.5 Hz - every 2 seconds
                         configurationName: 'slave only',
                         channel: channel,
                         open: true
@@ -244,10 +256,8 @@
             }.bind(this);
 
             this.host.init(hostOptions, hostInitCB);
-        }
+        };
 
-
-    };
 
     // Receives page from device profile and forwards it to the UI frame
     GenericHostEnvironment.prototype.onpage = function (page) {
@@ -275,4 +285,5 @@
     };
 
     return GenericHostEnvironment;
+    
 });

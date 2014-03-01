@@ -27,6 +27,8 @@
 
 </head>
 <body>
+    <noscript>Javascript is not enabled in the ui frame - application will only work with javascript turned on. iframe sandbox-attribute flag 'allow-scripts' should be provided in parent frame.</noscript>
+
     <div id="appRootVM">
 
         <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
@@ -49,7 +51,10 @@
 
         <script type="text/html" id="ENVIRONMENT-short-template">
 
-            <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
+
+            <p style="text-align: right">
+                <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
+            </p>
 
             <div data-bind="if: location() !== undefined">
                 <span data-bind="text: location" title="Location"></span>
@@ -70,30 +75,45 @@
 
         <script type="text/html" id="temperature-template">
             <li>
-                <div class="flex rownowrap spacearound centeritems fontlarge">
-                    <div id="flexIcon">
+                
+
+                    <!--<div id="flexIcon">
                         <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: location, attr: {title: ('Sensor id. : '+sensorId+' '+location()) }" />
                         <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !location, attr: {title: ('Sensor id. : '+sensorId) }" />
 
+                    </div>-->
+
+                    <div  class="flex rownowrap spacearound centeritems fontlarge">
+
+                        <p class="temperatureParagraph">
+                            <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
+                        </p>
+                        
+                        <div data-bind="visible: $root.settingVM.show24HMaxMin()" >
+
+                            <p class="temperatureParagraph">
+                                <span class="temperature24H" data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" title="Lowest 24 hour temperature"></span>
+                            </p>
+                        
+                        </div>
+                        
+                        <div data-bind="visible: $root.settingVM.show24HMaxMin()">
+
+                            <p class="temperatureParagraph">
+                                <span class="temperature24H" data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" title="Highest 24 hour temperature"></span>
+                            </p>
+
+                        </div>
+
+                            <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" title="Location" />
+
+                            <span class="timestamp" data-bind="text: formattedTimestamp" title="Last update time"></span>
                     </div>
-
-                    <div id="flexMeasurement" class="flex rownowrap spacearound centeritems fontlarge">
-
-                        <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
-                        <!--<label data-bind="visible: $root.settingVM.show24H">Min</label>-->
-                        <span class="temperature24H" data-bind="html: formattedLow24H, visible: $root.settingVM.show24H, style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" title="Low 24 hour temperature"></span>
-                        <!--<label data-bind="visible: $root.settingVM.show24H">Max</label>-->
-                        <span class="temperature24H" data-bind="html: formattedHigh24H, visible: $root.settingVM.show24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" title="High 24 hour temperature"></span>
-
-                        <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" title="Location" />
-
-                        <span class="timestamp" data-bind="text: formattedTimestamp" title="Last update time"></span>
-                    </div>
-                </div>
+                
 
                 <!-- Background pages -->
 
-                <div id="flexBackground" class="flex rownowrap spacearound centeritems"  data-bind="if: $root.settingVM.showAdditionalInfo()">
+                <div class="flex rownowrap spacearound centeritems backgroundPage"  data-bind="visible: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
                     <!--<div style="display:inline" data-bind="if: _page.broadcast.RSSI !== undefined && _page.broadcast.RSSI.measurementType === 0x20">
                         <span data-bind="text: 'RSSI '+_page.broadcast.RSSI.RSSIValue+' dBm'"></span>
@@ -107,15 +127,17 @@
                         </div>
                     </div>-->
 
-                    <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
+                    <span data-bind="text: sensorId"></span>
+
+                    <div style="display:inline" data-bind="visible: HWRevision() !== undefined ">
                         <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
                     </div>
 
-                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                    <div style="display:inline" data-bind="visible: SWRevision() !== undefined ">
                         <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
                     </div>
 
-                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                    <div style="display:inline" data-bind="visible: (cumulativeOperatingTime() !== undefined) ">
                         <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 1">
@@ -148,7 +170,7 @@
 
         <script type="text/html" id="footpod-template">
             <li>
-                <div id="flexMeasurement">
+                <div >
                     <img class="icon" src="icon/footpod.png" alt="Footpod" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />
 
                     <span data-bind="text: formattedSpeed"></span>
@@ -158,15 +180,13 @@
                     <span data-bind="text: cumulativeStrides"></span>
 
 
-
-
                     <span data-bind="text: status.UseStateFriendly(), visible: status.UseState() === 0"></span>
                     <span data-bind="text: formattedTimestamp"></span>
                 </div>
 
                 <!-- Background pages -->
 
-                <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
 
                     <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
@@ -220,15 +240,17 @@
 
         <script type="text/html" id="spdcad-template">
             <li>
-                <div id="flexDiv">
+                <div>
 
-                    <div id="flexIcon">
+                    <!--<div id="flexIcon">
                         <img class="icon" src="icon/spdcad.png" alt="SPDCAD" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />
 
-                    </div>
+                    </div>-->
+
+                 
 
 
-                    <div id="flexMeasurement">
+                    <div class="flex rownowrap spacearound centeritems">
 
                         <span class="largeNumber" data-bind="text: formattedSpeed" title="Speed"></span>
                         <span class="largeNumber" data-bind="text: formattedCadence" title="Cadence"></span>
@@ -242,8 +264,10 @@
 
                 <!-- Background pages -->
 
-                <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                
+                <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
+                    <span data-bind="text: sensorId"></span>
 
                     <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
                         <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
@@ -277,15 +301,6 @@
 
                     </div>
 
-                    <div style="display: inline">
-                        <span data-bind="text: 'Time '+time()+' s'"></span>
-                        <span data-bind="text: 'Stride '+strideCount()"></span>
-                        <span data-bind="text: 'Use '+status.UseStateFriendly()"></span>
-                        <span data-bind="text: 'Health '+status.SDMHealthFriendly()"></span>
-                        <span data-bind="text: 'Location '+status.SDMLocationFriendly()"></span>
-                        <span data-bind="text: 'Latency '+ updateLatency()+ 's'"></span>
-                    </div>
-
                 </div>
 
             </li>
@@ -294,27 +309,27 @@
         <script type="text/html" id="HRM-template">
             <li>
 
-                <div id="flexDiv">
-                    <div id="flexIcon">
+                <div>
+                   
+                    <div class="flex rownowrap spacearound centeritems">
 
-                        <img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />
-                    </div>
-                    <div id="flexMeasurement">
+                        <!--<img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />-->
 
-
-                        <div style="display: inline" data-bind="if: computedHeartRate !== 0x00">
+                        <div data-bind="if: computedHeartRate !== 0x00">
                             <span class="computedHeartRate" data-bind="text: computedHeartRate"></span>
                         </div>
 
-                        <div style="display: inline" data-bind="if: computedHeartRate === 0x00">
+                        <div data-bind="if: computedHeartRate === 0x00">
                             <span class="computedHeartRate">---</span>
                         </div>
 
-                        <!--<span data-bind="text: RRInterval"></span>-->
+                        <span data-bind="text: RRInterval"></span>
 
                     </div>
 
-                    <div id="flexBackground" data-bind="if: $root.settingVM.showAdditionalInfo()">
+                    <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+
+                        <span data-bind="text: sensorId"></span>
 
                         <!-- HRM page 2 - background -->
 
@@ -347,59 +362,50 @@
 
         <!-- Top level menu -->
 
-        <nav id="appToolbar">
+        <nav id="appToolbar" class="flex rowwrap spacearound centeritems toolbarBackground">
 
+                <div>
+                    <a data-bind="click: settingVM.toggleShowCredits">
 
-            <div id="flexTemperatureMode" class="flex rowwrap spacearound centeritems" >
+                        <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" />
+                        <label style="vertical-align: middle; margin-left : 3px">ANT+ Monitor</label>
+                    </a>
 
-                <!--<label id="lblTemperatureMonitor">Temperature Monitor</label>-->
-                <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" data-bind="click: settingVM.toggleShowCredits" id="lblTemperatureMonitor" src="images/icon-128.png" />
+                </div>
 
-                <a class="tabItem" id="aMain" href="#tabMain" title="Show integrated chart visualizing data from all sensors"><span style="margin-right: 3px">Sensors</span></a>
+                <div class="flex rownowrap flexstart centeritems">
+                    <a class="tabItem"  id="aMain" href="#tabMain" title="Show integrated chart visualizing data from all sensors">
 
-                <!-- ko if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length) -->
-               
-                     <div class="flex rownowrap centeritems flexstart">
-                        
-                        <!-- ko if: (sensorVM.devices.HRM().length)  -->
+                        <img src="icon/sensorgraph.png" class="icon" style="vertical-align: middle; padding-left: 3px" />
+
+                        <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400">Sensors</span>
+                    </a>
+
+                    <div data-bind="if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length)">
+
+                        <div class="flex rownowrap centeritems flexstart">
+
+                            <!-- ko if: (sensorVM.devices.HRM().length)  -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
                                 <img class="icon" src="icon/heart.png" title="Turn on/off visibility of Heart Rate Monitors" alt="Turn on/off visibility of Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length, attr: { title: sensorVM.devices.HRM().length + ' heart rate monitor(s) discovered'}"></sub>
                             </div>
-                        <!-- /ko -->
-
-                        <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
+                            <!-- /ko -->
+                            <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
                                 <img class="icon" src="icon/spdcad.png" title="Turn on/off visibility of Speed and cadence sensors" alt="Turn on/off visibility of Speed and cadence sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length, attr: { title: sensorVM.devices.SPDCAD().length + ' speed and cadence sensor(s) discovered'}"></sub>
                             </div>
-                        <!-- /ko -->
-
-                        <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
+                            <!-- /ko -->
+                            <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
-                                <img class="icon" src="icon/temperature.png" title="Turn on/off visibility of Environment sensors" alt="Turn on/off visibility of Environment sensors" /><sub  data-bind="text: sensorVM.devices.ENVIRONMENT().length, attr: { title: sensorVM.devices.ENVIRONMENT().length + ' environment sensor(s) discovered'}"></sub>
+                                <img class="icon" src="icon/temperature.png" title="Turn on/off visibility of Environment sensors" alt="Turn on/off visibility of Environment sensors" /><sub data-bind="text: sensorVM.devices.ENVIRONMENT().length, attr: { title: sensorVM.devices.ENVIRONMENT().length + ' environment sensor(s) discovered'}"></sub>
                             </div>
-                        <!-- /ko -->
+                            <!-- /ko -->
+
+                        </div>
 
                     </div>
-
-                <!-- /ko -->
-
-                <div class="flex rownowrap spacearound centeritems">
-                    <label class="lblTemperatureMode">&deg;C</label>
-                    <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
-                    <span id="spanSpace"></span>
-                    <label class="lblTemperatureMode">&deg;F</label>
-                    <input class="inpTemperatureMode" type="radio" value="fahrenheit" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
                 </div>
 
-                <div id="divMAXMIN">
-                    <label id="lblMAXMIN">MIN&darr;/MAX&uarr;</label>
-                    <input type="checkbox" data-bind="checked: settingVM.show24H">
-                </div>
-
-                <div class="flex rownowrap spacearound centeritems">
-                    <img src="icon/info.png" data-bind="click: settingVM.toggleShowAdditionalInfo" alt="Information" title="Additional information (i.e operating time)" />
-                    <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
-                </div>
 
                 <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
 
@@ -422,16 +428,17 @@
 
                 </div>
 
+                <!-- ko if: settingVM.showTimer() -->
                 <div id="divTimer" class="flex spacearound centeritems rowwrap">
 
                     <ul id="ulTimer">
-                        
+
                         <!-- http://css-tricks.com/almanac/properties/v/vertical-align/ -->
 
-                        <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: timerVM.reset"><span class="spanTimer alignMiddle" >RESET</span> <img class="alignMiddle" src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
-                        <li><button class="btnTimer" title="Start timer" data-bind="click: timerVM.start"><span class="spanTimer alignMiddle" >START</span> <img class="alignMiddle" src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
-                        <li><button class="btnTimer" title="Lap" data-bind="click: timerVM.lap"><span class="spanTimer alignMiddle" >LAP</span> <img class="alignMiddle" src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
-                        <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop"><span class="spanTimer alignMiddle" >STOP</span> <img class="alignMiddle" src="icon/stop.png" alt="Stop timer" /></button></li>
+                        <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: timerVM.reset"><span class="spanTimer verticalAlignMiddle">RESET</span> <img class="verticalAlignMiddle" src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
+                        <li><button class="btnTimer" title="Start timer" data-bind="click: timerVM.start"><span class="spanTimer verticalAlignMiddle">START</span> <img class="verticalAlignMiddle" src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
+                        <li><button class="btnTimer" title="Lap" data-bind="click: timerVM.lap"><span class="spanTimer verticalAlignMiddle">LAP</span> <img class="verticalAlignMiddle" src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
+                        <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop"><span class="spanTimer verticalAlignMiddle">STOP</span> <img class="verticalAlignMiddle" src="icon/stop.png" alt="Stop timer" /></button></li>
                     </ul>
 
                     <div id="divTimeInfo" class="flex flexstart">
@@ -442,7 +449,7 @@
 
                 </div>
 
-            </div>
+                <!-- /ko -->
 
         </nav>
 
@@ -451,10 +458,10 @@
             <div id="innerDivCredits">
 
                 <!-- http://stackoverflow.com/questions/3106290/align-icons-with-text -->
-                <h2><img class="icon" src='images/icon-128.png' class="alignMiddle" /><span class="alignMiddle" style="margin-left : 3px">ANT+ Monitor</span></h2>
+                <h2><img class="icon verticalAlignMiddle" src='images/icon-128.png' /><span class="verticalAlignMiddle" style="margin-left : 3px">ANT+ Monitor</span></h2>
 
                 <p>The application sets the ANT USB stick into a scanning mode searching on the ANT+ frequency 2457Mhz for broadcasts sent by various sensor types, e.g a heart rate monitor.<p>
-                <p>A big thanks to the effort and creativity in dependant libraries and icons.</p>
+                <p>This project would have been almost impossible without the effort and creativity in supporting dependant libraries and icons.</p>
                 <h3>Libraries</h3>
 
                 <ul>
@@ -510,43 +517,50 @@
                 <div id="flexShortSensorInfo" class="flex rowwrap spacearound flexstartitems">
 
                     <!-- Don't render DOM if sensors for a device type is not available by using ko directive inside comment -->
+
                     <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
 
-                    <div>
-                        <img class="icon" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
-                        <div id="divHRMshort">
-                            <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
-                        </div>
-                    </div>
+                        <div>
+                            <a href="#tabHRM" title="Show heart rate sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
+                                <img class="icon verticalAlignMiddle" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
+                                <span class="verticalAlignMiddle">Heartrate</span>
+                            </a>    
+                                
+                                <div id="divHRMshort">
+                                    <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
+                                </div>
+</div>
 
                     <!-- /ko -->
+
                     <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
 
-                    <div>
-                        <a href="#tabSPDCAD" title="Show temperature sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
-                            <img class="icon alignMiddle" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
-                            <span>Speed and cadence</span>
-                        </a>
+                        <div>
+                            <a href="#tabSPDCAD" title="Show temperature sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
+                                <img class="icon verticalAlignMiddle" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
+                                <span class="verticalAlignMiddle">Speed and cadence</span>
+                            </a>
 
-                        <div id="divSPDCADshort">
-                            <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
+                            <div id="divSPDCADshort">
+                                <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
+                            </div>
+
                         </div>
-
-                    </div>
 
                     <!-- /ko -->
+
                     <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
 
-                    <div>
-                        <a href="#tabEnvironment" title="Show temperature sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
-                            <img class="icon alignMiddle" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
-                            <span>Temperature</span>
-                        </a>
-                        <div id="divENVIRONMENTshort">
-                            <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
-                        </div>
+                        <div>
+                            <a href="#tabEnvironment" title="Show temperature sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
+                                <img class="icon verticalAlignMiddle" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
+                                <span class="verticalAlignMiddle">Temperature</span>
+                            </a>
+                            <div id="divENVIRONMENTshort">
+                                <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
+                            </div>
 
-                    </div>
+                        </div>
 
                     <!-- /ko -->
 
@@ -562,14 +576,48 @@
             </div>
 
             <div id="tabEnvironment" class="hidden">
-                <h2><img src="icon/temperature.png" class="alignMiddle icon" /><span class="alignMiddle">Temperature</span></h2>
-                <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.deviceTypeVM}"></ul>
+
+                <div class="flex rownowrap centeritems spacearound toolbarBackground">
+
+                    <div class="flex rownowrap spacearound centeritems">
+                        <label class="lblTemperatureMode">&deg;C</label>
+                        <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
+                        <span id="spanSpace"></span>
+                        <label class="lblTemperatureMode">&deg;F</label>
+                        <input class="inpTemperatureMode" type="radio" value="fahrenheit" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
+                    </div>
+
+                    <div id="divMAXMIN">
+                        <label id="lblMAXMIN">MIN&darr;/MAX&uarr;</label>
+
+                        <input type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
+                    </div>
+
+                    <div class="flex rownowrap centeritems spacearound" style="margin-left: 10px">
+
+                        <img src="icon/info.png" alt="Information" title="Additional information (i.e operating time)" />
+                        <label style="margin-left : 3px">Background</label>
+                        <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
+
+                    </div>
+
+                </div>
+
+                <h1 class="tabHeading"><img src="icon/temperature-icon-128.png" class="tabHeading" /><span class="tabHeading">Temperature overview</span></h1>
+                
+                <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.ENVIRONMENT}"></ul>
             </div>
 
             <div id="tabSPDCAD" class="hidden">
-                <h2><img src="icon/spdcad.png" class="alignMiddle icon" /><span class="alignMiddle">Speed and cadence</span></h2>
-                <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.deviceTypeVM}"></ul>
+                <h1 class="tabHeading"><img src="icon/spdcad.png" class="tabHeading" /><span class="tabHeading">Speed and cadence overview</span></h1>
+                <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.SPDCAD}"></ul>
             </div>
+
+            <div id="tabHRM" class="hidden">
+                <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading">Heart rate overview</span></h1>
+                <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.HRM}"></ul>
+            </div>
+
 
             
 

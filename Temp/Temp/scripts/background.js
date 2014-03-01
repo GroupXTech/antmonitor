@@ -1,8 +1,16 @@
 ﻿(function () {
 
-    function Background()
+    var loggerFunc;
+    
+
+
+    function Background(configuration)
     {
-      var  requirejsConfiguration = {
+       this.timestamp = {
+          startup : Date.now()
+       };
+        
+        var requirejsConfiguration = {
 
             baseUrl: '../bower_components/libant',
 
@@ -25,14 +33,13 @@
 
         requirejs(deps, function (Logger) {
 
-            this.logger = new Logger({ log: true });
-            if (this.logger && this.logger.logging)
-                this.logger.log('info', 'Logger loaded');
-          
+            this.logger  = new Logger(configuration);
 
         }.bind(this));
+        
+        
 
-        this.startChromeApp();
+        this.startChromeApp(); 
         
     }
 
@@ -40,7 +47,7 @@
     Background.prototype.releaseInterfaceAndCloseDevice = function(TXinformation)
     {
         var logger = this.logger,
-            CLOSE_BP_DELAY = 20000; // Give a chance for onSuspend to be called (its about 15 seconds)
+            CLOSE_BP_DELAY = 15000; // Give a chance for onSuspend to be called (its about 10 seconds)
             WAIT_FOR_RESET_DELAY = 500;
 
         if (TXinformation.resultCode !== 0) {
@@ -125,8 +132,15 @@
 
     Background.prototype.onRestarted = function ()
     {
+        var now = Date.now();
+        this.timestamp.onRestarted = now;
+        
+        var msg = 'App-life cycle event : onRestarted';
         if (this.logger && this.logger.logging)
-            this.logger.log('log', 'App-life cycle event : onRestarted');
+            this.logger.log('log', msg);
+
+        if (!this.logger)
+            console.log(now, msg);
 
         this.createChromeAppWindow();
     };
@@ -134,20 +148,41 @@
     // On win8 is seems like the timeout for setting the "inactive" flag in the extension overview chrome://extensions is 15 seconds
     Background.prototype.onSuspend = function ()
     {
-       
+        var now = Date.now();
+        this.timestamp.onSuspend = now;
+        
+        var msg = 'App-life cycle event : onSuspend - delay from startup '+(this.timestamp.onSuspend-this.timestamp.startup)+' ms. Background page is going down soon';
+    
         if (this.logger && this.logger.logging)
-            this.logger.log('log', 'App-life cycle event : onSuspend');
+            this.logger.log('log',msg );
+
+        if (!this.logger)
+            console.log(now,msg);
     };
 
     Background.prototype.onSuspendCanceled = function () {
+        var now = Date.now();
+        this.timestamp.onSuspendCanceled = now;
+        
+        var msg = 'App-life cycle event : onSuspendCanceled';
         if (this.logger && this.logger.logging)
-            this.logger.log('log', 'App-life cycle event : onSuspendCanceled');
+            this.logger.log('log', msg);
+
+        if (!this.logger)
+            console.log(now, msg);
+
     };
 
     Background.prototype.onLaunched = function (launchData)
     {
+        var now = Date.now();
+        this.timestamp.onLaunched = now;
+        var msg = 'App-life cycle event : onLaunched - launch data';
         if (this.logger && this.logger.logging)
-            this.logger.log('log', 'App-life cycle event : onLaunched - launch data', launchData);
+            this.logger.log('log', msg, launchData);
+
+        if (!this.logger)
+            console.log(now,msg, launchData);
 
         this.createChromeAppWindow();
 
@@ -156,8 +191,16 @@
     // When Chrome is restarted, can be simulated by right-click context menu "simulate browser restart" in the app window
     Background.prototype.onRestarted = function ()
     {
+         var now = Date.now();
+        this.timestamp.onRestarted = now;
+        
+        var msg = 'App-life cycle event : onRestarted';
+
         if (this.logger && this.logger.logging)
-            this.logger.log('log', 'App-life cycle event : onRestarted');
+            this.logger.log('log',msg);
+
+        if (!this.logger)
+            console.log(now,msg);
         
         this.createChromeAppWindow();
     };
@@ -165,29 +208,42 @@
     // Chrome background page handles app life cycles events, i.e onLaunched
     Background.prototype.handleChromeLifeCycleEvents = function () {
 
-        console.info(Date.now(), 'Background page started');
+        var DEFAULT_STARTUP_DELAY = 3000;
+        
+        console.info(Date.now(), 'Background page started - hooking up app life-cycle event handlers');
 
+        setTimeout(function _checkForLaunchOrRestart () {
+            if (!this.timestamp.onLaunched || !this.timestamp.onRestarted)
+            {
+                console.warn(Date.now(),'Has not received expected onLaunched or onRestarted app life-cycle event during '+DEFAULT_STARTUP_DELAY+' ms',this.timestamp);
+            }
+                
+        }.bind(this),DEFAULT_STARTUP_DELAY);
+        
         chrome.app.runtime.onLaunched.addListener(this.onLaunched.bind(this));
         chrome.app.runtime.onRestarted.addListener(this.onRestarted.bind(this));
+        
         chrome.runtime.onSuspend.addListener(this.onSuspend.bind(this));
         chrome.runtime.onSuspendCanceled.addListener(this.onSuspend.bind(this));
 
-        // In case app window want to post messages
+        // In case app window want to post messages to the background page
+        
         this.messageListener = this.onmessage.bind(this); 
         window.addEventListener('message', this.messageListener);
 
-        //chrome.runtime.getPlatformInfo(function _getPlatformInfo(platformInfo) {
-        //    if (this.logger && this.logger.logging)
-        //        this.logger.log('info', 'Platform info', platformInfo);
-        //}.bind(this));
+        chrome.runtime.getPlatformInfo(function (platformInfo) {
+            // Logger probably not loaded yet
+            console.info('Platform info', platformInfo,platformInfo.os,platformInfo.arch,platformInfo.nacl_arch);
+        });
        
     };
 
     Background.prototype.createChromeAppWindow = function () {
+        
         var appWinCreated = function (appWindow) {
            
             if (this.logger && this.logger.logging)
-                this.logger.log('log', 'Created main window ' + appWindow.contentWindow.location.toString());
+                this.logger.log('log', 'Created main window ' + appWindow.contentWindow.location.toString(),appWindow);
 
         }.bind(this),
             
@@ -197,8 +253,11 @@
           minWidth;
 
         if (this.logger && this.logger.logging)
-            this.logger.log('info','Screen available', window.screen);
+            this.logger.log('info','Screen for window', window.screen);
        
+        // Issue: Multimonitor setup on ubuntu -> background window screen gets the screen dimensions of the first enumerated monitor (HDTV) by xrandr,
+        // even if chrome was started on the second enumerated screen (ordinary laptop)
+
         height = Math.round( 0.75 * window.screen.height);
         width = Math.round(0.75 * window.screen.width);
 
@@ -210,6 +269,7 @@
 
     };
 
-    void new Background();
+    void new Background({ log: true });
+    
 
 })();
