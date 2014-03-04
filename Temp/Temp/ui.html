@@ -105,7 +105,7 @@
 
                         </div>
 
-                            <input class="location" placeholder="Location..." data-bind="value: location, valueUpdate: 'afterkeydown'" title="Location" />
+                        <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown', attr: { placeholder : $root.languageVM.location().message }"  />
 
                             <span class="timestamp" data-bind="text: formattedTimestamp" title="Last update time"></span>
                     </div>
@@ -365,7 +365,7 @@
                 <div>
                     <a data-bind="click: settingVM.toggleShowCredits">
 
-                        <img class="icon" title="About ANT+ Monitor" alt="About ANT+ Monitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" />
+                        <img class="icon" alt="About ANT+ Monitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" data-bind="attr: { title: languageVM.ant_monitor().details }" />
                         <label style="vertical-align: middle; margin-left : 3px">ANT+ Monitor</label>
                     </a>
 
@@ -386,17 +386,17 @@
 
                             <!-- ko if: (sensorVM.devices.HRM().length)  -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
-                                <img class="icon" src="icon/heart.png" title="Turn on/off visibility of Heart Rate Monitors" alt="Turn on/off visibility of Heart Rate Monitors" /><sub title="Number of HRM sensors discovered" data-bind="text: sensorVM.devices.HRM().length, attr: { title: sensorVM.devices.HRM().length + ' heart rate monitor(s) discovered'}"></sub>
+                                <img class="icon" src="icon/heart.png"  alt="Turn on/off visibility of Heart Rate Monitors" /><sub  data-bind="text: sensorVM.devices.HRM().length"></sub>
                             </div>
                             <!-- /ko -->
                             <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
-                                <img class="icon" src="icon/spdcad.png" title="Turn on/off visibility of Speed and cadence sensors" alt="Turn on/off visibility of Speed and cadence sensors" /><sub title="Number of SPDCAD sensors discovered" data-bind="text: sensorVM.devices.SPDCAD().length, attr: { title: sensorVM.devices.SPDCAD().length + ' speed and cadence sensor(s) discovered'}"></sub>
+                                <img class="icon" src="icon/spdcad.png" alt="Turn on/off visibility of Speed and cadence sensors" /><sub  data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
                             </div>
                             <!-- /ko -->
                             <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
                             <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
-                                <img class="icon" src="icon/temperature.png" title="Turn on/off visibility of Environment sensors" alt="Turn on/off visibility of Environment sensors" /><sub data-bind="text: sensorVM.devices.ENVIRONMENT().length, attr: { title: sensorVM.devices.ENVIRONMENT().length + ' environment sensor(s) discovered'}"></sub>
+                                <img class="icon" src="icon/temperature.png"  alt="Turn on/off visibility of Environment sensors" /><sub data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>
                             </div>
                             <!-- /ko -->
 
@@ -522,7 +522,7 @@
 
                         <div>
                             <a href="#tabHRM"  class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.heartrate().details }">
-                                <img class=" icon verticalalignmiddle" src="icon/heart.png" />
+                                <img class=" icon verticalAlignMiddle" src="icon/heart.png" />
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.heartrate().message"></span>
                             </a>    
                                 
@@ -588,7 +588,7 @@
                     </div>
 
                     <div id="divMAXMIN">
-                        <label id="lblMAXMIN">MIN&darr;/MAX&uarr;</label>
+                        <label id="lblMAXMIN"><span data-bind="text: languageVM.minimum().abbreviated"></span>&darr;/<span data-bind="text: languageVM.maximum().abbreviated"></span>&uarr;</label>
 
                         <input type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
                     </div>

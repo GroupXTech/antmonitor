@@ -401,7 +401,9 @@
                             fontWeight: 'bold',
                             fontSize: '16px'
                         }
-                    }
+                    },
+
+                    opposite : true
 
                 },
 
@@ -566,7 +568,7 @@
                           enabled: false
                       },
 
-                      opposite: true,
+                      //opposite: true,
 
                       labels:
                      {
@@ -578,9 +580,7 @@
                          }
                      }
 
-
                   }
-
 
             ],
 
@@ -975,7 +975,9 @@
 
                // Disable generation of tooltip data for mouse tracking - improve performance
 
-               enableMouseTracking: false
+               enableMouseTracking: false,
+
+               visible : false // Turn of cadence, often just having speed available is the most relevant
 
            }, false, false);
 

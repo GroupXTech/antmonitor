@@ -1,8 +1,6 @@
-﻿define(['logger'], function _definedLanguageVM(Logger) {
+﻿define(['scripts/resource/language','logger'], function _defineLanguageVM(resource,Logger) {
 
     'use strict';
-
-    var resource;
 
     function LanguageVM(configuration) {
         this.logger = new Logger(configuration);
@@ -12,157 +10,6 @@
         if (this.logger && this.logger.logging)
             this.logger.log('info', 'Navigator language', this.language());
         // Chrome : 'nb', IE 11/Win app : 'nb-NO'
-
-        resource = {
-
-            'nb': {
-
-                temperature: {
-                    message: 'Temperatur'
-                },
-
-                heartrate: {
-                    message: 'Hjertefrekvens',
-                    details: "Vis hjertefrekvens detaljer"
-                },
-
-                speed: {
-                    message : 'Hastighet'
-                },
-
-                cadence: {
-                    message: 'Kadens'
-                },
-
-                sensors: {
-                    message: 'Sensorer',
-                    details: 'Vis integrert graf for alle oppdagede sensorer'
-                },
-
-                temperature_overview: {
-                    message: 'Oversikt',
-                    details : 'Vis temperatur oversikt'
-                },
-
-                    hrm_overview : {
-                     message : 'Oversikt'
-                    },
-
-                 spdcad_overview : {
-                    message : 'Oversikt'
-                },
-
-                about_part1: {
-                   
-                    message : 'Applikasjonen setter ANT USB enheten i skanne modus, og vil søke på ANT+ frekvensen 2457Mhz etter kringkastinger som sendes av diverse sensor typer, e.g en hjertefrekvens måler'
-                },
-
-                about_part2: {
-                   
-                    message: 'Dette projectet ville ha vært nesten umulig å gjennomføre uten innsatsen og kreativiten i avhengige biblioteker og ikon'
-                },
-
-                about_part3: {
-                   
-                 message: 'Applikasjonen og ANT USB biblioteket'
-                },
-
-                about_part4: {
-                   
-                    message: 'er utviklet i Javascript av Henning Knut Skoglund'
-                },
-
-                libraries: {
-                    message: 'Biblioteker'
-                },
-
-                icons: {
-                    message: 'Ikon'
-                },
-
-                speedandcadence: {
-                    message: 'Hastighet og kadens',
-                    details : 'Vis hastighet og kadens detaljer'
-                },
-
-                background: {
-                    message: 'Bakgrunn',
-                    details : 'Vis detaljer fra bakgrunnssider'
-                }
-            },
-
-            'en': {
-
-                temperature: {
-                    message: 'Temperature'
-                },
-
-                heartrate: {
-                    message: 'Heartrate',
-                    details: 'Show heart rate details'
-                },
-
-                speed: {
-                    message : 'Speed'
-                },
-
-                cadence: {
-                    message : 'Cadence'
-                },
-
-                sensors : {
-                    message: 'Sensors',
-                    details: 'Show integrated chart visualizing data from all discovered sensors'
-                },
-
-                temperature_overview: {
-                    message: 'Overview',
-                    details : 'Show temperature overview'
-                },
-
-                hrm_overview : {
-                    message : 'Overview'
-                },
-
-                spdcad_overview : {
-                    message : 'Overview'
-                },
-
-                about_part1: {
-                    message: 'The application sets the ANT USB stick into a scanning mode searching on the ANT+ frequency 2457Mhz for broadcasts sent by various sensor types, e.g a heart rate monitor.'
-                },
-
-                about_part2: {
-                    message : 'This project would have been almost impossible without the effort and creativity in supporting dependant libraries and icons.'
-                },
-
-                about_part3: {
-                    message : 'The application and the ANT USB library'
-                },
-
-                about_part4 : {
-                    message : 'is developed in Javascript by Henning Knut Skoglund'
-                },
-
-                libraries: {
-                    message : 'Libraries'
-                },
-
-                icons: {
-                    message : 'Icons'
-                },
-
-                speedandcadence: {
-                    message: 'Speed and cadence',
-                    details : "Show temperature sensor details"
-                },
-
-                background: {
-                    message: 'Background',
-                    details : 'Show additional sensor details from background pages'
-                }
-            }
-        };
 
         this.temperature = ko.computed(function () { // Dependent observable
             return this.getMessage('temperature');
@@ -221,7 +68,6 @@
             return this.getMessage('icons');
         }.bind(this));
 
-
         this.speedandcadence = ko.computed(function () {
             return this.getMessage('speedandcadence');
         }.bind(this));
@@ -230,12 +76,22 @@
             return this.getMessage('background');
         }.bind(this));
 
+        this.ant_monitor = ko.computed(function () {
+            return this.getMessage('ant_monitor');
+        }.bind(this));
+
+        this.minimum = ko.computed(function () {
+            return this.getMessage('minimum');
+        }.bind(this));
 
 
+        this.maximum = ko.computed(function () {
+            return this.getMessage('maximum');
+        }.bind(this));
 
-
-        
-
+        this.location = ko.computed(function () {
+            return this.getMessage('location');
+        }.bind(this));
 
     };
 

@@ -442,6 +442,7 @@
     <Content Include="scripts\generichostenvironment.js" />
     <Content Include="scripts\hostloader.js" />
     <Content Include="scripts\hostWin81.js" />
+    <Content Include="scripts\resource\language.js" />
     <Content Include="scripts\timer.js" />
     <Content Include="scripts\ui.js" />
     <Content Include="scripts\viewmodel\languageVM.js" />
