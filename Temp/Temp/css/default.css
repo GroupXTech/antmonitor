@@ -199,8 +199,8 @@ h1.detailsHeading::before {
 }
 
 #divHRMshort {
-     width : 100px;
-    height : 75px;
+     /*width : 100px;*/
+    /*height : 75px;*/
     overflow : hidden;
 }
 

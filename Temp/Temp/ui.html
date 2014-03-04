@@ -35,11 +35,13 @@
 
         <script type="text/html" id="HRM-short-template">
             <div data-bind="if: computedHeartRate() !== 0x00">
-                <span title="Current heart rate" class="computedHeartRate" data-bind="text: computedHeartRate"></span>
+                <span title="Current heart rate" class="computedHeartRate verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
+                <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
             </div>
 
             <div data-bind="if: computedHeartRate() === 0x00">
-                <span title="Current heart rate" class="computedHeartRate">---</span>
+                <span title="Current heart rate" class="computedHeartRate verticalAlignMiddle" data-bind="text: '---'"></span>
+                <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
             </div>
 
             <div data-bind="if: RRInterval() >= 0x00">

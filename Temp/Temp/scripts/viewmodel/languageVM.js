@@ -93,6 +93,12 @@
             return this.getMessage('location');
         }.bind(this));
 
+        this.bpm = ko.computed(function () {
+
+           return this.getMessage('bpm');
+         
+        }.bind(this));
+
     };
 
     LanguageVM.prototype.getLanguage = function () {

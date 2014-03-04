@@ -95,6 +95,10 @@
 
             location: {
                 message: 'Sted...'
+            },
+
+            bpm: {
+                message: 'slag/min'
             }
         },
 
@@ -186,6 +190,10 @@
 
             location: {
                 message: 'Location...'
+            },
+
+            bpm: {
+                message :'beats/min'
             }
         }
 
