@@ -51,12 +51,10 @@
 
         // Linux filenames are case sensitive -> can get resource loading problems if module id does not match filename exactly
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'scripts/timer','logger', 'converter/temperatureConverter'],
-            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,Timer,Logger,TempConverter) {
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger', 'converter/temperatureConverter'],
+            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger,TempConverter) {
 
                 this.logger = new Logger({ log: true });
-
-                this.sendReadyEvent();
 
                 this.timerID = {
                     interval: {},
@@ -65,7 +63,7 @@
 
                 this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
 
-                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, Timer,Logger, TempConverter);
+                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer,Logger, TempConverter);
 
     
 
@@ -123,7 +121,7 @@
        window.parent.postMessage('ready', '*');
     };
 
-    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, Timer, Logger, TemperatureConverter) {
+    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer, Logger, TemperatureConverter) {
 
         var rootVM; // Root viewmodel, contains all the other sub-view models
         var tempModeKey;
@@ -147,6 +145,7 @@
         this.viewModel.SPDCADVM = SPDCADVM;
         this.viewModel.TimerVM = TimerVM;
         this.viewModel.SettingVM = SettingVM;
+        this.viewModel.LanguageVM = LanguageVM;
 
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
 
@@ -158,6 +157,8 @@
         this.tempConverter = new TemperatureConverter();
 
         this.viewModel.rootVM = {
+
+            languageVM : new LanguageVM({log : true}),
 
             settingVM: new SettingVM({log : true}),
 
@@ -243,7 +244,7 @@
         rootElement.style.display = "block";
 
         this.tabMain = document.getElementById('tabMain');
-        
+
         this.createIntegratedChart();
 
     };
@@ -313,7 +314,7 @@
                     id: 'temperature-axis',
 
                     title: {
-                        text: 'TEMPERATURE',
+                        text: this.viewModel.rootVM.languageVM.temperature().message.toLocaleUpperCase(),
                         style: {
                             color: 'black',
                             fontSize: '16px',
@@ -366,7 +367,7 @@
                 {
                     id: 'heartrate-axis',
                     title: {
-                        text: 'HEART RATE',
+                        text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
                         style: {
                             color: 'red',
                             fontSize: '16px',
@@ -451,7 +452,7 @@
                  {
                      id: 'bike-speed-axis',
                      title: {
-                         text: 'SPEED',
+                         text: this.viewModel.rootVM.languageVM.speed().message.toLocaleUpperCase(),
                          style: {
                              color: 'blue',
                              fontWeight: 'bold',
@@ -495,7 +496,7 @@
                  {
                      id: 'bike-cadence-axis',
                      title: {
-                         text: 'CADENCE',
+                         text: this.viewModel.rootVM.languageVM.cadence().message.toLocaleUpperCase(),
                          style: {
                              color: 'magenta',
                              fontSize: '16px',
@@ -765,6 +766,8 @@
 
         this.startRedrawInterval(1000);
 
+        this.sendReadyEvent();
+
         // TEST change formatter on x-Axis 
         // setInterval(function () {
         //    integratedChart.options.liveTracking = !integratedChart.options.liveTracking;
@@ -783,7 +786,7 @@
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
             {
-                name: 'Temperature ' + sensorId,
+                name: this.viewModel.rootVM.languageVM.temperature().message + ' '+ sensorId,
                 id: 'ENVIRONMENT-current-' + sensorId,
                 color: 'black',
                 data: [], // tuples [timestamp,value]
@@ -847,7 +850,7 @@
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
           {
-              name: 'Heartrate ' + sensorId,
+              name: this.viewModel.rootVM.languageVM.heartrate().message+' ' + sensorId,
               id: 'HRM-current-' + sensorId,
               color: 'red',
               data: [], // tuples [timestamp,value]
@@ -948,7 +951,7 @@
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
-               name: 'Cadence ' + sensorId,
+               name: this.viewModel.rootVM.languageVM.cadence().message+' ' + sensorId,
                id: 'SPDCAD-cadence-' + sensorId,
                color: 'magenta',
                data: [], // tuples [timestamp,value]
@@ -996,7 +999,7 @@
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
-               name: 'Speed ' + sensorId,
+               name: this.viewModel.rootVM.languageVM.speed().message+' ' + sensorId,
                id: 'SPDCAD-speed-' + sensorId,
                color: 'blue',
                data: [], // tuples [timestamp,value]
@@ -1167,7 +1170,7 @@
                         currentSeries = this.sensorChart.integrated.chart.get('ENVIRONMENT-current-' + sensorId);
 
                         if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)]);
+                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)],false);
                         } else {
                             currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], false,
                                 //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
@@ -1331,7 +1334,6 @@
         
     };
 
-   
     void new ANTMonitorUI();
 
 })();

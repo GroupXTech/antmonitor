@@ -113,7 +113,7 @@
 
                 <!-- Background pages -->
 
-                <div class="flex rownowrap spacearound centeritems backgroundPage"  data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                <div class="flex rowwrap spacearound centeritems backgroundPage"  data-bind="visible: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
                     <!--<div style="display:inline" data-bind="if: _page.broadcast.RSSI !== undefined && _page.broadcast.RSSI.measurementType === 0x20">
                         <span data-bind="text: 'RSSI '+_page.broadcast.RSSI.RSSIValue+' dBm'"></span>
@@ -138,25 +138,25 @@
                     </div>
 
                     <div style="display:inline" data-bind="visible: (cumulativeOperatingTime() !== undefined) ">
-                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 1">
-                            <img src="icon/battery-full.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
-                            <img src="icon/battery.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 4">
-                            <img src="icon/battery-low.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 5">
-                            <img src="icon/battery-empty.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
                         </div>
 
-                        <span data-bind="text: batteryStatusString"></span>
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
                     </div>
 
                 </div>
@@ -186,7 +186,7 @@
 
                 <!-- Background pages -->
 
-                <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                <div class="flex rowwrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
 
                     <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
@@ -198,27 +198,25 @@
                     </div>
 
                     <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
-                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 1">
-                            <img src="icon/battery-full.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
-                            <img src="icon/battery.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 4">
-                            <img src="icon/battery-low.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 5">
-                            <img src="icon/battery-empty.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
                         </div>
 
-                        <span data-bind="text: batteryStatusString"></span>
-
-
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
 
                     </div>
 
@@ -265,7 +263,7 @@
                 <!-- Background pages -->
 
                 
-                <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                <div class="flex rowwrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
                     <!--<div id="flexBattery">-->
                     <span data-bind="text: sensorId"></span>
 
@@ -278,25 +276,25 @@
                     </div>
 
                     <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
-                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 1">
-                            <img src="icon/battery-full.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
-                            <img src="icon/battery.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 4">
-                            <img src="icon/battery-low.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
                         </div>
 
                         <div style="display:inline" data-bind="if: batteryStatus() === 5">
-                            <img src="icon/battery-empty.png" />
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
                         </div>
 
-                        <span data-bind="text: batteryStatusString"></span>
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
 
 
                     </div>
@@ -374,11 +372,12 @@
                 </div>
 
                 <div class="flex rownowrap flexstart centeritems">
-                    <a class="tabItem"  id="aMain" href="#tabMain" title="Show integrated chart visualizing data from all sensors">
+
+                    <a class="tabItem" id="aMain" href="#tabMain" data-bind="attr: {title: languageVM.sensors().details}">
 
                         <img src="icon/sensorgraph.png" class="icon" style="vertical-align: middle; padding-left: 3px" />
 
-                        <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400">Sensors</span>
+                        <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400" data-bind="text: languageVM.sensors().message"></span>
                     </a>
 
                     <div data-bind="if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length)">
@@ -460,35 +459,36 @@
                 <!-- http://stackoverflow.com/questions/3106290/align-icons-with-text -->
                 <h2><img class="icon verticalAlignMiddle" src='images/icon-128.png' /><span class="verticalAlignMiddle" style="margin-left : 3px">ANT+ Monitor</span></h2>
 
-                <p>The application sets the ANT USB stick into a scanning mode searching on the ANT+ frequency 2457Mhz for broadcasts sent by various sensor types, e.g a heart rate monitor.<p>
-                <p>This project would have been almost impossible without the effort and creativity in supporting dependant libraries and icons.</p>
-                <h3>Libraries</h3>
+                <p data-bind="text: languageVM.about_part1().message"><p>
+                <!--<p data-bind="text: languageVM.about_part2"></p>-->
+
+                <h3 data-bind="text: languageVM.libraries().message"></h3>
 
                 <ul>
                     <li>
-                        Charting <a href="http://wwww.highcharts.com" title="Great graphing library" target="_blank">Highcharts</a>
+                        <a href="http://wwww.highcharts.com"  target="_blank">Highcharts</a>
                     </li>
                     <li>
-                        Data-binding <a href="http://knockoutjs.com/index.html" title="Great databinding library" target="_blank">Knockoutjs</a>
+                       <a href="http://knockoutjs.com/index.html"  target="_blank">Knockoutjs</a>
                     </li>
                     <li>
-                        Script loading <a href="http://requirejs.org/" title="Great script loading library" target="_blank">Requirejs</a>
+                         <a href="http://requirejs.org/"  target="_blank">Requirejs</a>
                     </li>
 
                 </ul>
 
-                <h3>Icons</h3>
+                <h3 data-bind="text: languageVM.icons().message"></h3>
 
                 <ul>
                     <li>
-                        Fugue icons <a href="https://github.com/yusukekamiyamane/fugue-icons" title="Most icons are from fugue icons" target="_blank">Fugue Icons</a>
+                        <a href="https://github.com/yusukekamiyamane/fugue-icons" title="Most icons are from fugue icons" target="_blank">Fugue Icons</a>
                     </li>
                     <li>
-                        Visual pharm <a href="http://www.visualpharm.com" title="Temperature icon" target="_blank">Visual Pharm</a>
+                        <a href="http://www.visualpharm.com" title="Temperature icon" target="_blank">Visual Pharm</a>
                     </li>
                 </ul>
                 <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
-                <p>The application and the ANT USB library <a href="https://github.com/hkskoglund/libant" title="Library for interfacing with ANT USB hardware" target="_blank">Libant</a> is entierly developed in Javascript by Henning Knut Skoglund, <time datetime="2013/2014">2013&ndash;2014</time></p>
+                <p><span data-bind="text: languageVM.about_part3().message"></span> <a href="https://github.com/hkskoglund/libant"  target="_blank">Libant</a> <span data-bind="text: languageVM.about_part4().message"></span>, <time datetime="2013/2014">2013&ndash;2014</time></p>
             </div>
 
         </div>
@@ -521,9 +521,9 @@
                     <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
 
                         <div>
-                            <a href="#tabHRM" title="Show heart rate sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
-                                <img class="icon verticalAlignMiddle" src="icon/heart.png" title="Heart Rate Monitors" alt="Heart Rate Monitors" />
-                                <span class="verticalAlignMiddle">Heartrate</span>
+                            <a href="#tabHRM"  class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.heartrate().details }">
+                                <img class=" icon verticalalignmiddle" src="icon/heart.png" />
+                                <span class="verticalAlignMiddle" data-bind="text: languageVM.heartrate().message"></span>
                             </a>    
                                 
                                 <div id="divHRMshort">
@@ -536,9 +536,9 @@
                     <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
 
                         <div>
-                            <a href="#tabSPDCAD" title="Show temperature sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
-                                <img class="icon verticalAlignMiddle" src="icon/spdcad.png" title="Speed and cadence sensors" alt="Speed and cadence sensors" />
-                                <span class="verticalAlignMiddle">Speed and cadence</span>
+                            <a href="#tabSPDCAD"  class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.speedandcadence().details }">
+                                <img class="icon verticalAlignMiddle" src="icon/spdcad.png"  />
+                                <span class="verticalAlignMiddle" data-bind="text: languageVM.speedandcadence().message"></span>
                             </a>
 
                             <div id="divSPDCADshort">
@@ -552,9 +552,9 @@
                     <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
 
                         <div>
-                            <a href="#tabEnvironment" title="Show temperature sensor details" class="tabItem" style="padding-bottom : 8px; padding-right: 3px">
-                                <img class="icon verticalAlignMiddle" src="icon/temperature.png" title="Environment sensors" alt="Environment sensors" />
-                                <span class="verticalAlignMiddle">Temperature</span>
+                            <a href="#tabEnvironment" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.temperature_overview().details }">
+                                <img class="icon verticalAlignMiddle" src="icon/temperature.png"  />
+                                <span class="verticalAlignMiddle" data-bind="text: languageVM.temperature().message"></span>
                             </a>
                             <div id="divENVIRONMENTshort">
                                 <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
@@ -595,26 +595,26 @@
 
                     <div class="flex rownowrap centeritems spacearound" style="margin-left: 10px">
 
-                        <img src="icon/info.png" alt="Information" title="Additional information (i.e operating time)" />
-                        <label style="margin-left : 3px">Background</label>
+                        <img src="icon/info.png" data-bind="attr: { title: languageVM.background().details }" />
+                        <label style="margin-left : 3px" data-bind="text: languageVM.background().message"></label>
                         <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
 
                     </div>
 
                 </div>
 
-                <h1 class="tabHeading"><img src="icon/temperature-icon-128.png" class="tabHeading" /><span class="tabHeading">Temperature overview</span></h1>
+                <h1 class="tabHeading"><img src="icon/temperature-icon-128.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.temperature_overview().message"></span></h1>
                 
                 <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.ENVIRONMENT}"></ul>
             </div>
 
             <div id="tabSPDCAD" class="hidden">
-                <h1 class="tabHeading"><img src="icon/spdcad.png" class="tabHeading" /><span class="tabHeading">Speed and cadence overview</span></h1>
+                <h1 class="tabHeading"><img src="icon/spdcad.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.spdcad_overview().message"></span></h1>
                 <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.SPDCAD}"></ul>
             </div>
 
             <div id="tabHRM" class="hidden">
-                <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading">Heart rate overview</span></h1>
+                <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.hrm_overview().message"></span></h1>
                 <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.HRM}"></ul>
             </div>
 

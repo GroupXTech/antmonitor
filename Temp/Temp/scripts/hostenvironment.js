@@ -162,6 +162,7 @@
             this.uiFrameReady = true;
            
             this.uiFrame = window.frames[0];
+
             if (this.logger && this.logger.logging) 
                 this.logger.log('log', 'UI frame ready to process messages');
            
