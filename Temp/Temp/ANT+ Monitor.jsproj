@@ -471,7 +471,6 @@
     <Content Include="scripts\converter\temperatureConverter.js" />
     <Content Include="scripts\db\storage.js" />
     <Content Include="scripts\db\storageWindows.js" />
-    <Content Include="scripts\hostenvironment.js" />
     <Content Include="scripts\highcharts\highcharts.js" />
     <Content Include="scripts\highcharts\highcharts.src.js" />
     <Content Include="scripts\highcharts\standalone-framework.src.js" />

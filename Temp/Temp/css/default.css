@@ -215,7 +215,7 @@ h1.detailsHeading::before {
 /* It seems like the padding-right moves the scrollbar beyond the max width on the container div which has overflow hidden */
 #divENVIRONMENTshort {
      width : 140px;
-    height : 70px;
+    /*height : 70px;*/
     overflow : hidden;
 }
 
@@ -286,16 +286,18 @@ h1 > img.tabHeading {
     margin :3px;
 }
 
-.temperature, .largeNumber {
+.primary-short-heading {
   
-    font-size: 300%;
+    font-size: 250%;
     font-weight: bold;
+  
     /*width : 90px;*/
 }
 
-.quiteLargeNumber {
-   font-size : 150%;
-   font-weight : bold;
+ .secondary-short-heading {
+   font-size : 125%;
+  
+   /*font-weight : bold;*/
    /*width : 90px;*/
 }
 

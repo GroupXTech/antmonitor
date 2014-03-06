@@ -34,18 +34,20 @@
         <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
 
         <script type="text/html" id="HRM-short-template">
-            <div data-bind="if: computedHeartRate() !== 0x00">
-                <span title="Current heart rate" class="computedHeartRate verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
+            <div style="text-align: center" data-bind="if: computedHeartRate() !== 0x00">
+                <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
                 <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
             </div>
 
-            <div data-bind="if: computedHeartRate() === 0x00">
-                <span title="Current heart rate" class="computedHeartRate verticalAlignMiddle" data-bind="text: '---'"></span>
+            <div style="text-align: center" data-bind="if: computedHeartRate() === 0x00">
+                <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
                 <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
             </div>
 
-            <div data-bind="if: RRInterval() >= 0x00">
-                <span title="Last RR interval (beat to beat interval)" data-bind="text: RRInterval() + ' ms'"></span>
+            <div style="text-align: center" data-bind="if: RRInterval() >= 0x00">
+                
+                <span class="secondary-short-heading verticalAlignMiddle"  data-bind="text: RRInterval"></span>
+                <span class="verticalAlignMiddle">ms (RR)</span>
             </div>
 
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
@@ -53,23 +55,20 @@
 
         <script type="text/html" id="ENVIRONMENT-short-template">
 
+            <div  style="text-align: center" class="primary-short-heading" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"> </div>
 
-            <p style="text-align: right">
-                <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
-            </p>
-
-            <div data-bind="if: location() !== undefined">
-                <span data-bind="text: location" title="Location"></span>
-            </div>
+            <!-- ko if:  location() !== undefined-->
+            <div style="text-align: center" class="secondary-short-heading" data-bind="text: location"></div>
+            <!-- /ko -->
 
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
 
         <script type="text/html" id="SPDCAD-short-template">
 
-            <span class="largeNumber" data-bind="text: formattedSpeed" title="Speed"></span>
+            <span class="primary-short-heading" data-bind="text: formattedSpeed" ></span>
             <div>
-                <span class="quiteLargeNumber" data-bind="text: formattedCadence" title="Cadence"></span>
+                <span class="secondary-short-heading" data-bind="text: formattedCadence" ></span>
             </div>
 
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
@@ -88,13 +87,13 @@
                     <div  class="flex rownowrap spacearound centeritems fontlarge">
 
                         <p class="temperatureParagraph">
-                            <span class="temperature" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" title="Current temperature"></span>
+                            <span  data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" ></span>
                         </p>
                         
                         <div data-bind="visible: $root.settingVM.show24HMaxMin()" >
 
                             <p class="temperatureParagraph">
-                                <span class="temperature24H" data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" title="Lowest 24 hour temperature"></span>
+                                <span class="temperature24H" data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" ></span>
                             </p>
                         
                         </div>
@@ -102,14 +101,14 @@
                         <div data-bind="visible: $root.settingVM.show24HMaxMin()">
 
                             <p class="temperatureParagraph">
-                                <span class="temperature24H" data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" title="Highest 24 hour temperature"></span>
+                                <span class="temperature24H" data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" ></span>
                             </p>
 
                         </div>
 
                         <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown', attr: { placeholder : $root.languageVM.location().message }"  />
 
-                            <span class="timestamp" data-bind="text: formattedTimestamp" title="Last update time"></span>
+                            <span class="timestamp" data-bind="text: formattedTimestamp" ></span>
                     </div>
                 
 
@@ -252,12 +251,12 @@
 
                     <div class="flex rownowrap spacearound centeritems">
 
-                        <span class="largeNumber" data-bind="text: formattedSpeed" title="Speed"></span>
-                        <span class="largeNumber" data-bind="text: formattedCadence" title="Cadence"></span>
-                        <span data-bind="text: formattedCumulativeDistance" title="Distance"></span>
-                        <input id="wheelCircumference" data-bind="value: wheelCircumference" title="Wheel circumference" />
+                        <span  data-bind="text: formattedSpeed" ></span>
+                        <span  data-bind="text: formattedCadence"></span>
+                        <span data-bind="text: formattedCumulativeDistance" ></span>
+                        <input id="wheelCircumference" data-bind="value: wheelCircumference"  />
 
-                        <span data-bind="text: formattedTimestamp" title="Last update time"></span>
+                        <span data-bind="text: formattedTimestamp" ></span>
                     </div>
 
                 </div>
@@ -413,17 +412,17 @@
                 <div id="divENUMERATEDDEVICE">
 
                     <div data-bind="if: deviceVM.enumeratedDevice().length > 1">
-                        <img src="icon/ant_usb.png" alt="Device" title="ANT devices" />
+                        <img src="icon/ant_usb.png" alt="Device"  />
                         <select data-bind="options: deviceVM.enumeratedDevice, optionsText: 'name', value: deviceVM.selectedDevice, optionsCaption: 'Device...', enable:  deviceVM.enumeratedDevice().length > 1"></select>
                     </div>
 
                     <div data-bind="if: deviceVM.enumeratedDevice().length ===  1">
-                        <img src="icon/ant_usb.png" alt="ANT USB Device" title="ANT device" />
+                        <img src="icon/ant_usb.png" alt="ANT USB Device"  />
                         <span data-bind="text: deviceVM.enumeratedDevice()[0].name"></span>
                     </div>
 
                     <div data-bind="if: deviceVM.enumeratedDevice().length ===  0 && deviceVM.enumerationCompleted()">
-                        <img src="icon/no_ant_usb.png" alt="No ANT device" title="No ANT device" />
+                        <img src="icon/no_ant_usb.png" alt="No ANT device"  />
                         <span>No ANT device found</span>
                     </div>
 
@@ -436,16 +435,16 @@
 
                         <!-- http://css-tricks.com/almanac/properties/v/vertical-align/ -->
 
-                        <li><button class="btnTimer" title="Reset timer and chart" data-bind="click: timerVM.reset"><span class="spanTimer verticalAlignMiddle">RESET</span> <img class="verticalAlignMiddle" src="icon/refresh.png" alt="Reset timer and chart" title="Reset timer and chart" /></button></li>
-                        <li><button class="btnTimer" title="Start timer" data-bind="click: timerVM.start"><span class="spanTimer verticalAlignMiddle">START</span> <img class="verticalAlignMiddle" src="icon/start.png" alt="Start timer" title="Start timer" /></button></li>
-                        <li><button class="btnTimer" title="Lap" data-bind="click: timerVM.lap"><span class="spanTimer verticalAlignMiddle">LAP</span> <img class="verticalAlignMiddle" src="icon/lap.png" alt="Lap" title="Lap" /></button></li>
-                        <li><button class="btnTimer" title="Stop timer" data-bind="click: timerVM.stop"><span class="spanTimer verticalAlignMiddle">STOP</span> <img class="verticalAlignMiddle" src="icon/stop.png" alt="Stop timer" /></button></li>
+                        <li><button class="btnTimer"  data-bind="click: timerVM.reset"><span class="spanTimer verticalAlignMiddle">RESET</span> <img class="verticalAlignMiddle" src="icon/refresh.png" alt="Reset timer and chart" /></button></li>
+                        <li><button class="btnTimer"  data-bind="click: timerVM.start"><span class="spanTimer verticalAlignMiddle">START</span> <img class="verticalAlignMiddle" src="icon/start.png" alt="Start timer"  /></button></li>
+                        <li><button class="btnTimer"data-bind="click: timerVM.lap"><span class="spanTimer verticalAlignMiddle">LAP</span> <img class="verticalAlignMiddle" src="icon/lap.png" alt="Lap"  /></button></li>
+                        <li><button class="btnTimer"  data-bind="click: timerVM.stop"><span class="spanTimer verticalAlignMiddle">STOP</span> <img class="verticalAlignMiddle" src="icon/stop.png" alt="Stop timer" /></button></li>
                     </ul>
 
                     <div id="divTimeInfo" class="flex flexstart">
-                        <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap"><span class="spanElapsedTimer" style="margin-left : 3px;margin-right: 5px">TOTAL</span><span class="largeNumber" id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span></div>
+                        <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap"><span class="spanElapsedTimer" style="margin-left : 3px;margin-right: 5px">TOTAL</span><span  id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span></div>
 
-                        <div id="divLapElapsedTime" class="flex spacearound centeritems rowwrap" style="margin-left : 5px"><span class="spanElapsedTimer" style="margin-right: 5px">LAP</span><span class="largeNumber" id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span></div>
+                        <div id="divLapElapsedTime" class="flex spacearound centeritems rowwrap" style="margin-left : 5px"><span class="spanElapsedTimer" style="margin-right: 5px">LAP</span><span  id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span></div>
                     </div>
 
                 </div>
@@ -483,10 +482,10 @@
 
                 <ul>
                     <li>
-                        <a href="https://github.com/yusukekamiyamane/fugue-icons" title="Most icons are from fugue icons" target="_blank">Fugue Icons</a>
+                        <a href="https://github.com/yusukekamiyamane/fugue-icons"  target="_blank">Fugue Icons</a>
                     </li>
                     <li>
-                        <a href="http://www.visualpharm.com" title="Temperature icon" target="_blank">Visual Pharm</a>
+                        <a href="http://www.visualpharm.com"  target="_blank">Visual Pharm</a>
                     </li>
                 </ul>
                 <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
@@ -495,24 +494,7 @@
 
         </div>
 
-        <div>
-
-            <nav id="tabNav">
-               
-            </nav>
-
-            <!--<div class="hidden" id="div1">
-            <p>Div1</p>
-            <div id="chart" max-height="200" max-width="100"></div>
-        </div>
-        <div class="hidden" id="div2">
-            <p>Div2</p>
-        </div>
-        <div class="hidden" id="div3">
-            <p>Div3</p>
-        </div>-->
-
-
+      
 
             <div id="tabMain" class="hidden">
 
@@ -619,11 +601,6 @@
                 <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.hrm_overview().message"></span></h1>
                 <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.HRM}"></ul>
             </div>
-
-
-            
-
-        </div>
     </div>
 </body>
 </html>

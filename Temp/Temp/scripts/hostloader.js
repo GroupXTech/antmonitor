@@ -64,7 +64,6 @@
 
         console.info('Requirejs configuration', requirejsConfiguration);
 
-
         requirejs.config(requirejsConfiguration);
 
     }
@@ -197,12 +196,8 @@
 
     };
 
-   
-
     var hostLoader = new HostLoader();
     
         hostLoader.init();
     
-    
-
 })(); // Enclose in separate lexical environment by convention (to not interfere with the global object/environment)

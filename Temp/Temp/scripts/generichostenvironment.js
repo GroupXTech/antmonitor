@@ -7,11 +7,8 @@ define(['logger'], function _requireDefine(Logger) {
 
         this.options = options;
 
-        if (options && options.log)
-            this.logger = new Logger(options.log);
-        else
-            this.logger = new Logger();
-
+        this.logger = new Logger(options);
+       
         // Used for sending a page received form the device profile as  a message to UI frame 
 
         this.pageFromDeviceProfile = { page: undefined };
@@ -35,6 +32,12 @@ define(['logger'], function _requireDefine(Logger) {
 
     }
 
+    GenericHostEnvironment.prototype.postMessage = function (obj)
+    {
+        if (this.uiFrame)
+          this.uiFrame.postMessage(obj, '*');
+    }
+
     // Get messages from embedded UI frame, in Chrome it runs in a sandbox mode to avoid content security policy restrictions
     GenericHostEnvironment.prototype.onmessage = function (event) {
 
@@ -53,16 +56,47 @@ define(['logger'], function _requireDefine(Logger) {
 
         if (this.logger && this.logger.logging) this.logger.log('info',  this.name+' received message event', event);
 
-        // UI frame ready 
-        if (data === 'ready') {
-            this.uiFrameReady = true;
+        if (!data) {
+            if (this.logger && this.logger.logging) this.logger.log('warn', this.name + ' no data received');
+            return;
+        }
 
-            this.uiFrame = window.frames[0];
-            if (this.logger && this.logger.logging)
-                this.logger.log('log', this.name+' UI frame ready to process messages');
+        switch (data.response) {
 
-            this.uiFrame.postMessage('ready', '*');
+            // UI frame ready to receive messages
 
+            case 'ready':
+
+                this.uiFrameReady = true;
+
+                this.uiFrame = window.frames[0];
+                if (this.logger && this.logger.logging)
+                    this.logger.log('log', this.name + ' UI frame ready to process messages');
+
+                this.postMessage({ response: 'ready' });
+
+                break;
+
+            // Storage handling
+
+            case 'get':
+
+                this.storage.get(data.key, function _getkey(items) {
+                    this.postMessage({response: 'get', items : items });
+                }.bind(this));
+               
+                break;
+
+            case 'set':
+
+                this.storage.set(data.items);
+
+                break;
+
+            default:
+
+                if (this.logger && this.logger.logging) this.logger.log('error', this.name + ' is unable to do anything with data ', data);
+                break;
         }
 
     };
@@ -83,10 +117,7 @@ define(['logger'], function _requireDefine(Logger) {
     // Initialization of ANT host and USB
     GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, TEMPprofile, RxScanMode, Storage, Logger) {
 
-
-        //   var rootVM = this.viewModel.rootVM;
-
-        this.storage = new Storage();
+        this.storage = new Storage({ log: true });
 
         this.host = new ANTHost();
         
@@ -265,16 +296,19 @@ GenericHostEnvironment.prototype.configureUSB = function(deviceId) {
             this.logger.log('log', this.name + ' received page', page);
 
         if (typeof page.clone === 'function')
-            this.pageFromDeviceProfile.page = page.clone();
+            this.pageFromDeviceProfile = page.clone();
         else
-            this.pageFromDeviceProfile.page = page;
+            this.pageFromDeviceProfile = page;
         // Possible exception here DataCloneError -> try catch block ? IE 11
         try {
             //setTimeout(function () {
             //for (var i = 0; i <= 10000;i++)
             //window.pageFromDeviceProfile = page; // FOR DEBUGGING dataclone error (misses local variabels during debugging in IE 11/VS 2013);
             if (this.uiFrame) // 'ready' must be received from uiFrame before its available (from window.frames[0])
-                this.uiFrame.postMessage(this.pageFromDeviceProfile, '*');
+                this.uiFrame.postMessage({
+                    response: 'page',
+                    page: this.pageFromDeviceProfile
+                }, '*');
             else if (this.logger && this.logger.logging)
                 this.logger.log('warn', 'Received page from device profile, but ui frame message handler is not ready for it', this.pageFromDeviceProfile);
             // }.bind(this), 0);

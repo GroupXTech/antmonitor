@@ -4,103 +4,93 @@
 define(['require','module','exports','logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(require,module,exports,Logger,GenericPage, GenericVM, TemperatureConverter) {
     'use strict';
     
-     function TemperatureVM(configuration) {
-         
-         GenericVM.call(this, configuration);
+    function TemperatureVM(configuration) {
 
-         this.sensorId = ko.observable();
+        GenericVM.call(this, configuration);
 
-         this.tempConverter = new TemperatureConverter();
-          
-         // Idea: Hook up temperatureMode observable to settingsVM
-         this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
-         
-         this.number = ko.observable();
-         
-          // Current temperature
-         this.currentTemp = ko.observable();
-         
-         var getFormattedTemp = function (tempObs,toFixedDigits) {
-              var formattedTemp;
-             
-              if (tempObs() === undefined)
-                     return '--.--'; // Sensor discovered, but temperature observation not available yet
-             
-             switch (this.temperatureMode()) {
-                        case TemperatureVM.prototype.MODE.FAHRENHEIT :
-                   
-                            //formattedTemp = (tempObs()*(9/5)+32);
-                            formattedTemp = this.tempConverter.fromCelciusToFahrenheit(tempObs()).toFixed(toFixedDigits || 2);
-                             break;
-                        
-                        default :
-                             
-                             formattedTemp = tempObs().toFixed(toFixedDigits || 2);
-                             break;
-                     }
-             return formattedTemp;
-         }.bind(this);
-         
-         this.formattedCurrentTemp = ko.computed({
-             read: 
-             function () {
-                  return getFormattedTemp(this.currentTemp,2);
-             }.bind(this)
-            });
-         
-            this.eventCount = ko.observable();
-         
-         // 24 h high
-          this.high24H = ko.observable();
-          this.formattedHigh24H = ko.computed({
-             read: function () {
-                return getFormattedTemp(this.high24H,1)+'&uarr;';
-                
-             }.bind(this)
-            
-         });
-         
-         // 24 h low
-          this.low24H = ko.observable();
-          this.formattedLow24H = ko.computed({
-             read: function () {
-                return getFormattedTemp(this.low24H,1)+'&darr;';
-             }.bind(this)
-            
-         });
+        this.sensorId = ko.observable();
 
-          this.location = ko.observable();
-          var loc;
-         // TO DO : Fix dependecy on storage here
-         if (!window.chrome)
-          loc = window.localStorage[configuration.sensorId + '-location'];
-        // configuration.storage.get(configuration.sensorId + '-location');
-          if (loc)
-              this.location(loc);
+        this.tempConverter = new TemperatureConverter();
 
-         // Subscribe to further updates via UI
+        // Idea: Hook up temperatureMode observable to settingsVM
+        this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
 
-          this.location.subscribe(function (newValue) {
-              window.localStorage[configuration.sensorId + '-location'] = newValue;
-              //if (!this.disableLocationDBUpdate) // !undefined = true
-              //  configuration.storage.set(configuration.sensorId + '-location',newValue);
-          }.bind(this));
+        this.number = ko.observable();
 
-          this.timestamp = ko.observable();
-          this.formattedTimestamp = ko.computed({
-              read: function () {
-                  if (this.timestamp)
+        // Current temperature
+        this.currentTemp = ko.observable();
+
+        var getFormattedTemp = function (tempObs, toFixedDigits) {
+            var formattedTemp;
+
+            if (tempObs() === undefined)
+                return '--.--'; // Sensor discovered, but temperature observation not available yet
+
+            switch (this.temperatureMode()) {
+                case TemperatureVM.prototype.MODE.FAHRENHEIT:
+
+                    //formattedTemp = (tempObs()*(9/5)+32);
+                    formattedTemp = this.tempConverter.fromCelciusToFahrenheit(tempObs()).toFixed(toFixedDigits || 2);
+                    break;
+
+                default:
+
+                    formattedTemp = tempObs().toFixed(toFixedDigits || 2);
+                    break;
+            }
+            return formattedTemp;
+        }.bind(this);
+
+        this.formattedCurrentTemp = ko.computed({
+            read:
+            function () {
+                return getFormattedTemp(this.currentTemp, 2);
+            }.bind(this)
+        });
+
+        this.eventCount = ko.observable();
+
+        // 24 h high
+        this.high24H = ko.observable();
+        this.formattedHigh24H = ko.computed({
+            read: function () {
+                return getFormattedTemp(this.high24H, 1) + '&uarr;';
+
+            }.bind(this)
+
+        });
+
+        // 24 h low
+        this.low24H = ko.observable();
+        this.formattedLow24H = ko.computed({
+            read: function () {
+                return getFormattedTemp(this.low24H, 1) + '&darr;';
+            }.bind(this)
+
+        });
+
+        this.location = ko.observable();
+        //var loc;
+        //// TO DO : Fix dependecy on storage here
+        //if (!window.chrome)
+        //    loc = window.localStorage[configuration.sensorId + '-location'];
+        //// configuration.storage.get(configuration.sensorId + '-location');
+        //if (loc)
+        //    this.location(loc);
+
+        
+
+        this.timestamp = ko.observable();
+        this.formattedTimestamp = ko.computed({
+            read: function () {
+                if (this.timestamp)
                     return (new Date(this.timestamp())).toLocaleTimeString();
-              }.bind(this)
-          });
+            }.bind(this)
+        });
 
-          this._page = undefined;
+        this._page = undefined;
 
-        
-
-        
-
-     }
+    };
     
      TemperatureVM.prototype = Object.create(GenericVM.prototype);
      TemperatureVM.prototype.constructor = TemperatureVM;

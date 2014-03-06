@@ -21,7 +21,7 @@
 
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
-                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready from host environment - messages will probably not reach host');
+                if (this.logger && this.logger.logging) this.logger.log('warn', this.name+' has not received ready from host environment - messages will probably not reach host');
             }
         }.bind(this), 3000);
 
@@ -78,7 +78,11 @@
 
 
             var sourceWindow = event.source,
-                data = event.data;
+                data = event.data,
+                sensorId,
+                vm,
+                key,
+                value;
 
             //// Skip unknown protocols if available
             //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME)) {
@@ -91,19 +95,77 @@
 
             if (this.logger && this.logger.logging) this.logger.log('info', this.name+' received message event', event);
 
-            if (data === 'ready') {
-                this.hostEnvironmentReady = true;
-                if (this.logger && this.logger.logging)
-                    this.logger.log('log', this.name+' ready to process messages');
-            } else if (data && data.page) {
-                if (this.logger && this.logger.logging)
-                    this.logger.log('log', this.name+' received page', data.page);
-
-                this.onpage(data.page);
-            } else if (data === 'clearTimers')
+            if (!data)
             {
-                this.clearTimers();
+                if (this.logger && this.logger.logging) this.logger.log('warn', this.name + ' no data received');
+                return;
             }
+
+            switch (data.response) {
+
+                case 'ready':
+
+                    this.hostEnvironmentReady = true;
+
+                    this.hostFrame = sourceWindow;
+
+                    if (this.logger && this.logger.logging)
+                        this.logger.log('log', this.name + ' ready to process messages');
+
+                    break;
+
+                case 'clearTimers':
+
+                    this.clearTimers();
+
+                    break;
+
+                case 'page':
+
+                    if (this.logger && this.logger.logging)
+                        this.logger.log('log', this.name + ' received page', data.page);
+
+                    this.onpage(data.page);
+
+                    break;
+
+                    // DB handling
+
+                case 'get':
+
+                    for (key in data.items)
+                    {
+                        // Location for temperature sensor
+
+                        if (key.substr(0,8) === 'location')
+                        {
+                            console.timeEnd('initlocation');
+                            sensorId = key.substring(9);
+                            vm = this.viewModel.sensorDictionary[sensorId]; // get viewmodel
+                            if (vm)
+                            {
+                                value = data.items[key];
+                                if (value)  // Don't update with undefined
+                                    vm.location(value);
+                                //else
+                                //    vm.location("testing undefined");
+                            } else 
+                            {
+                                if (this.logger && this.logger.logging) this.logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available', this.viewModel.sensorDictionary);
+                            }
+                        }
+                    }
+
+                    break;
+
+                default:
+
+                    if (this.logger && this.logger.logging) this.logger.log('error', this.name + ' is unable to do anything with data ', data);
+
+                    break;
+
+            }
+           
 
         } catch (e) { // Maybe a dataclone error
             if (this.logger && this.logger.logging)
@@ -115,11 +177,20 @@
 
     ANTMonitorUI.prototype.sendReadyEvent = function () {
        
+        this.postMessage({ response: 'ready' });
+    };
+
+    ANTMonitorUI.prototype.postMessage = function (obj)
+    {
+
         // For Chrome App pr. 29012014 : Sending message from a sandboxed page (in manifest.json) gives origin = 'null' on the receiving window
         // Only '* targetOrigin is supported in Chrome App, tried with '/', but got "Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('null') does not match the recipient window's origin ('chrome-extension://njnnocbhcjoigjfpfgkglahgjhppagmp')."
 
-       window.parent.postMessage('ready', '*');
-    };
+        if (this.hostFrame)
+            this.hostFrame.postMessage(obj, '*');
+        else
+            window.parent.postMessage(obj, '*'); // UI is embedded in a host frame
+    }
 
     ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer, Logger, TemperatureConverter) {
 
@@ -241,7 +312,7 @@
 
         ko.applyBindings(rootVM, rootElement);
 
-        rootElement.style.display = "block";
+        rootElement.style.display = "block"; // Now it's time to show bounded ui
 
         this.tabMain = document.getElementById('tabMain');
 
@@ -805,11 +876,32 @@
                 }
             }, false, false);
 
+        console.time('initlocation');
+        this.postMessage({  response: 'get', key: 'location-' + sensorId }); // Fetch previous location of sensor if available
+
         deviceTypeVM = new TemperatureVM({
             logger: handlerLogger,
             temperatureMode: rootVM.settingVM.temperatureMode,
             sensorId: sensorId
         });
+
+        // In case user changes location, copy to storage
+
+        setTimeout(function () {
+            deviceTypeVM.location.subscribe(function (newValue) {
+                var key,
+                   items = {};
+
+                key = 'location-' + sensorId;
+                items[key] = newValue;
+
+                this.postMessage({
+                    response: 'set',
+                    items: items
+                });
+
+            }.bind(this));
+        }.bind(this), 500); // Wait 500ms before hooking up -> give a chance to update location on initialization without overwrite again
 
         this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
 

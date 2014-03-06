@@ -2,11 +2,12 @@
 
 // Using blocking window.localStorage, simulating async behaviour with callback
 // Maybe todo: Use async. storage instead
-define(['require', 'module', 'exports', 'logger','db/storage'], function (require, module, exports, Logger, Storage) {
+define(['logger', 'db/storage'], function (Logger, Storage) {
+
     'use strict';
 
     function StorageWindows(configuration) {
-        // this._logger = new Logger(configuration);
+        this.logger = new Logger(configuration);
 
     }
 
@@ -14,22 +15,31 @@ define(['require', 'module', 'exports', 'logger','db/storage'], function (requir
     StorageWindows.prototype.constructor = StorageWindows;
 
 
-    StorageWindows.prototype.get = function (key, callback) {
+    StorageWindows.prototype.get = function (items, callback) {
         var db = {};
-        db[key] = window.localStorage[key];
-        if (db[key] === "undefined")
-            db[key] = undefined;
-      if (typeof callback === 'function')
-        callback(db);
+
+        if (typeof items === 'string') { // Only support getting one key
+            db[items] = window.localStorage[items];
+            if (db[items] === "undefined")
+                db[items] = undefined;
+            if (typeof callback === 'function')
+                callback(db);
+        }
     };
 
-    StorageWindows.prototype.set = function (key, value, callback) {
-        if (value !== undefined)
-          window.localStorage[key] = value;
+    StorageWindows.prototype.set = function (items, callback) {
+        var key, value;
+
+       for (var key in items) {
+            value = items[key];
+            if (value !== undefined)
+                window.localStorage[key] = value;
+        }
+
         if (typeof callback === 'function')
             callback();
     }
 
-    module.exports = StorageWindows;
-    return module.exports;
+    return StorageWindows;
+  
 });

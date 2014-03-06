@@ -4,7 +4,9 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
     'use strict';
 
     function HostWin81(options) {
+
         GenericHostEnvironment.call(this,options);
+
         this.name = 'hostWin81';
       
         this.moduleId.storage = 'db/storageWindows';
