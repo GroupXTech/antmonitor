@@ -75,34 +75,36 @@
         </script>
 
         <script type="text/html" id="temperature-template">
+
             <li>
                 
-
                     <!--<div id="flexIcon">
                         <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: location, attr: {title: ('Sensor id. : '+sensorId+' '+location()) }" />
                         <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !location, attr: {title: ('Sensor id. : '+sensorId) }" />
 
                     </div>-->
 
-                    <div  class="flex rownowrap spacearound centeritems fontlarge">
+                    <div  class="flex rowwrap spacearound centeritems">
 
-                        <p class="temperatureParagraph">
+                        <div class="temperatureParagraph">
                             <span  data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" ></span>
-                        </p>
+                        </div>
                         
                         <div data-bind="visible: $root.settingVM.show24HMaxMin()" >
 
-                            <p class="temperatureParagraph">
-                                <span class="temperature24H" data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" ></span>
-                            </p>
+                            <div class="temperatureParagraph">
+                                <span  data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" ></span>
+                                <span>&darr;</span>
+                            </div>
                         
                         </div>
                         
                         <div data-bind="visible: $root.settingVM.show24HMaxMin()">
 
-                            <p class="temperatureParagraph">
-                                <span class="temperature24H" data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" ></span>
-                            </p>
+                            <div class="temperatureParagraph">
+                                <span  data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" ></span>
+                                <span>&uarr;</span>
+                            </div>
 
                         </div>
 

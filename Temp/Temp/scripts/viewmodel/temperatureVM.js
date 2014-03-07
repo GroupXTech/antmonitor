@@ -54,7 +54,7 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
         this.high24H = ko.observable();
         this.formattedHigh24H = ko.computed({
             read: function () {
-                return getFormattedTemp(this.high24H, 1) + '&uarr;';
+                return getFormattedTemp(this.high24H, 1) ;
 
             }.bind(this)
 
@@ -64,7 +64,7 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
         this.low24H = ko.observable();
         this.formattedLow24H = ko.computed({
             read: function () {
-                return getFormattedTemp(this.low24H, 1) + '&darr;';
+                return getFormattedTemp(this.low24H, 1) ;
             }.bind(this)
 
         });
