@@ -442,6 +442,10 @@
     <Content Include="scripts\generichostenvironment.js" />
     <Content Include="scripts\hostloader.js" />
     <Content Include="scripts\hostWin81.js" />
+    <Content Include="scripts\knockout-3.1.0.debug.js" />
+    <Content Include="scripts\knockout-3.1.0.js" />
+    <Content Include="scripts\r.js" />
+    <Content Include="scripts\require.js" />
     <Content Include="scripts\resource\language.js" />
     <Content Include="scripts\timer.js" />
     <Content Include="scripts\ui.js" />
@@ -474,9 +478,6 @@
     <Content Include="scripts\highcharts\highcharts.js" />
     <Content Include="scripts\highcharts\highcharts.src.js" />
     <Content Include="scripts\highcharts\standalone-framework.src.js" />
-    <Content Include="scripts\knockout-3.0.0.debug.js" />
-    <Content Include="scripts\knockout-3.0.0.js" />
-    <Content Include="scripts\require.js" />
     <None Include="TemperatureMonitor_StoreKey.pfx" />
     <Content Include="scripts\viewmodel\footpodVM.js" />
     <Content Include="scripts\viewmodel\genericVM.js" />

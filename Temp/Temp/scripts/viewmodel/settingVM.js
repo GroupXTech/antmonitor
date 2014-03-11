@@ -23,7 +23,7 @@
 
         };
 
-        this.showTimer = ko.observable(false);
+        this.showTimer = ko.observable(true);
 
        
         // Behavior

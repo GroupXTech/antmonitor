@@ -176,43 +176,49 @@ h1.detailsHeading::before {
 
 #divHRMshort {
      /*width : 100px;*/
-    /*height : 75px;*/
+    height : 75px;
     overflow : hidden;
 }
 
 #ulHRMshort {
     
     width :inherit;
-    height : 70px;
+    height : inherit;
     padding-right: 20px;
+    margin : 0px;
 }
 
 /* Hide scrollbar by padding-right and and div wrapper with overflow hidden, based on http://jsfiddle.net/5GCsJ/4/ http://stackoverflow.com/questions/16670931/hide-scroll-bar-but-still-being-able-to-scroll */
 /* It seems like the padding-right moves the scrollbar beyond the max width on the container div which has overflow hidden */
 #divENVIRONMENTshort {
      width : 140px;
-    /*height : 70px;*/
+    height : 85px;
     overflow : hidden;
 }
 
 #ulENVIRONMENTshort {
-     
+    
     width : inherit;
-    height : 65px;
+    height : inherit;
     padding-right : 20px;
+    margin : 0px;
 }
 
 #divSPDCADshort {
+    /*border : 1px solid red;*/
      width : 140px;
-    height : 90px;
+     height : 100px;
     overflow : hidden;
 }
 
 #ulSPDCADshort {
      
+    /*border : 1px solid green;*/
+    margin : 0px;
     width : inherit;
-    height : 85px;
+    height : inherit;
     padding-right : 20px;
+
 }
 
 #ulMeasurements {
@@ -281,7 +287,7 @@ h1 > img.tabHeading {
 }
 
 .primary-short-heading {
-  
+    text-align :center;
     font-size: 250%;
     font-weight: bold;
   
@@ -289,10 +295,16 @@ h1 > img.tabHeading {
 }
 
  .secondary-short-heading {
-   font-size : 125%;
+     text-align :center;
+   font-size : 150%;
   
    /*font-weight : bold;*/
    /*width : 90px;*/
+}
+
+.tertiary-short-heading {
+    text-align :center;
+   font-size : 125%;
 }
 
 /*.temperature24H {

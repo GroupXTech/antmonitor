@@ -1,10 +1,12 @@
 ﻿/* global define: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
-define(['require', 'module', 'exports', 'logger', 'profiles/Page'], function (require, module, exports, Logger, GenericPage) {
+define(['require', 'module', 'exports', 'logger', 'profiles/Page','events'], function (require, module, exports, Logger, GenericPage,EventEmitter) {
     'use strict';
 
     function GenericVM(configuration) {
+        EventEmitter.call(this, configuration);
+
         // this._logger = new Logger(configuration);
         this._logger = configuration.logger || new Logger(configuration); // Use sensorVM logger, or create a new one
 
@@ -28,6 +30,9 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page'], function (re
         this.cumulativeOperatingTimeString = ko.observable();
         this.lastBatteryReset = ko.observable();
     }
+
+    GenericVM.prototype = EventEmitter.prototype;
+    GenericVM.constructor = EventEmitter;
 
     // Merge common page into viewmodel
     GenericVM.prototype.updateCommonPage = function (page)

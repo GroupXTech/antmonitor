@@ -74,6 +74,9 @@
 
     ANTMonitorUI.prototype.onmessage = function (event)
     {
+
+        var firstSetKey;
+
         try {
 
 
@@ -82,7 +85,9 @@
                 sensorId,
                 vm,
                 key,
-                value;
+                value,
+                property,
+                index;
 
             //// Skip unknown protocols if available
             //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME)) {
@@ -133,30 +138,42 @@
 
                 case 'get':
 
+                    // Properties are stored in the format; property-sensorid = value
+
                     for (key in data.items)
                     {
-                        // Location for temperature sensor
-
-                        if (key.substr(0,8) === 'location')
+                    
+                        console.timeEnd('get-' + key);
+                        index = key.indexOf('-', 0);
+                        property = key.substr(0, index);
+                        sensorId = key.substring(index + 1);
+                        vm = this.viewModel.sensorDictionary[sensorId]; // get viewmodel
+                        if (vm)
                         {
-                            console.timeEnd('initlocation');
-                            sensorId = key.substring(9);
-                            vm = this.viewModel.sensorDictionary[sensorId]; // get viewmodel
-                            if (vm)
-                            {
-                                value = data.items[key];
-                                if (value)  // Don't update with undefined
-                                    vm.location(value);
-                                //else
-                                //    vm.location("testing undefined");
-                            } else 
-                            {
-                                if (this.logger && this.logger.logging) this.logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available', this.viewModel.sensorDictionary);
-                            }
+                            value = data.items[key];
+                            if (value)  // Don't update with undefined
+                                vm[property](value);
+                            
+                        } else 
+                        {
+                            if (this.logger && this.logger.logging) this.logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available', this.viewModel.sensorDictionary);
                         }
+
+                        // Startswith common in Ecmascript 6?
+                        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
+                      
                     }
 
                     break;
+
+                case 'set': // ECHO when keys has been stored
+
+                    firstSetKey = Object.keys(data.items)[0];
+                    if (firstSetKey)
+                        console.timeEnd('set-' + firstSetKey);
+
+                    break;
+
 
                 default:
 
@@ -182,9 +199,33 @@
 
     ANTMonitorUI.prototype.postMessage = function (obj)
     {
+        var firstSetKey;
 
         // For Chrome App pr. 29012014 : Sending message from a sandboxed page (in manifest.json) gives origin = 'null' on the receiving window
         // Only '* targetOrigin is supported in Chrome App, tried with '/', but got "Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('null') does not match the recipient window's origin ('chrome-extension://njnnocbhcjoigjfpfgkglahgjhppagmp')."
+
+        if (!obj)
+        {
+            if (this.logger && this.logger.logging)
+                this.logger.log('warn', 'Attempt to post an undefined or null object to host frame, something is wrong');
+        }
+
+        // Performance metric for access to storage
+        if (obj && (obj.response === 'get' || obj.response === 'set'))
+        {
+          
+            if (obj.items) {
+
+                if (typeof obj.items === 'object')
+                    firstSetKey = Object.keys(obj.items)
+                else if (typeof obj.items === 'string')
+                    firstSetKey = obj.items;
+
+                if (firstSetKey)
+                    console.time(obj.response + '-' + firstSetKey);
+            }
+           
+        }
 
         if (this.hostFrame)
             this.hostFrame.postMessage(obj, '*');
@@ -198,7 +239,7 @@
         var tempModeKey;
         var sensorChart;
         
-        this.timer = new Timer({ log: true });
+       
 
         // Holds chart instances
         this.sensorChart = {};
@@ -268,15 +309,77 @@
 
             },
 
-            timerVM: new TimerVM({ log: true }),
+            timerVM: new TimerVM({
+                log: true,
+                timezoneOffsetInMilliseconds : this.timezoneOffsetInMilliseconds
+            }),
 
-            ui: this, // For referencing ui.prototype functions inside viewmodel callbacks,
+            //  ui: this, // For referencing ui.prototype functions inside viewmodel callbacks,
+            // Hook up event listeners instead
 
             sensorChart : sensorChart
 
         };
 
         rootVM = this.viewModel.rootVM;
+
+        rootVM.timerVM.addEventListener('stop', function (latestLocalStopTime) {
+            this.addPlotLine('red', latestLocalStopTime);
+        }.bind(this));
+
+        rootVM.timerVM.addEventListener('start', function (latestLocalStartTime) {
+            this.addPlotLine('green', latestLocalStartTime);
+        }.bind(this));
+
+        rootVM.timerVM.addEventListener('lap', function (localLapTime) {
+            this.addPlotLine('gray', localLapTime);
+        }.bind(this));
+
+
+        rootVM.timerVM.addEventListener('firststart', function () {
+            this._resetViewModels();
+        }.bind(this));
+
+        rootVM.timerVM.addEventListener('reset', function () {
+            var viewModel = this.viewModel.rootVM,
+                chart,
+                dateTimeAxis,
+                seriesNr,
+                currentSeries,
+                len;
+
+            if (viewModel.sensorChart && viewModel.sensorChart.integrated) {
+
+
+                chart = viewModel.sensorChart.integrated.chart;
+
+                // Remove plot lines
+
+                dateTimeAxis = chart.get('datetime-axis');
+
+                if (dateTimeAxis) {
+
+                    dateTimeAxis.removePlotLine(); // undefined id will delete all plotlines (using id === undefined)
+
+                }
+
+                // Remove series data
+
+                for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
+
+                    currentSeries = chart.series[seriesNr];
+
+                    currentSeries.setData([], false);
+                }
+
+
+                this._resetViewModels();
+
+
+            }
+        }.bind(this));
+
+
 
         //tempModeKey = this.storage.__proto__.key.temperaturemode;
 
@@ -319,6 +422,18 @@
         this.createIntegratedChart();
 
     };
+
+    // Reset sensor viewmodels
+    ANTMonitorUI.prototype._resetViewModels = function () {
+      
+        var sensorDictionary = this.viewModel.sensorDictionary;
+
+        for (var sensorId in sensorDictionary) {
+            if (typeof sensorDictionary[sensorId].reset === 'function')
+                sensorDictionary[sensorId].reset();
+
+        }
+    }
 
     ANTMonitorUI.prototype.addPlotLine = function (color, time)
     {
@@ -385,7 +500,8 @@
                     id: 'temperature-axis',
 
                     title: {
-                        text: this.viewModel.rootVM.languageVM.temperature().message.toLocaleUpperCase(),
+                        //text: this.viewModel.rootVM.languageVM.temperature().message.toLocaleUpperCase(),
+                        text : null,
                         style: {
                             color: 'black',
                             fontSize: '16px',
@@ -427,7 +543,7 @@
                     {
                         enabled: true,
                         style: {
-                            //color: '#6D869F',
+                            color: 'black',
                             fontWeight: 'bold',
                             fontSize: '16px'
                         }
@@ -438,7 +554,8 @@
                 {
                     id: 'heartrate-axis',
                     title: {
-                        text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
+                        //text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
+                        text : null,
                         style: {
                             color: 'red',
                             fontSize: '16px',
@@ -468,7 +585,7 @@
                     {
                         enabled: true,
                         style: {
-                            //color: '#6D869F',
+                            color: 'red',
                             fontWeight: 'bold',
                             fontSize: '16px'
                         }
@@ -481,7 +598,8 @@
                  {
                      id: 'footpod-speed-axis',
                      title: {
-                         text: 'Footpod speed',
+                         //text: 'Footpod speed',
+                         text : null,
                          style: {
                              color: 'green',
                              fontSize: '16px',
@@ -525,7 +643,8 @@
                  {
                      id: 'bike-speed-axis',
                      title: {
-                         text: this.viewModel.rootVM.languageVM.speed().message.toLocaleUpperCase(),
+                         //text: this.viewModel.rootVM.languageVM.speed().message.toLocaleUpperCase(),
+                         text : null,
                          style: {
                              color: 'blue',
                              fontWeight: 'bold',
@@ -557,7 +676,7 @@
                     {
                         enabled: true,
                         style: {
-                            //color: '#6D869F',
+                            color: 'blue',
                             fontWeight: 'bold',
                             fontSize: '16px'
                         }
@@ -569,7 +688,8 @@
                  {
                      id: 'bike-cadence-axis',
                      title: {
-                         text: this.viewModel.rootVM.languageVM.cadence().message.toLocaleUpperCase(),
+                         //text: this.viewModel.rootVM.languageVM.cadence().message.toLocaleUpperCase(),
+                         text :  null,
                          style: {
                              color: 'magenta',
                              fontSize: '16px',
@@ -601,7 +721,7 @@
                     {
                         enabled: true,
                         style: {
-                            //color: '#6D869F',
+                            color: 'magenta',
                             fontWeight: 'bold',
                             fontSize: '16px'
                         }
@@ -613,7 +733,8 @@
                   {
                       id: 'hrm-rr-axis',
                       title: {
-                          text: 'RR',
+                          //text: 'RR',
+                          text : null,
                           style: {
                               color: 'gray',
                               fontSize: '16px',
@@ -645,7 +766,7 @@
                      {
                          enabled: true,
                          style: {
-                             //color: '#6D869F',
+                             color: 'gray',
                              fontWeight: 'bold',
                              fontSize: '16px'
                          }
@@ -846,6 +967,45 @@
 
     };
 
+    ANTMonitorUI.prototype.subscribeAndStore = function (vm,properties,sensorId)
+    {
+       
+        var subscribe = function (singleProperty) {
+            vm[singleProperty].subscribe(function (newValue) {
+                var key,
+                   items = {};
+
+                key = singleProperty + '-' + sensorId;
+
+                items[key] = newValue;
+
+                this.postMessage({
+                    response: 'set',
+                    items: items
+                });
+
+            }.bind(this));
+        }.bind(this);
+
+        if (typeof properties === 'string') { // Single property
+          
+            subscribe(properties);
+        }
+        else if (Array.isArray(properties)) // Multiple properties [p1,p2,...]
+        {
+            for (var prop in properties)
+            {
+              
+                subscribe(properties[prop]);
+            }
+        } else
+        {
+            if (this.logger && this.logger.logging)
+                this.logger.log('warn', 'Unable to subscribe to properties of type', typeof properties);
+        }
+        
+    }
+
     ANTMonitorUI.prototype.addTemperatureSeries = function (page) {
 
         var addedSeries,
@@ -876,8 +1036,8 @@
                 }
             }, false, false);
 
-        console.time('initlocation');
-        this.postMessage({  response: 'get', key: 'location-' + sensorId }); // Fetch previous location of sensor if available
+        
+        this.postMessage({  response: 'get', items: 'location-' + sensorId }); // Fetch previous location of sensor if available
 
         deviceTypeVM = new TemperatureVM({
             logger: handlerLogger,
@@ -888,19 +1048,7 @@
         // In case user changes location, copy to storage
 
         setTimeout(function () {
-            deviceTypeVM.location.subscribe(function (newValue) {
-                var key,
-                   items = {};
-
-                key = 'location-' + sensorId;
-                items[key] = newValue;
-
-                this.postMessage({
-                    response: 'set',
-                    items: items
-                });
-
-            }.bind(this));
+            this.subscribeAndStore(deviceTypeVM, 'location',sensorId);
         }.bind(this), 500); // Wait 500ms before hooking up -> give a chance to update location on initialization without overwrite again
 
         this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
@@ -1073,10 +1221,22 @@
 
            }, false, false);
 
+        this.postMessage({ response: 'get', items: ['wheelCircumference-' + sensorId,'speedMode-'+sensorId] }); // Fetch previous wheel circumference and speed mode
+
         deviceTypeVM = new SPDCADVM({
             logger: handlerLogger,
             sensorId: sensorId
         });
+
+        deviceTypeVM.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
+            var timer = this.viewModel.rootVM.timerVM._timer;
+            if (timer.state === timer.__proto__.STATE.STARTED) // Only update cumulatated distance  when timer is running
+                observable(observable()+relativeDistance);
+        }.bind(this));
+
+        setTimeout(function () {
+            this.subscribeAndStore(deviceTypeVM, ['wheelCircumference','speedMode'],sensorId);
+        }.bind(this), 500);
 
         this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
 

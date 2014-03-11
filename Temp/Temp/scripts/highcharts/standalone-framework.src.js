@@ -304,7 +304,7 @@ var HighchartsAdapter = (function () {
                         // HTML styles
                     } else {
                         styles = {};
-                        styles[elem] = this.now + this.unit;
+                        styles[this.prop] = this.now + this.unit;
                         Highcharts.css(elem, styles);
                     }
 
@@ -350,9 +350,10 @@ var HighchartsAdapter = (function () {
                         ret,
                         done,
                         options = this.options,
+                        elem = this.elem,
                         i;
 
-                    if (this.elem.stopAnimation) {
+                    if (elem.stopAnimation || (elem.attr && !elem.element)) { // #2616, element including flag is destroyed
                         ret = false;
 
                     } else if (gotoEnd || t >= options.duration + this.startTime) {
@@ -371,7 +372,7 @@ var HighchartsAdapter = (function () {
 
                         if (done) {
                             if (options.complete) {
-                                options.complete.call(this.elem);
+                                options.complete.call(elem);
                             }
                         }
                         ret = false;

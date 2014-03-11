@@ -70,15 +70,7 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
         });
 
         this.location = ko.observable();
-        //var loc;
-        //// TO DO : Fix dependecy on storage here
-        //if (!window.chrome)
-        //    loc = window.localStorage[configuration.sensorId + '-location'];
-        //// configuration.storage.get(configuration.sensorId + '-location');
-        //if (loc)
-        //    this.location(loc);
-
-        
+      
 
         this.timestamp = ko.observable();
         this.formattedTimestamp = ko.computed({
@@ -163,6 +155,16 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
        // return undefined;
          return "temperature-template";
     };
+
+    TemperatureVM.prototype.reset = function ()
+    {
+        this.sensorId(undefined);
+        this.number(undefined);
+        this.currentTemp(undefined);
+        this.low24H(undefined);
+        this.high24H(undefined);
+        this.timestamp(undefined);
+    }
     
     module.exports = TemperatureVM;
     return module.exports;

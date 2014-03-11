@@ -16,15 +16,35 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
 
 
     StorageWindows.prototype.get = function (items, callback) {
-        var db = {};
+        var db,
+            key,
+            index;
 
-        if (typeof items === 'string') { // Only support getting one key
-            db[items] = window.localStorage[items];
-            if (db[items] === "undefined")
-                db[items] = undefined;
-            if (typeof callback === 'function')
-                callback(db);
+        function readKey()
+        {
+            db[key] = window.localStorage[key];
+            if (db[key] === "undefined")
+                db[key] = undefined;
         }
+
+        if (typeof items === 'string') 
+        { 
+            db = {};
+                key = items;
+             readKey();
+
+          
+        } else if (Array.isArray(items))
+        {
+            db = {};
+            for (index in items) {
+                key = items[index];
+                readKey();
+            }
+        }
+
+        if (typeof callback === 'function')
+            callback(db);
     };
 
     StorageWindows.prototype.set = function (items, callback) {

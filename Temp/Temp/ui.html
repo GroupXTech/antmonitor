@@ -7,8 +7,8 @@
 
     <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
 
-    <script src="/scripts/knockout-3.0.0.debug.js"></script>
-    <!--<script src="/scripts/knockout-3.0.0.js"></script>-->
+    <script src="/scripts/knockout-3.1.0.debug.js"></script>
+    <!--<script src="/scripts/knockout-3.1.0.js"></script>-->
     <!-- Some icons by Yusuke Kamiyamane http://creativecommons.org/licenses/by/3.0/  https://github.com/yusukekamiyamane/fugue-icons -->
     <!--  Highcharts adapter -->
 
@@ -55,10 +55,10 @@
 
         <script type="text/html" id="ENVIRONMENT-short-template">
 
-            <div  style="text-align: center" class="primary-short-heading" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"> </div>
+            <div   class="primary-short-heading" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"> </div>
 
             <!-- ko if:  location() !== undefined-->
-            <div style="text-align: center" class="secondary-short-heading" data-bind="text: location"></div>
+            <div class="secondary-short-heading" data-bind="text: location"></div>
             <!-- /ko -->
 
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
@@ -66,10 +66,11 @@
 
         <script type="text/html" id="SPDCAD-short-template">
 
-            <span class="primary-short-heading" data-bind="text: formattedSpeed" ></span>
-            <div>
-                <span class="secondary-short-heading" data-bind="text: formattedCadence" ></span>
-            </div>
+            <div class="primary-short-heading" data-bind="text: formattedSpeed" ></div>
+            
+            <div class="secondary-short-heading" data-bind="text: formattedCadence"> </div>
+
+            <div class="tertiary-short-heading" data-bind="text: formattedCumulativeDistance"></div>
 
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
@@ -240,28 +241,42 @@
         </script>
 
         <script type="text/html" id="spdcad-template">
-            <li>
-                <div>
 
+            <li>
+               
                     <!--<div id="flexIcon">
                         <img class="icon" src="icon/spdcad.png" alt="SPDCAD" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />
 
                     </div>-->
 
-                 
+                <!-- Main page-->
 
+                    <div class="flex rowwrap spacearound centeritems">
 
-                    <div class="flex rownowrap spacearound centeritems">
+                        
+                        <div>
+                            <span>Speed</span>
+                            <!-- Using name= property to group radio buttons generates exception inside template-->
+                            <input type="radio" value="2" data-bind="checked: speedMode() === 2" />
+                            
+                            <span>Tempo</span>
+                            <input type="radio" value="1" data-bind="checked: speedMode() !== 2" />
+
+                        </div>
+                       
 
                         <span  data-bind="text: formattedSpeed" ></span>
                         <span  data-bind="text: formattedCadence"></span>
                         <span data-bind="text: formattedCumulativeDistance" ></span>
-                        <input id="wheelCircumference" data-bind="value: wheelCircumference"  />
-
+                        
+                        <div>
+                            <!-- Min/max Based on info from https://support.garmin.com/support/searchSupport/case.faces?caseId=%7B8c7b7b10-0424-11de-76c5-000000000000%7D -->
+                            <input id="wheelCircumference" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: wheelCircumference, valueUpdate: 'input'" />
+                            <span style="margin-left: 3px" data-bind="text: wheelCircumference" />
+                        </div>
+                       
                         <span data-bind="text: formattedTimestamp" ></span>
                     </div>
-
-                </div>
 
                 <!-- Background pages -->
 

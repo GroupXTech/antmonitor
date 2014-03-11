@@ -81,7 +81,7 @@ define(['logger'], function _requireDefine(Logger) {
 
             case 'get':
 
-                this.storage.get(data.key, function _getkey(items) {
+                this.storage.get(data.items, function _getkey(items) {
                     this.postMessage({response: 'get', items : items });
                 }.bind(this));
                
@@ -89,7 +89,10 @@ define(['logger'], function _requireDefine(Logger) {
 
             case 'set':
 
-                this.storage.set(data.items);
+                this.storage.set(data.items, function _setKeys() {
+                    this.postMessage({ response : 'set', items : data.items}); // ECHO to ui when data are saved
+                }.bind(this));
+               
 
                 break;
 

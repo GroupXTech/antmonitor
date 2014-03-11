@@ -1,13 +1,16 @@
-﻿define(['converter/timeFormatter','scripts/timer','logger'],function _requireDefineTimerVM(TimeFormatter, Timer, Logger) {
+﻿define(['converter/timeFormatter','scripts/timer','logger','events'],function _requireDefineTimerVM(TimeFormatter, Timer, Logger, EventEmitter) {
 
   
     // Timer model is highly connected to the viewmodel that's interfacing the declarative view in HTML
     function TimerVM(options)
     {
+        EventEmitter.call(this);
+
         //this.currentTime = ko.observable();
 
         // Privates
 
+        this._options = options;
         this._timeFormatter = new TimeFormatter();
         this._timer = new Timer(options);
         this._logger = new Logger(options)
@@ -35,6 +38,9 @@
        
     }
 
+    TimerVM.prototype = EventEmitter.prototype;
+    TimerVM.constructor = TimerVM;
+
     TimerVM.prototype.stop = function _stop(viewModel, event) {
 
         if (!this._timer.stop())
@@ -42,7 +48,9 @@
 
         clearInterval(this._timerID.interval['updateElapsedTime']);
 
-        viewModel.ui.addPlotLine('red', this._timer.getLatestStopTime() + viewModel.ui.timezoneOffsetInMilliseconds);
+        this.emit('stop', this._timer.getLatestStopTime() + this._options.timezoneOffsetInMilliseconds);
+
+        //viewModel.ui.addPlotLine('red', this._timer.getLatestStopTime() + viewModel.ui.timezoneOffsetInMilliseconds);
 
     };
 
@@ -54,7 +62,9 @@
         this.lapElapsedTime(0);
         this.lapNr(this._timer.lapTime.length);
 
-        viewModel.ui.addPlotLine('gray', this._timer.getLatestLapTime() + viewModel.ui.timezoneOffsetInMilliseconds);
+        this.emit('lap',this._timer.getLatestLapTime() + this._options.timezoneOffsetInMilliseconds)
+
+        
     };
 
    
@@ -69,51 +79,31 @@
             this.lapElapsedTime(this._timer.getLapElapsedTime());
         }.bind(this), 1000);
 
-        viewModel.ui.addPlotLine('green', this._timer.getLatestStartTime() + viewModel.ui.timezoneOffsetInMilliseconds);
+        this.emit('start', this._timer.getLatestStartTime() + this._options.timezoneOffsetInMilliseconds);
+
+        //viewModel.ui.addPlotLine('green', this._timer.getLatestStartTime() + viewModel.ui.timezoneOffsetInMilliseconds);
+
+        if (this._timer.event.length === 1 && this._timer.event[0].event === 'start') // Reset all viewmodels on the first start event
+            this.emit('firststart');
 
     };
 
+    
+
     TimerVM.prototype.reset = function (viewModel,event) {
-        var currentSeries,
-           seriesNr,
-           len,
-           chart,
-           dateTimeAxis,
+        var 
            updateElapsedTimeID = this._timerID.interval['updateElapsedTime'];
 
         if (!this._timer.reset())
             return;
 
-        if (viewModel.sensorChart && viewModel.sensorChart.integrated) {
+        this.totalElapsedTime(0);
+        this.lapElapsedTime(0);
 
-            this.totalElapsedTime(0);
-            this.lapElapsedTime(0);
-               
-            if (updateElapsedTimeID !== undefined)
-                clearInterval(updateElapsedTimeID);
+        if (updateElapsedTimeID !== undefined)
+            clearInterval(updateElapsedTimeID);
 
-            chart = viewModel.sensorChart.integrated.chart;
-
-            // Remove plot lines
-
-            dateTimeAxis = chart.get('datetime-axis');
-
-            if (dateTimeAxis) {
-
-                dateTimeAxis.removePlotLine(); // undefined id will delete all plotlines (using id === undefined)
-
-            }
-
-            // Remove series data
-
-            for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
-
-                currentSeries = chart.series[seriesNr];
-
-                currentSeries.setData([], false);
-            }
-
-        }
+        this.emit('reset');
 
     };
 

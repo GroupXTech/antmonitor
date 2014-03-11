@@ -24,7 +24,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
             }.bind(this)
         })
 
-        this.distance = ko.observable();
+        //this.distance = ko.observable();
 
         this.speed = ko.observable();
 
@@ -58,6 +58,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
                 var distStr = '-';
 
                 if (this.cumulativeDistance() !== undefined) {
+
                     switch (this.distanceMode()) {
 
                         case SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL:
@@ -83,9 +84,12 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         this.formattedSpeed = ko.computed({
 
             read: function () {
-                var speedStr = '-', speed = this.speed();
+
+                var speedStr = '--.-',
+                    speed = this.speed();
 
                 if (speed !== undefined) {
+
                     switch (this.speedMode()) {
 
                         //case SPDCADVM.prototype.SPEED_MODE.TEMPO:
@@ -152,6 +156,15 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         if (page.cadence !== undefined)
             this.cadence(page.cadence);
 
+        // Distance
+
+        if (page.relativeCumulativeSpeedRevolutionCount !== undefined)
+        {
+            // this.cumulativeDistance(this.cumulativeDistance() + this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
+            // Update based on timer state === running
+            this.emit('newRelativeDistance', this.cumulativeDistance, this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
+        }
+
         //if (page.profile.hasCommonPages)
         //    this.updateCommonPage(page);
 
@@ -162,6 +175,16 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         // return undefined;
         return "spdcad-template";
     };
+
+    SPDCADVM.prototype.reset = function () {
+        this.sensorId(undefined);
+        this.number(undefined);
+        this.timestamp(undefined);
+        this.speed(undefined);
+        this.cadence(undefined);
+        this.cumulativeDistance(0);
+
+    }
 
    return SPDCADVM;
    

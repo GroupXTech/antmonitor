@@ -2,8 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>RequireJS</id>
-    <version>2.1.9</version>
-    <title>RequireJS</title>
+    <version>2.1.11</version>
     <authors>James Burke</authors>
     <owners>James Burke</owners>
     <licenseUrl>https://github.com/jrburke/requirejs/blob/master/LICENSE</licenseUrl>
@@ -12,8 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A JavaScript module loader.</description>
     <releaseNotes />
-    <copyright>Copyright 2010-2013</copyright>
-    <language />
+    <copyright>Copyright 2010-2014</copyright>
     <tags>JavaScript</tags>
   </metadata>
 </package>
