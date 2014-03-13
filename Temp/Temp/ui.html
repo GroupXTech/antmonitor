@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>ANT+ Monitor</title>
@@ -34,7 +34,9 @@
         <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
 
         <script type="text/html" id="HRM-short-template">
-            <div style="text-align: center" data-bind="if: computedHeartRate() !== 0x00">
+        
+        <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+            <div style="text-align: center" data-bind="if: computedHeartRate() > 0x00">
                 <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
                 <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
             </div>
@@ -49,30 +51,38 @@
                 <span class="secondary-short-heading verticalAlignMiddle"  data-bind="text: RRInterval"></span>
                 <span class="verticalAlignMiddle">ms (RR)</span>
             </div>
-
+         </div>
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
 
         <script type="text/html" id="ENVIRONMENT-short-template">
 
-            <div   class="primary-short-heading" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"> </div>
+            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+            
+                <div   class="primary-short-heading" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"> </div>
 
-            <!-- ko if:  location() !== undefined-->
-            <div class="secondary-short-heading" data-bind="text: location"></div>
-            <!-- /ko -->
+                <!-- ko if:  location() !== undefined-->
+                
+                    <div class="secondary-short-heading" data-bind="text: location"></div>
+                
+                <!-- /ko -->
+            </div>
 
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
 
         <script type="text/html" id="SPDCAD-short-template">
+        
+            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
-            <div class="primary-short-heading" data-bind="text: formattedSpeed" ></div>
-            
-            <div class="secondary-short-heading" data-bind="text: formattedCadence"> </div>
+                <div class="primary-short-heading" data-bind="text: formattedSpeed" ></div>
 
-            <div class="tertiary-short-heading" data-bind="text: formattedCumulativeDistance"></div>
+                <div class="secondary-short-heading" data-bind="text: formattedCadence"> </div>
 
-            <!--<span data-bind="text: ko.toJSON($data)"></span>-->
+                <div class="tertiary-short-heading" data-bind="text: formattedCumulativeDistance"></div>
+            </div>
+
+                <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
 
         <script type="text/html" id="temperature-template">
@@ -446,22 +456,53 @@
                 </div>
 
                 <!-- ko if: settingVM.showTimer() -->
+            
                 <div id="divTimer" class="flex spacearound centeritems rowwrap">
 
                     <ul id="ulTimer">
 
                         <!-- http://css-tricks.com/almanac/properties/v/vertical-align/ -->
 
-                        <li><button class="btnTimer"  data-bind="click: timerVM.reset"><span class="spanTimer verticalAlignMiddle">RESET</span> <img class="verticalAlignMiddle" src="icon/refresh.png" alt="Reset timer and chart" /></button></li>
-                        <li><button class="btnTimer"  data-bind="click: timerVM.start"><span class="spanTimer verticalAlignMiddle">START</span> <img class="verticalAlignMiddle" src="icon/start.png" alt="Start timer"  /></button></li>
-                        <li><button class="btnTimer"data-bind="click: timerVM.lap"><span class="spanTimer verticalAlignMiddle">LAP</span> <img class="verticalAlignMiddle" src="icon/lap.png" alt="Lap"  /></button></li>
-                        <li><button class="btnTimer"  data-bind="click: timerVM.stop"><span class="spanTimer verticalAlignMiddle">STOP</span> <img class="verticalAlignMiddle" src="icon/stop.png" alt="Stop timer" /></button></li>
+                        <li>
+                            <button class="btnTimer" data-bind="click: timerVM.reset">
+                                <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_reset().message"></span> 
+                                <img class="verticalAlignMiddle" src="icon/refresh.png"  />
+                            </button>
+                        </li>
+                        
+                        <li>
+                            <button class="btnTimer"  data-bind="click: timerVM.start">
+                            <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_start().message"></span> 
+                                <img class="verticalAlignMiddle" src="icon/start.png"   />
+                            </button>
+                        </li>
+                        
+                        <li>
+                            <button class="btnTimer"data-bind="click: timerVM.lap">
+                                <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_lap().message"></span> 
+                                <img class="verticalAlignMiddle" src="icon/lap.png"  />
+                            </button>
+                        </li>
+                        
+                        <li>
+                            <button class="btnTimer"  data-bind="click: timerVM.stop">
+                                <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_stop().message"></span> 
+                                <img class="verticalAlignMiddle" src="icon/stop.png"  />
+                            </button>
+                        </li>
                     </ul>
 
                     <div id="divTimeInfo" class="flex flexstart">
-                        <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap"><span class="spanElapsedTimer" style="margin-left : 3px;margin-right: 5px">TOTAL</span><span  id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span></div>
+                        <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap">
+                            <span style="margin-left : 3px;margin-right: 5px" class="spanElapsedTimer" data-bind="text: languageVM.timer_total_elapsed_time().message"></span>
+                            <span  id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span>
+                        </div>
 
-                        <div id="divLapElapsedTime" class="flex spacearound centeritems rowwrap" style="margin-left : 5px"><span class="spanElapsedTimer" style="margin-right: 5px">LAP</span><span  id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()"></span></div>
+                        <div id="divLapElapsedTime" class="flex spacearound centeritems rowwrap" style="margin-left : 5px">
+                            <span style="margin-right: 5px" class="spanElapsedTimer" data-bind="text: languageVM.timer_lap_time().message" ></span>
+                            <span  id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()">
+                            </span>
+                        </div>
                     </div>
 
                 </div>

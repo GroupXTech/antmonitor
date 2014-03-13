@@ -1,4 +1,4 @@
-﻿/* global define: true */
+/* global define: true */
 
 // Main viewmodel class
 define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM'], function (require, module, exports, Logger, GenericPage, GenericVM) {
@@ -132,6 +132,25 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         if (page.modelNumber)
             this.modelNumber(page.modelNumber);
     };
+    
+    HRMVM.prototype.reset = function ()
+    {
+        this.number(undefined);
+        this.heartBeatEventTime(undefined);
+        this.heartBeatCount(undefined);
+        this.computedHeartRate(undefined);
+        this.previousHeartBeatEventTime(undefined);
+        this.RRInterval(undefined);
+        this.cumulativeOperatingTime(undefined);
+        this.cumulativeOperatingTimeString(undefined);
+        this.lastBatteryReset(undefined);
+        this.manufacturerID(undefined);
+        this.serialNumber(undefined);
+        this.manufacturerString(undefined);
+        this.hardwareVersion(undefined);
+        this.softwareVersion(undefined);
+        this.modelNumber(undefined);
+    }
 
     HRMVM.prototype.getTemplateName = function (item) {
         // return undefined;

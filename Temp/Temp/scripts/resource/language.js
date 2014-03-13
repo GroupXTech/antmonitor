@@ -1,4 +1,4 @@
-﻿define(function _defineLanguageResource() {
+define(function _defineLanguageResource() {
     var resource;
 
     resource = {
@@ -69,7 +69,7 @@
             },
 
             speedandcadence: {
-                message: 'Hastighet og kadens',
+                message: 'Hastighet-Kadens',
                 details: 'Vis hastighet og kadens detaljer'
             },
 
@@ -99,6 +99,27 @@
 
             bpm: {
                 message: 'slag/min'
+            },
+            
+            timer_start: {
+                message : 'START'
+            },
+            timer_stop: {
+                message : 'STOPP'
+            },
+            timer_lap : {
+                message : 'RUNDE'
+            },
+            timer_reset:{
+                message : 'NULLSTILL'
+            },
+            
+            timer_total_elapsed_time : {
+                message : 'TID'
+            },
+            
+            timer_lap_time : {
+                message : 'RUNDETID'
             }
         },
 
@@ -164,8 +185,8 @@
             },
 
             speedandcadence: {
-                message: 'Speed and cadence',
-                details: "Show temperature sensor details"
+                message: 'Speed-Cadence',
+                details: "Show speed and cadence (SPDCAD) sensor details"
             },
 
             background: {
@@ -194,6 +215,30 @@
 
             bpm: {
                 message :'beats/min'
+            },
+            
+            timer_start: {
+                message : 'START'
+            },
+            
+            timer_stop: {
+                message : 'STOP'
+            },
+            
+            timer_lap : {
+                message : 'LAP'
+            },
+            
+            timer_reset:{
+                message : 'RESET'
+            },
+            
+            timer_total_elapsed_time : {
+                message : 'TIME'
+            },
+            
+            timer_lap_time : {
+                message : 'LAPTIME'
             }
         }
 

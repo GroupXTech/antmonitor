@@ -21,6 +21,12 @@ body {
     
 }
 
+#timerTotalElapsedTime, #timerLapElapsedTime
+{
+  font-size : 200%;
+  font-weight : bold;
+}
+
 .flex {
     display: flex;
 }
@@ -419,9 +425,11 @@ h1 > img.tabHeading {
     .spanTimer {
         display: inline;
     }
+/*
     .btnTimer {
         width: 100px;
     }
+*/
 }
 
 @media (max-width : 590px) /* max = '<=' */

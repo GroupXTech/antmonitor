@@ -161,7 +161,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         if (page.relativeCumulativeSpeedRevolutionCount !== undefined)
         {
             // this.cumulativeDistance(this.cumulativeDistance() + this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
-            // Update based on timer state === running
+            // Update based on timer state === started
             this.emit('newRelativeDistance', this.cumulativeDistance, this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
         }
 

@@ -98,8 +98,44 @@
            return this.getMessage('bpm');
          
         }.bind(this));
+        
+          this.timer_start = ko.computed(function () {
 
-    };
+           return this.getMessage('timer_start');
+         
+        }.bind(this));
+        
+        this.timer_stop = ko.computed(function () {
+
+           return this.getMessage('timer_stop');
+         
+        }.bind(this));
+        
+         this.timer_lap = ko.computed(function () {
+
+           return this.getMessage('timer_lap');
+         
+        }.bind(this));
+        
+         this.timer_reset = ko.computed(function () {
+
+           return this.getMessage('timer_reset');
+         
+        }.bind(this));
+        
+         this.timer_total_elapsed_time = ko.computed(function () {
+
+           return this.getMessage('timer_total_elapsed_time');
+         
+        }.bind(this));
+        
+         this.timer_lap_time = ko.computed(function () {
+
+           return this.getMessage('timer_lap_time');
+         
+        }.bind(this));
+
+    }
 
     LanguageVM.prototype.getLanguage = function () {
         return window.navigator.language;
