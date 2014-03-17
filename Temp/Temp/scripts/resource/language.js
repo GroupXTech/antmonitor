@@ -97,9 +97,7 @@ define(function _defineLanguageResource() {
                 message: 'Sted...'
             },
 
-            bpm: {
-                message: 'slag/min'
-            },
+
             
             timer_start: {
                 message : 'START'
@@ -120,7 +118,15 @@ define(function _defineLanguageResource() {
             
             timer_lap_time : {
                 message : 'RUNDETID'
-            }
+            },
+
+            unit_cadence : {
+               message : 'opm'
+            },
+
+            unit_bpm: {
+                message: 'spm'
+            },
         },
 
         'en': {
@@ -213,10 +219,6 @@ define(function _defineLanguageResource() {
                 message: 'Location...'
             },
 
-            bpm: {
-                message :'beats/min'
-            },
-            
             timer_start: {
                 message : 'START'
             },
@@ -239,7 +241,17 @@ define(function _defineLanguageResource() {
             
             timer_lap_time : {
                 message : 'LAPTIME'
-            }
+            },
+
+             unit_cadence : {
+               message : 'rpm'
+            },
+
+
+            unit_bpm: {
+                message :'bpm'
+            },
+
         }
 
     };

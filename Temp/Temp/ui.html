@@ -38,12 +38,12 @@
         <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
             <div style="text-align: center" data-bind="if: computedHeartRate() > 0x00">
                 <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
-                <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
+                <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
             </div>
 
             <div style="text-align: center" data-bind="if: computedHeartRate() === 0x00">
                 <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
-                <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.bpm().message"></span>
+                <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
             </div>
 
             <div style="text-align: center" data-bind="if: RRInterval() >= 0x00">
@@ -77,7 +77,10 @@
 
                 <div class="primary-short-heading" data-bind="text: formattedSpeed" ></div>
 
-                <div class="secondary-short-heading" data-bind="text: formattedCadence"> </div>
+                <div class="text-align: center" >
+                        <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
+                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+                  </div>
 
                 <div class="tertiary-short-heading" data-bind="text: formattedCumulativeDistance"></div>
             </div>

@@ -22,7 +22,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
                 if (this.timestamp && this.timestamp())
                     return (new Date(this.timestamp())).toLocaleTimeString();
             }.bind(this)
-        })
+        });
 
         //this.distance = ko.observable();
 
@@ -37,7 +37,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
             read: function () {
                 if (this.cadence() !== undefined)
-                    return this.cadence().toFixed(1);
+                    return Math.round(this.cadence());
                 else
                     return '--.-';
 

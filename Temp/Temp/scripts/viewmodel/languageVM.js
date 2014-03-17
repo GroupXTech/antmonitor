@@ -135,6 +135,10 @@
          
         }.bind(this));
 
+        this.unit_cadence = ko.computed(function () {
+            return this.getMessage('unit_cadence');
+        }.bind(this));
+
     }
 
     LanguageVM.prototype.getLanguage = function () {
