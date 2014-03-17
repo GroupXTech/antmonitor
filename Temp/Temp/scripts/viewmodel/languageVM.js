@@ -93,11 +93,7 @@
             return this.getMessage('location');
         }.bind(this));
 
-        this.bpm = ko.computed(function () {
 
-           return this.getMessage('bpm');
-         
-        }.bind(this));
         
           this.timer_start = ko.computed(function () {
 
@@ -137,6 +133,12 @@
 
         this.unit_cadence = ko.computed(function () {
             return this.getMessage('unit_cadence');
+        }.bind(this));
+
+         this.unit_bpm = ko.computed(function () {
+
+           return this.getMessage('unit_bpm');
+
         }.bind(this));
 
     }
