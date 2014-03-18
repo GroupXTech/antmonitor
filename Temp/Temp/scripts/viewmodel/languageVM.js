@@ -141,6 +141,13 @@
 
         }.bind(this));
 
+        // SPDCAD
+
+        this.spdcad_wheel_circumference = ko.computed(function () {
+
+            return this.getMessage('spdcad_wheel_circumference');
+        }.bind(this));
+
     }
 
     LanguageVM.prototype.getLanguage = function () {

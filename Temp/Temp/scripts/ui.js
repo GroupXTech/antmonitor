@@ -1,4 +1,4 @@
-﻿(function _ANTMonitorUI() {
+(function _ANTMonitorUI() {
     'use strict';
 
     function HostEnvironment()
@@ -1233,6 +1233,8 @@
             if (timer.state === timer.__proto__.STATE.STARTED) // Only update cumulatated distance  when timer is running
                 observable(observable()+relativeDistance);
         }.bind(this));
+
+        // Any changes to viewmodel properies will be propagated back to storage
 
         setTimeout(function () {
             this.subscribeAndStore(deviceTypeVM, ['wheelCircumference','speedMode'],sensorId);

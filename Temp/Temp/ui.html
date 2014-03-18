@@ -78,7 +78,7 @@
                 <div class="primary-short-heading" data-bind="text: formattedSpeed" ></div>
 
                 <div style="text-align: center" >
-                        <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
+                        <span  class="secondary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
                      <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                   </div>
 
@@ -279,13 +279,24 @@
                        
 
                         <span  data-bind="text: formattedSpeed" ></span>
-                        <span  data-bind="text: formattedCadence"></span>
+
+                        <!-- Cadence -->
+
+                        <div style="text-align: center" >
+
+                          <span  class="verticalAlignMiddle" data-bind="text: formattedCadence" ></span>
+                           <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+                        </div>
+
                         <span data-bind="text: formattedCumulativeDistance" ></span>
                         
                         <div>
                             <!-- Min/max Based on info from https://support.garmin.com/support/searchSupport/case.faces?caseId=%7B8c7b7b10-0424-11de-76c5-000000000000%7D -->
-                            <input id="wheelCircumference" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: wheelCircumference, valueUpdate: 'input'" />
-                            <span style="margin-left: 3px" data-bind="text: wheelCircumference" />
+
+                             <label class="verticalAlignMiddle" data-bind="text: $root.languageVM.spdcad_wheel_circumference().message"></label>
+
+                            <input id="wheelCircumference" class="verticalAlignMiddle" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: wheelCircumference, valueUpdate: 'input'" />
+                            <span style="margin-left: 3px" data-bind="text: wheelCircumference()+' m'" />
                         </div>
                        
                         <span data-bind="text: formattedTimestamp" ></span>

@@ -127,6 +127,12 @@ define(function _defineLanguageResource() {
             unit_bpm: {
                 message: 'spm'
             },
+
+            // SPDCAD
+
+            spdcad_wheel_circumference : {
+                message : 'Hjulomkrets'
+            }
         },
 
         'en': {
@@ -251,6 +257,12 @@ define(function _defineLanguageResource() {
             unit_bpm: {
                 message :'bpm'
             },
+
+            // SPDCAD
+
+            spdcad_wheel_circumference : {
+                message : 'Wheel circumference'
+            }
 
         }
 
