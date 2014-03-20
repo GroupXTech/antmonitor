@@ -317,11 +317,14 @@
             //  ui: this, // For referencing ui.prototype functions inside viewmodel callbacks,
             // Hook up event listeners instead
 
-            sensorChart : sensorChart
+            sensorChart: sensorChart,
+
+
 
         };
 
         rootVM = this.viewModel.rootVM;
+
 
         rootVM.timerVM.addEventListener('stop', function (latestLocalStopTime) {
             this.addPlotLine('red', latestLocalStopTime);

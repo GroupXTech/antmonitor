@@ -72,9 +72,10 @@
         </script>
 
         <script type="text/html" id="SPDCAD-short-template">
+
+
         
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
-
                 <div>
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
                    
@@ -93,7 +94,7 @@
                      <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                   </div>
 
-                <div data-bind="if: cumulativeDistance() && (cumulativeDistance() !== 0)">
+                <div data-bind="visible: cumulativeDistance() && (cumulativeDistance() !== 0)">
                     <span class="tertiary-short-heading verticalAlignMiddle" data-bind="text: formattedCumulativeDistance"></span>
                     <!-- unit km or mi -->
                     <div style="display:inline" class="verticalAlignMiddle" data-bind="if: distanceMode() === 1">
@@ -320,7 +321,7 @@
                            <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                         </div>
 
-                        <div data-bind="if: cumulativeDistance() && (cumulativeDistance() !== 0)">
+                        <div data-bind="visible: cumulativeDistance() && (cumulativeDistance() !== 0)">
                             <span data-bind="text: formattedCumulativeDistance"></span>
                           
                             <!-- unit km or mi -->
@@ -638,7 +639,7 @@
                             </a>
 
                             <div id="divSPDCADshort">
-                                <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD}"></ul>
+                                <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD }"></ul>
                             </div>
 
                         </div>
