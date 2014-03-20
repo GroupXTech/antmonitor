@@ -127,6 +127,14 @@ define(function _defineLanguageResource() {
             unit_bpm: {
                 message: 'spm'
             },
+            
+            unit_km_pr_h: {
+                message: 'km/t'
+            },
+
+            unit_mph: {
+                message: 'miles/t'
+            },
 
             // SPDCAD
 
@@ -257,6 +265,14 @@ define(function _defineLanguageResource() {
             unit_bpm: {
                 message :'bpm'
             },
+            
+             unit_km_pr_h: {
+                message: 'km/h'
+             },
+
+             unit_mph: {
+                 message : 'mph'
+             },
 
             // SPDCAD
 

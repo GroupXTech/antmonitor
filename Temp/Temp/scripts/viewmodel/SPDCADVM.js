@@ -55,7 +55,8 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         this.formattedCumulativeDistance = ko.computed({
 
             read: function () {
-                var distStr = '-';
+
+                var distStr = '-.--';
 
                 if (this.cumulativeDistance() !== undefined) {
 
@@ -63,13 +64,19 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
                         case SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL:
 
-                            distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL).toFixed(1);
+                            if (this.cumulativeDistance() > SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL)
+                                distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL).toFixed(2);
+                            else
+                                distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL).toFixed(3);
 
                             break;
 
                         default:
 
-                            distStr = this.cumulativeDistance().toFixed(1);
+                            if (this.cumulativeDistance() < 1000)
+                                distStr = (this.cumulativeDistance() / 1000).toFixed(3);
+                            else
+                                distStr = (this.cumulativeDistance() / 1000).toFixed(2);
                             break;
                     }
                 }
@@ -150,8 +157,12 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         if (page.timestamp)
             this.timestamp(page.timestamp);
 
-        if (page.unCalibratedSpeed !== undefined)
-            this.speed(this.wheelCircumference()*page.unCalibratedSpeed);
+        if (page.unCalibratedSpeed !== undefined) {
+            if (this.distanceMode() === 1) // km/h
+                this.speed(3.6 * this.wheelCircumference() * page.unCalibratedSpeed);
+            else if (this.distanceMode() ===2) // mph
+                this.speed(2.2369362920544 * this.wheelCircumference() * page.unCalibratedSpeed)
+        }
 
         if (page.cadence !== undefined)
             this.cadence(page.cadence);

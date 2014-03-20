@@ -75,14 +75,35 @@
         
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
-                <div class="primary-short-heading" data-bind="text: formattedSpeed" ></div>
+                <div>
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
+                   
+                     <div style="display:inline" data-bind="if: distanceMode() === 1">
+                        <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_km_pr_h().message"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: distanceMode() === 2">
+                        <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_mph().message"></span>
+                    </div>
+
+                </div>
 
                 <div style="text-align: center" >
                         <span  class="secondary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
                      <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                   </div>
 
-                <div class="tertiary-short-heading" data-bind="text: formattedCumulativeDistance"></div>
+                <div data-bind="if: cumulativeDistance() && (cumulativeDistance() !== 0)">
+                    <span class="tertiary-short-heading verticalAlignMiddle" data-bind="text: formattedCumulativeDistance"></span>
+                    <!-- unit km or mi -->
+                    <div style="display:inline" class="verticalAlignMiddle" data-bind="if: distanceMode() === 1">
+                        <span>km</span>
+                    </div>
+                    <div style="display:inline" class="verticalAlignMiddle" data-bind="if: distanceMode() === 2">
+                        <span>mi</span>
+                    </div>
+                </div>
+
             </div>
 
                 <!--<span data-bind="text: ko.toJSON($data)"></span>-->
@@ -267,19 +288,30 @@
                     <div class="flex rowwrap spacearound centeritems">
 
                         
-                        <div>
-                            <span>Speed</span>
+                    <!--<div>
+                            <span>Speed</span>-->
                             <!-- Using name= property to group radio buttons generates exception inside template-->
-                            <input type="radio" value="2" data-bind="checked: speedMode() === 2" />
+                            <!--<input type="radio" value="2" data-bind="checked: speedMode() === 2" />
                             
                             <span>Tempo</span>
                             <input type="radio" value="1" data-bind="checked: speedMode() !== 2" />
 
+                        </div>--> 
+                       
+                        <div>
+                            <span data-bind="text: formattedSpeed"></span>
+                            
+
+                            <div style="display:inline" data-bind="if: distanceMode() === 1">
+                                <span data-bind="text:' '+$root.languageVM.unit_km_pr_h().message"></span>
+                            </div>
+                            
+                            <div style="display:inline" data-bind="if: distanceMode() === 2">
+                                <span data-bind="text:' '+$root.languageVM.unit_mph().message"></span>
+                            </div>
+
                         </div>
                        
-
-                        <span  data-bind="text: formattedSpeed" ></span>
-
                         <!-- Cadence -->
 
                         <div style="text-align: center" >
@@ -288,19 +320,27 @@
                            <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                         </div>
 
-                        <span data-bind="text: formattedCumulativeDistance" ></span>
-                        
-                        <div>
-                            <!-- Min/max Based on info from https://support.garmin.com/support/searchSupport/case.faces?caseId=%7B8c7b7b10-0424-11de-76c5-000000000000%7D -->
-
-                             <label class="verticalAlignMiddle" data-bind="text: $root.languageVM.spdcad_wheel_circumference().message"></label>
-
-                            <input id="wheelCircumference" class="verticalAlignMiddle" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: wheelCircumference, valueUpdate: 'input'" />
-                            <span style="margin-left: 3px" data-bind="text: wheelCircumference()+' m'" />
+                        <div data-bind="if: cumulativeDistance() && (cumulativeDistance() !== 0)">
+                            <span data-bind="text: formattedCumulativeDistance"></span>
+                          
+                            <!-- unit km or mi -->
+                              <div style="display:inline" data-bind="if: distanceMode() === 1">
+                                <span>km</span>
+                            </div>
+                            <div style="display:inline" data-bind="if: distanceMode() === 2">
+                                <span>mi</span>
+                            </div>
+                            
                         </div>
-                       
-                        <span data-bind="text: formattedTimestamp" ></span>
-                    </div>
+                            <div>
+                                <!-- Min/max Based on info from https://support.garmin.com/support/searchSupport/case.faces?caseId=%7B8c7b7b10-0424-11de-76c5-000000000000%7D -->
+                                <label class="verticalAlignMiddle" data-bind="text: $root.languageVM.spdcad_wheel_circumference().message"></label>
+                                <input style="padding-bottom: 0px; padding-top: 0px" class="verticalAlignMiddle" id="wheelCircumference" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: wheelCircumference, valueUpdate: 'input'" />
+                                <span style="margin-left: 3px" data-bind="text: wheelCircumference()+' m'" />
+                            </div>
+
+                            <span data-bind="text: formattedTimestamp"></span>
+                        </div>
 
                 <!-- Background pages -->
 

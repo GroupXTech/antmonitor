@@ -140,6 +140,18 @@
            return this.getMessage('unit_bpm');
 
         }.bind(this));
+        
+       this.unit_km_pr_h = ko.computed(function () {
+
+           return this.getMessage('unit_km_pr_h');
+
+       }.bind(this));
+
+       this.unit_mph = ko.computed(function () {
+
+           return this.getMessage('unit_mph');
+
+       }.bind(this));
 
         // SPDCAD
 
