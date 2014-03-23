@@ -22,9 +22,14 @@ define(function _defineLanguageResource() {
                 message: 'Kadens'
             },
 
-            sensors: {
+            anchor_sensors: {
                 message: 'Sensorer',
                 details: 'Vis integrert graf for alle oppdagede sensorer'
+            },
+
+            anchor_settings: {
+                message: 'Innstillinger',
+                details: 'Vis instillinger'
             },
 
             temperature_overview: {
@@ -140,6 +145,16 @@ define(function _defineLanguageResource() {
 
             spdcad_wheel_circumference : {
                 message : 'Hjulomkrets'
+            },
+
+            // Settings
+
+            setting_distance_mile : {
+                message : 'Mile distanse'
+            },
+
+              setting_background_page_info : {
+                message : 'Bakgrunn side info.'
             }
         },
 
@@ -162,9 +177,14 @@ define(function _defineLanguageResource() {
                 message: 'Cadence'
             },
 
-            sensors: {
+            anchor_sensors: {
                 message: 'Sensors',
                 details: 'Show integrated chart visualizing data from all discovered sensors'
+            },
+
+             anchor_settings: {
+                message: 'Settings',
+                details: 'Show settings'
             },
 
             temperature_overview: {
@@ -278,6 +298,16 @@ define(function _defineLanguageResource() {
 
             spdcad_wheel_circumference : {
                 message : 'Wheel circumference'
+            },
+
+             // Settings
+
+            setting_distance_mile : {
+                message : 'Mile distance'
+            },
+
+             setting_background_page_info : {
+                message : 'Background page info.'
             }
 
         }

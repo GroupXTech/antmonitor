@@ -1,4 +1,4 @@
-﻿/* global define: true */
+/* global define: true */
 
 // Main viewmodel class
 define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Logger, GenericPage, GenericVM, deviceProfileSPDCAD) {
@@ -30,6 +30,20 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
         // Access via prototype object, deviceProfileSPDCAD reference to the constructor function. not to an instance so its deviceProfileSPDCAD.WHEEL_CIRCUMFERENCE will return undefined
         this.wheelCircumference = ko.observable(deviceProfileSPDCAD.prototype.WHEEL_CIRCUMFERENCE); // meters
+
+        this.formattedWheelCircumference = ko.computed( {
+            read: function ()
+            {
+
+                  return this.wheelCircumference().toFixed(3);
+            }.bind(this),
+
+            write : function (value)
+            {
+                // Convert from string to number
+                this.wheelCircumference(Number(value));
+            }.bind(this)
+        });
 
         this.cadence = ko.observable();
 

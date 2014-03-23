@@ -300,8 +300,12 @@
                         </div>--> 
                        
                         <div>
+
+                           <!-- Right adjust number, remember inline doesnt have height or width -> use inline-block -->
+
+                           <div style="text-align: right; width: 65px; display: inline-block">
                             <span data-bind="text: formattedSpeed"></span>
-                            
+                           </div>
 
                             <div style="display:inline" data-bind="if: distanceMode() === 1">
                                 <span data-bind="text:' '+$root.languageVM.unit_km_pr_h().message"></span>
@@ -315,10 +319,16 @@
                        
                         <!-- Cadence -->
 
-                        <div style="text-align: center" >
+                        <div >
 
-                          <span  class="verticalAlignMiddle" data-bind="text: formattedCadence" ></span>
+                            <!-- Right adjust number, remember inline doesnt have height or width -> use inline-block -->
+
+                           <div style="text-align: right; width: 65px; display: inline-block">
+                             <span  class="verticalAlignMiddle" data-bind="text: formattedCadence" ></span>
+                           </div>
+
                            <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+
                         </div>
 
                         <div data-bind="visible: cumulativeDistance() && (cumulativeDistance() !== 0)">
@@ -336,8 +346,10 @@
                             <div>
                                 <!-- Min/max Based on info from https://support.garmin.com/support/searchSupport/case.faces?caseId=%7B8c7b7b10-0424-11de-76c5-000000000000%7D -->
                                 <label class="verticalAlignMiddle" data-bind="text: $root.languageVM.spdcad_wheel_circumference().message"></label>
-                                <input style="padding-bottom: 0px; padding-top: 0px" class="verticalAlignMiddle" id="wheelCircumference" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: wheelCircumference, valueUpdate: 'input'" />
-                                <span style="margin-left: 3px" data-bind="text: wheelCircumference()+' m'" />
+                                <input style="padding-bottom: 0px; padding-top: 0px" class="verticalAlignMiddle" id="wheelCircumference" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: formattedWheelCircumference, valueUpdate: 'input'" />
+
+                                   <span style="margin-left: 3px" data-bind="text: formattedWheelCircumference()+' m'" />
+
                             </div>
 
                             <span data-bind="text: formattedTimestamp"></span>
@@ -456,11 +468,11 @@
 
                 <div class="flex rownowrap flexstart centeritems">
 
-                    <a class="tabItem" id="aMain" href="#tabMain" data-bind="attr: {title: languageVM.sensors().details}">
+                    <a class="tabItem" id="aMain" href="#tabMain" data-bind="attr: {title: languageVM.anchor_sensors().details}">
 
                         <img src="icon/sensorgraph.png" class="icon" style="vertical-align: middle; padding-left: 3px" />
 
-                        <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400" data-bind="text: languageVM.sensors().message"></span>
+                        <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400" data-bind="text: languageVM.anchor_sensors().message"></span>
                     </a>
 
                     <div data-bind="if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length)">
@@ -487,6 +499,18 @@
 
                     </div>
                 </div>
+
+
+                 <div class="flex rownowrap flexstart centeritems">
+
+                    <a class="tabItem" id="aSettings" href="#tabSettings" data-bind="attr: {title: languageVM.anchor_settings().details}">
+
+                        <img src="icon/fugue/settings.png" class="icon" style="vertical-align: middle; padding-left: 3px" />
+
+                        <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400" data-bind="text: languageVM.anchor_settings().message"></span>
+                    </a>
+
+                 </div>
 
 
                 <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
@@ -623,7 +647,7 @@
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.heartrate().message"></span>
                             </a>    
                                 
-                                <div id="divHRMshort">
+                                <div id="divHRMshort" class="div-sensor-short">
                                     <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
                                 </div>
 </div>
@@ -638,7 +662,7 @@
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.speedandcadence().message"></span>
                             </a>
 
-                            <div id="divSPDCADshort">
+                            <div id="divSPDCADshort" class="div-sensor-short">
                                 <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD }"></ul>
                             </div>
 
@@ -653,7 +677,7 @@
                                 <img class="icon verticalAlignMiddle" src="icon/temperature.png"  />
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.temperature().message"></span>
                             </a>
-                            <div id="divENVIRONMENTshort">
+                            <div id="divENVIRONMENTshort" class="div-sensor-short">
                                 <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
                             </div>
 
@@ -713,6 +737,28 @@
             <div id="tabHRM" class="hidden">
                 <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.hrm_overview().message"></span></h1>
                 <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.HRM}"></ul>
+            </div>
+
+            <div id="tabSettings" class="hidden">
+              <h2>
+                 <img src="icon/fugue/settings.png" class="icon verticalAlignMiddle"  />
+                 <span class="verticalAlignMiddle" data-bind="text: languageVM.anchor_settings().message"></span>
+              </h2>
+
+
+
+               <ul style="list-style: none">
+                     <li>
+                        <input class="verticalAlignMiddle" type="checkbox" />
+                        <label  data-bind="text:languageVM.setting_distance_mile().message"></label>
+                     </li>
+
+                     <li>
+                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.showAdditionalInfo" />
+                        <label data-bind="text:languageVM.setting_background_page_info().message"></label>
+                    </li>
+                </ul>
+
             </div>
     </div>
 </body>

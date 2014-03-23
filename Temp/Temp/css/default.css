@@ -182,8 +182,8 @@ h1.detailsHeading::before {
 
 #divHRMshort {
      /*width : 100px;*/
-    height : 75px;
-    overflow : hidden;
+    /* height : 75px; */
+    /* overflow : hidden; */
 }
 
 #ulHRMshort {
@@ -198,8 +198,8 @@ h1.detailsHeading::before {
 /* It seems like the padding-right moves the scrollbar beyond the max width on the container div which has overflow hidden */
 #divENVIRONMENTshort {
      width : 140px;
-    height : 85px;
-    overflow : hidden;
+   /* height : 85px;
+    overflow : hidden; */
 }
 
 #ulENVIRONMENTshort {
@@ -210,11 +210,16 @@ h1.detailsHeading::before {
     margin : 0px;
 }
 
+.div-sensor-short {
+  height: 100px;
+  overflow : hidden;
+}
+
 #divSPDCADshort {
     /*border : 1px solid red;*/
      width : 140px;
-     height : 100px;
-    overflow : hidden;
+    /* height : 100px; */
+   /* overflow : hidden; */
 }
 
 #ulSPDCADshort {
@@ -272,11 +277,11 @@ h1 > img.tabHeading {
    font-size : small;
 }
 
-#tabEnvironment ul li {
+#tabEnvironment ul li, #tabSPDCAD ul li {
   font-size : x-large;
 }
 
-#tabEnvironment ul li:nth-child(odd) {
+#tabEnvironment ul li:nth-child(odd), #tabSPDCAD ul li:nth-child(odd) {
    background : lightgray;
 }
 

@@ -1,4 +1,4 @@
-﻿define(['scripts/resource/language','logger'], function _defineLanguageVM(resource,Logger) {
+define(['scripts/resource/language','logger'], function _defineLanguageVM(resource,Logger) {
 
     'use strict';
 
@@ -28,8 +28,12 @@
         }.bind(this));
 
 
-        this.sensors = ko.computed(function () {
-            return this.getMessage('sensors');
+        this.anchor_sensors = ko.computed(function () {
+            return this.getMessage('anchor_sensors');
+        }.bind(this));
+
+        this.anchor_settings = ko.computed(function () {
+            return this.getMessage('anchor_settings');
         }.bind(this));
 
         this.temperature_overview = ko.computed(function () {
@@ -160,6 +164,17 @@
             return this.getMessage('spdcad_wheel_circumference');
         }.bind(this));
 
+        // Settings
+
+        this.setting_distance_mile = ko.computed(function () {
+
+            return this.getMessage('setting_distance_mile');
+        }.bind(this));
+
+        this.setting_background_page_info = ko.computed(function () {
+
+            return this.getMessage('setting_background_page_info');
+        }.bind(this));
     }
 
     LanguageVM.prototype.getLanguage = function () {
