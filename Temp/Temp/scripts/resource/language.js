@@ -155,6 +155,10 @@ define(function _defineLanguageResource() {
 
               setting_background_page_info : {
                 message : 'Bakgrunn side info.'
+            },
+
+            setting_temperature_fahrenheit : {
+                message : 'Fahrenheit'
             }
         },
 
@@ -308,6 +312,10 @@ define(function _defineLanguageResource() {
 
              setting_background_page_info : {
                 message : 'Background page info.'
+            },
+
+             setting_temperature_fahrenheit : {
+                message : 'Fahrenheit'
             }
 
         }

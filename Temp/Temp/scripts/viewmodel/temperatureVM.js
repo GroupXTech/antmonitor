@@ -1,4 +1,4 @@
-﻿/* global define: true */
+/* global define: true */
 
 // Main viewmodel class
 define(['require','module','exports','logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(require,module,exports,Logger,GenericPage, GenericVM, TemperatureConverter) {
@@ -14,6 +14,15 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
 
         // Idea: Hook up temperatureMode observable to settingsVM
         this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
+        if (configuration && configuration.rootVM && configuration.rootVM.settingVM)
+            configuration.rootVM.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit)
+                                                                            {
+
+                                                                                if (useFahrenheit)
+                                                                                    this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
+                                                                                else
+                                                                                   this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
+                                                                            }.bind(this));
 
         this.number = ko.observable();
 

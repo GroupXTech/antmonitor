@@ -1016,7 +1016,10 @@
             TemperatureVM = this.viewModel.TemperatureVM,
             deviceTypeVM,
             sensorId = page.broadcast.channelId.sensorId,
-            handlerLogger = rootVM.sensorVM.getLogger();
+            handlerLogger = rootVM.sensorVM.getLogger(),
+            tempMeasurementNr,
+            len,
+            newSeriesData;
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
             {
@@ -1044,9 +1047,38 @@
 
         deviceTypeVM = new TemperatureVM({
             logger: handlerLogger,
+
             temperatureMode: rootVM.settingVM.temperatureMode,
             sensorId: sensorId
         });
+
+        // Subscribe to change in temperature setting
+
+        rootVM.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit) {
+                                                        newSeriesData = [];
+                                                          if (useFahrenheit)
+                                                            {
+                                                                this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
+
+                                                                  for (tempMeasurementNr=0, len = addedSeries.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                                                                  {
+                                                                        newSeriesData.push([addedSeries.xData[tempMeasurementNr],this.tempConverter.fromCelciusToFahrenheit(addedSeries.yData[tempMeasurementNr])]);
+                                                                  }
+
+
+                                                            }
+                                                            else {
+
+                                                               this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
+                                                                 for (tempMeasurementNr=0, len = addedSeries.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                                                                  {
+                                                                        newSeriesData.push([addedSeries.xData[tempMeasurementNr],this.tempConverter.fromFahrenheitToCelcius(addedSeries.yData[tempMeasurementNr])]);
+                                                                  }
+                                                            }
+
+                                                            addedSeries.setData(newSeriesData,true);
+}.bind(deviceTypeVM));
+
 
         // In case user changes location, copy to storage
 

@@ -757,6 +757,14 @@
                         <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.showAdditionalInfo" />
                         <label data-bind="text:languageVM.setting_background_page_info().message"></label>
                     </li>
+
+                   <h3 data-bind="text: $root.languageVM.temperature().message"></h3>
+
+                   <li>
+                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.temperature_fahrenheit" />
+                        <label data-bind="text:languageVM.setting_temperature_fahrenheit().message"></label>
+                        &degF
+                    </li>
                 </ul>
 
             </div>

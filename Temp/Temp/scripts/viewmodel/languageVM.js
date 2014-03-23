@@ -175,6 +175,11 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
 
             return this.getMessage('setting_background_page_info');
         }.bind(this));
+
+         this.setting_temperature_fahrenheit = ko.computed(function () {
+
+            return this.getMessage('setting_temperature_fahrenheit');
+        }.bind(this));
     }
 
     LanguageVM.prototype.getLanguage = function () {

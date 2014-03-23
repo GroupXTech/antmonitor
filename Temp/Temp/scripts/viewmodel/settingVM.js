@@ -13,6 +13,7 @@
 
         //this.temperatureModes: TemperatureVM.prototype.MODES,
 
+        // Keeps track of visibility of sensors in short sensor overview and in the integrated chart
         this.showSensors = {
 
             HRM : ko.observable(true),
@@ -24,6 +25,8 @@
         };
 
         this.showTimer = ko.observable(true);
+
+        this.temperature_fahrenheit = ko.observable(false);
 
        
         // Behavior
