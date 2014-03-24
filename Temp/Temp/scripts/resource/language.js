@@ -78,10 +78,6 @@ define(function _defineLanguageResource() {
                 details: 'Vis hastighet og kadens detaljer'
             },
 
-            background: {
-                message: 'Bakgrunnssider',
-                details: 'Vis detaljer fra bakgrunnssider'
-            },
 
             ant_monitor: {
                 message: 'ANT+ Monitor',
@@ -233,10 +229,6 @@ define(function _defineLanguageResource() {
                 details: "Show speed and cadence (SPDCAD) sensor details"
             },
 
-            background: {
-                message: 'Backgroundpages',
-                details: 'Show additional sensor details from background pages'
-            },
 
             ant_monitor: {
                 message: 'ANT+ Monitor',

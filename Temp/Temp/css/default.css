@@ -63,15 +63,6 @@ body {
     margin-left: 3px;
 }
 
-#divMAXMIN {
-    display : flex;
-    flex-flow : row no-wrap;
-     justify-content: space-around;
-     align-items : center;
-    margin-left: 15px;
-  
-}
-
 #divENUMERATEDDEVICE {
     margin-left : 15px;
 }
@@ -125,7 +116,7 @@ body {
 }
 
 
-.lblTemperatureMode, #lblMAXMIN, #spanSpace {
+.lblTemperatureMode, #spanSpace {
   
     margin-right : 7px;
    

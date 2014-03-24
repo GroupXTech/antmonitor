@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta charset="utf-8" />
+    <!-- Add meta tag/chartset for proper intepretation of special characters, e.g  º -->
+
     <title>ANT+ Monitor</title>
 
     <link href="/css/default.css" rel="stylesheet" />
@@ -57,21 +61,24 @@
 
         <script type="text/html" id="ENVIRONMENT-short-template">
 
-            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+            <div  class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
             
                 <div  class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
+                </div>
 
+                <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.show24HMaxMin()" >
+                        <span data-bind="html: formattedLow24H , style: { color : low24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
+                        <span>&darr;</span>
+                         <span style="margin-left: 10px" data-bind="html: formattedHigh24H , style: { color : high24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
+                          <span>&uarr;</span>
+                </div>
 
-        </div>
+                <div class="secondary-short-heading"  data-bind="visible: location() !== undefined, text: location">
+                </div>
 
-                <!-- ko if:  location() !== undefined-->
-                
-                    <div class="secondary-short-heading" data-bind="text: location"></div>
-                
-                <!-- /ko -->
             </div>
 
-            <!--<span data-bind="text: ko.toJSON($data)"></span>-->
+            <!-- <span data-bind="text: ko.toJSON($data)"></span> -->
         </script>
 
         <script type="text/html" id="SPDCAD-short-template">
@@ -701,32 +708,6 @@
 
             <div id="tabEnvironment" class="hidden">
 
-                <div class="flex rownowrap centeritems spacearound toolbarBackground">
-
-                    <div class="flex rownowrap spacearound centeritems">
-                        <label class="lblTemperatureMode">&deg;C</label>
-                        <input class="inpTemperatureMode" type="radio" value="celcius" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
-                        <span id="spanSpace"></span>
-                        <label class="lblTemperatureMode">&deg;F</label>
-                        <input class="inpTemperatureMode" type="radio" value="fahrenheit" name="tempGroup" data-bind="checked: settingVM.temperatureMode" />
-                    </div>
-
-                    <div id="divMAXMIN">
-                        <label id="lblMAXMIN"><span data-bind="text: languageVM.minimum().abbreviated"></span>&darr;/<span data-bind="text: languageVM.maximum().abbreviated"></span>&uarr;</label>
-
-                        <input type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
-                    </div>
-
-                    <div class="flex rownowrap centeritems spacearound" style="margin-left: 10px">
-
-                        <img src="icon/info.png" data-bind="attr: { title: languageVM.background().details }" />
-                        <label style="margin-left : 3px" data-bind="text: languageVM.background().message"></label>
-                        <input type="checkbox" data-bind="checked: settingVM.showAdditionalInfo" />
-
-                    </div>
-
-                </div>
-
                 <h1 class="tabHeading"><img src="icon/temperature-icon-128.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.temperature_overview().message"></span></h1>
                 
                 <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.ENVIRONMENT}"></ul>
@@ -767,6 +748,12 @@
                         <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.temperature_fahrenheit" />
                         <label data-bind="text:languageVM.setting_temperature_fahrenheit().message"></label>
                         &degF
+                    </li>
+
+                    <li>
+                        <input type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
+
+                         <label ><span data-bind="text: languageVM.minimum().abbreviated"></span>&darr; / <span data-bind="text: languageVM.maximum().abbreviated"></span>&uarr;</label>
                     </li>
                 </ul>
 

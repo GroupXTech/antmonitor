@@ -76,9 +76,6 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
             return this.getMessage('speedandcadence');
         }.bind(this));
 
-        this.background = ko.computed(function () {
-            return this.getMessage('background');
-        }.bind(this));
 
         this.ant_monitor = ko.computed(function () {
             return this.getMessage('ant_monitor');
