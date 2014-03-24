@@ -1,7 +1,8 @@
 /* global define: true */
 
 // Main viewmodel class
-define(['require','module','exports','logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(require,module,exports,Logger,GenericPage, GenericVM, TemperatureConverter) {
+define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(Logger,GenericPage, GenericVM, TemperatureConverter) {
+
     'use strict';
     
     function TemperatureVM(configuration) {
@@ -14,22 +15,15 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
 
         // Idea: Hook up temperatureMode observable to settingsVM
         this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
-        if (configuration && configuration.rootVM && configuration.rootVM.settingVM)
-            configuration.rootVM.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit)
-                                                                            {
-
-                                                                                if (useFahrenheit)
-                                                                                    this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
-                                                                                else
-                                                                                   this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
-                                                                            }.bind(this));
 
         this.number = ko.observable();
 
         // Current temperature
         this.currentTemp = ko.observable();
 
+
         var getFormattedTemp = function (tempObs, toFixedDigits) {
+
             var formattedTemp;
 
             if (tempObs() === undefined)
@@ -40,22 +34,49 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
 
                     //formattedTemp = (tempObs()*(9/5)+32);
                     formattedTemp = this.tempConverter.fromCelciusToFahrenheit(tempObs()).toFixed(toFixedDigits || 2);
+
                     break;
 
                 default:
 
                     formattedTemp = tempObs().toFixed(toFixedDigits || 2);
+
                     break;
             }
+
             return formattedTemp;
+
         }.bind(this);
 
-        this.formattedCurrentTemp = ko.computed({
-            read:
-            function () {
-                return getFormattedTemp(this.currentTemp, 2);
+        this.formattedUnit = ko.computed({
+
+            read: function () {
+                var formattedUnit;
+
+                 switch (this.temperatureMode()) {
+                        case TemperatureVM.prototype.MODE.FAHRENHEIT:
+
+                            formattedUnit = '°F';
+                            break;
+
+                        default:
+
+                            formattedUnit = '°C';
+                            break;
+                 }
+
+                return formattedUnit;
             }.bind(this)
         });
+
+        this.formattedCurrentTemp = ko.computed({
+            read: function () {
+                return getFormattedTemp(this.currentTemp, 2);
+
+            }.bind(this)
+
+        });
+
 
         this.eventCount = ko.observable();
 
@@ -91,7 +112,7 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
 
         this._page = undefined;
 
-    };
+    }
     
      TemperatureVM.prototype = Object.create(GenericVM.prototype);
      TemperatureVM.prototype.constructor = TemperatureVM;
@@ -173,8 +194,8 @@ define(['require','module','exports','logger','profiles/Page','vm/genericVM','co
         this.low24H(undefined);
         this.high24H(undefined);
         this.timestamp(undefined);
-    }
-    
-    module.exports = TemperatureVM;
-    return module.exports;
+    };
+
+    return TemperatureVM;
+
 });

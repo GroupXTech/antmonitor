@@ -59,7 +59,10 @@
 
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
             
-                <div   class="primary-short-heading" data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"> </div>
+                <div  class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
+
+
+        </div>
 
                 <!-- ko if:  location() !== undefined-->
                 

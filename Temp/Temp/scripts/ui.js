@@ -1460,7 +1460,7 @@
 
                         currentSeries = this.sensorChart.integrated.chart.get('ENVIRONMENT-current-' + sensorId);
 
-                        if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
+                        if (rootVM.settingVM.temperature_fahrenheit && rootVM.settingVM.temperature_fahrenheit()) {
                             currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)],false);
                         } else {
                             currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], false,
