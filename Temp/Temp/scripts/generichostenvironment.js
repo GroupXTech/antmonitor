@@ -24,7 +24,7 @@ define(['logger'], function _requireDefine(Logger) {
         // Constructor function to modules
         this.module = {
             
-        }
+        };
 
         // Setup receiver of message events
 
@@ -36,7 +36,7 @@ define(['logger'], function _requireDefine(Logger) {
     {
         if (this.uiFrame)
           this.uiFrame.postMessage(obj, '*');
-    }
+    };
 
     // Get messages from embedded UI frame, in Chrome it runs in a sandbox mode to avoid content security policy restrictions
     GenericHostEnvironment.prototype.onmessage = function (event) {
@@ -61,7 +61,7 @@ define(['logger'], function _requireDefine(Logger) {
             return;
         }
 
-        switch (data.response) {
+        switch (data.request) {
 
             // UI frame ready to receive messages
 
@@ -81,8 +81,41 @@ define(['logger'], function _requireDefine(Logger) {
 
             case 'get':
 
+                if (data.sensorId) {
+
+                    // Must append sensorId to items if available
+
+                    // First case items is of type string -> only a single property
+
+                    if  (typeof data.items === 'string')
+                    {
+
+                            data.items += '-'+data.sensorId; // Add sensorId to property
+
+                    }
+
+                    // Second case, multiple properties
+
+                    else if (Array.isArray(data.items))
+                    {
+                        for (var itemNr=0, len= data.items.length; itemNr < len; itemNr++)
+                        {
+
+                            data.items[itemNr] += '-'+data.sensorId;
+
+                        }
+                    }
+                }
+
                 this.storage.get(data.items, function _getkey(items) {
-                    this.postMessage({response: 'get', items : items });
+
+                    var getResponse = { response: 'get', items : items };
+
+                    if (data.sensorId)
+                        getResponse.sensorId = data.sensorId;
+
+                    this.postMessage(getResponse);
+
                 }.bind(this));
                
                 break;
@@ -310,6 +343,7 @@ GenericHostEnvironment.prototype.configureUSB = function(deviceId) {
             if (this.uiFrame) // 'ready' must be received from uiFrame before its available (from window.frames[0])
                 this.uiFrame.postMessage({
                     response: 'page',
+                    sensorId : page.broadcast.channelId.sensorId,
                     page: this.pageFromDeviceProfile
                 }, '*');
             else if (this.logger && this.logger.logging)

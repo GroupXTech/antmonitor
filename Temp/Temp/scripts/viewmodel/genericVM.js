@@ -1,10 +1,11 @@
 ﻿/* global define: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
-define(['require', 'module', 'exports', 'logger', 'profiles/Page','events'], function (require, module, exports, Logger, GenericPage,EventEmitter) {
+define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,EventEmitter) {
     'use strict';
 
     function GenericVM(configuration) {
+
         EventEmitter.call(this, configuration);
 
         // this._logger = new Logger(configuration);
@@ -86,10 +87,9 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page','events'], fun
 
                 break;
         }
-    }
-
-    module.exports = GenericVM;
+    };
 
     return GenericVM;
+
 
 });

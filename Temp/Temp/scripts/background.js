@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
 
     var loggerFunc;
     
@@ -29,6 +29,8 @@
 
         requirejs.config(requirejsConfiguration);
 
+         this.startChromeApp();
+
         deps = ['logger'];
 
         requirejs(deps, function (Logger) {
@@ -39,7 +41,7 @@
         
         
 
-        this.startChromeApp(); 
+
         
     }
 
@@ -124,10 +126,10 @@
 
     // Setup handlers for chrome app life-cycle events and load
     Background.prototype.startChromeApp = function () {
-        if (this.isChromeBackgroundPage()) {
+        //if (this.isChromeBackgroundPage()) {
             
             this.handleChromeLifeCycleEvents();
-        }
+        //}
     };
 
     Background.prototype.onRestarted = function ()
@@ -209,17 +211,7 @@
     Background.prototype.handleChromeLifeCycleEvents = function () {
 
         var DEFAULT_STARTUP_DELAY = 3000;
-        
-        console.info(Date.now(), 'Background page started - hooking up app life-cycle event handlers');
 
-        setTimeout(function _checkForLaunchOrRestart () {
-            if (!this.timestamp.onLaunched || !this.timestamp.onRestarted)
-            {
-                console.warn(Date.now(),'Has not received expected onLaunched or onRestarted app life-cycle event during '+DEFAULT_STARTUP_DELAY+' ms',this.timestamp);
-            }
-                
-        }.bind(this),DEFAULT_STARTUP_DELAY);
-        
         chrome.app.runtime.onLaunched.addListener(this.onLaunched.bind(this));
         chrome.app.runtime.onRestarted.addListener(this.onRestarted.bind(this));
         
@@ -235,6 +227,16 @@
             // Logger probably not loaded yet
             console.info('Platform info', platformInfo,platformInfo.os,platformInfo.arch,platformInfo.nacl_arch);
         });
+
+        console.info(Date.now(), 'Background page started');
+
+        setTimeout(function _checkForLaunchOrRestart () {
+            if (!this.timestamp.onLaunched || !this.timestamp.onRestarted)
+            {
+                console.warn(Date.now(),'Has not received expected onLaunched or onRestarted app life-cycle event during '+DEFAULT_STARTUP_DELAY+' ms',this.timestamp);
+            }
+
+        }.bind(this),DEFAULT_STARTUP_DELAY);
        
     };
 
@@ -270,6 +272,5 @@
     };
 
     void new Background({ log: true });
-    
 
 })();

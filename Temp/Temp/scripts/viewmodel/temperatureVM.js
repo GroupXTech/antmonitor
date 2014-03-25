@@ -7,11 +7,35 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     
     function TemperatureVM(configuration) {
 
+        var uiWin,
+
+            sensorId;
+
         GenericVM.call(this, configuration);
 
-        this.sensorId = ko.observable();
+        if (configuration && configuration.uiFrameWindow)
+        {
+            uiWin = configuration.uiFrameWindow;
+            this.hostWin = uiWin.parent;
+            uiWin.addEventListener('message',this.onmessage.bind(this));
+        }
 
-        this.tempConverter = new TemperatureConverter();
+        if (configuration && configuration.page)
+        {
+            sensorId = configuration.page.broadcast.channelId.sensorId;
+
+          this.sensorId = ko.observable(sensorId);
+
+           // console.info(Date.now(),"Created TempVM",sensorId);
+
+        }
+        else
+          this.sensorId = ko.observable();
+
+        if (configuration.tempConverter)
+            this.tempConverter = configuration.tempConverter; // Shared code
+        else
+          this.tempConverter = new TemperatureConverter(); // Fallback, if sharing code is not available
 
         // Idea: Hook up temperatureMode observable to settingsVM
         this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
@@ -110,46 +134,98 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
             }.bind(this)
         });
 
+
         this._page = undefined;
+
+        if (configuration.series)
+            this.series = configuration.series;
+
+        // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+        if (configuration.page)
+          this.updateFromPage(configuration.page);
+
+        this.initFromDB();
+
+        // Subscribe to change in global temperature setting
+
+        this.subscribeToTempChange(configuration);
+
 
     }
     
      TemperatureVM.prototype = Object.create(GenericVM.prototype);
      TemperatureVM.prototype.constructor = TemperatureVM;
     
+    TemperatureVM.prototype.addPoint = function (page)
+    {
+        // Ignore pages without currentTemp, e.g supported pages from temp. sensor
+
+        if (page.currentTemp === undefined)
+           return;
+
+        if (this.settingVM.temperatureMode && this.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
+            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
+
+        }
+        else {
+
+            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
+
+        }
+
+
+    };
+
+    TemperatureVM.prototype.subscribeToTempChange = function (configuration)
+    {
+         if (configuration.settingVM)
+        {
+            this.settingVM = configuration.settingVM;
+            this.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit) {
+                                                            var newSeriesData = [],
+                                                                tempMeasurementNr,
+                                                                len;
+
+                                                              if (useFahrenheit)
+                                                                {
+                                                                    this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
+
+                                                                      for (tempMeasurementNr=0, len = this.series.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                                                                      {
+                                                                            newSeriesData.push([this.series.xData[tempMeasurementNr],this.tempConverter.fromCelciusToFahrenheit(this.series.yData[tempMeasurementNr])]);
+                                                                      }
+
+
+                                                                }
+                                                                else {
+
+                                                                   this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
+                                                                     for (tempMeasurementNr=0, len = this.series.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                                                                      {
+                                                                            newSeriesData.push([this.series.xData[tempMeasurementNr],this.tempConverter.fromFahrenheitToCelcius(this.series.yData[tempMeasurementNr])]);
+                                                                      }
+                                                                }
+
+                                                                this.series.setData(newSeriesData,true);
+                                                        }.bind(this));
+        }
+    };
+
+    TemperatureVM.prototype.initFromDB = function ()
+    {
+
+    if (this.sensorId())
+            this.hostWin.postMessage({  request: 'get', sensorId : this.sensorId(),  items: 'location' },'*'); // Fetch previous location of sensor if available
+
+    };
+
     TemperatureVM.prototype.MODE = {
         CELCIUS : 'celcius',
         FAHRENHEIT : 'fahrenheit'
     };
     
      TemperatureVM.prototype.MODES = [TemperatureVM.prototype.MODE.CELCIUS,TemperatureVM.prototype.MODE.FAHRENHEIT];
-    
-//    TemperatureVM.prototype.getValue = function (temperatureObs,masterVM,digits)
-//    {
-//        var valueTemp = temperatureObs();
-//        
-//        if (valueTemp === undefined)
-//        {
-//            this._logger.log('error','Got undefined temperature',masterVM);
-//            return undefined;
-//        }
-//        
-//        console.warn("Value",valueTemp,masterVM);
-//        
-//        var tempMode = masterVM.settingVM.temperatureMode();
-//        if (tempMode === TemperatureVM.prototype.MODE.CELCIUS)
-//           return temperatureObs().toFixed(digits);
-//        else if (tempMode === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-//            // http://nn.wikipedia.org/wiki/Formlar_for_temperaturomrekning
-//            temperature(valueTemp*(9/5)+32); // Skip this return by knockout to enable chaining
-//            return temperatureObs().toFixed(digits);
-//        }
-//        else {
-//            this._logger.log('error','Unknown temperature mode',tempMode);
-//            return undefined;
-//        }
-//    };
-//    
+
     // Takes page with current, low/high 24 h and puts it into the viewModel
      TemperatureVM.prototype.updateFromPage = function (page) {
 
@@ -183,7 +259,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     TemperatureVM.prototype.getTemplateName = function (item)
     {
        // return undefined;
-         return "temperature-template";
+         return "environment-template";
     };
 
     TemperatureVM.prototype.reset = function ()
@@ -194,6 +270,50 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         this.low24H(undefined);
         this.high24H(undefined);
         this.timestamp(undefined);
+    };
+
+    TemperatureVM.prototype.onmessage = function (event)
+    {
+        var data = event.data,
+            page = event.data.page,
+            currentSeries = this.series;
+
+        // Ignore data without a sensorId or message destination is for another id
+
+        if (!data.sensorId || data.sensorId !== this.sensorId())
+            return;
+
+        console.info(Date.now(),'TempVM',this.sensorId(),'got event',event,data);
+
+        switch (data.response)
+        {
+                case 'page' :
+
+                    this.updateFromPage(page);
+
+                  if (page.currentTemp !== undefined) {
+
+                        if (this.settingVM.temperature_fahrenheit && this.settingVM.temperature_fahrenheit()) {
+                            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)],false);
+                        } else {
+                            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false,
+                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                                false,
+                                false);
+                        }
+
+
+                    }
+
+                    break;
+
+
+        }
+
+    };
+
+    TemperatureVM.prototype.addSeries = function ()
+    {
     };
 
     return TemperatureVM;

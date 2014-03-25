@@ -61,7 +61,7 @@
                     timeout: {}
                 };
 
-                this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
+
 
                 this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer,Logger, TempConverter);
 
@@ -77,7 +77,7 @@
 
         var firstSetKey;
 
-        try {
+       // try {
 
 
             var sourceWindow = event.source,
@@ -88,6 +88,7 @@
                 value,
                 property,
                 index;
+
 
             //// Skip unknown protocols if available
             //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME)) {
@@ -138,30 +139,47 @@
 
                 case 'get':
 
-                    // Properties are stored in the format; property-sensorid = value
-
-                    for (key in data.items)
-                    {
+                    // Sensor specific : Properties are stored in the format; property-sensorid = value
+                    // Setting : setting-settingname = value
                     
-                        console.timeEnd('get-' + key);
-                        index = key.indexOf('-', 0);
-                        property = key.substr(0, index);
-                        sensorId = key.substring(index + 1);
-                        vm = this.viewModel.sensorDictionary[sensorId]; // get viewmodel
-                        if (vm)
-                        {
-                            value = data.items[key];
-                            if (value)  // Don't update with undefined
-                                vm[property](value);
-                            
-                        } else 
-                        {
-                            if (this.logger && this.logger.logging) this.logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available', this.viewModel.sensorDictionary);
-                        }
+                    if (typeof data.items === 'object') {
 
-                        // Startswith common in Ecmascript 6?
-                        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
-                      
+                        for (key in data.items)
+                        {
+
+                            console.timeEnd('get-' + key);
+                            index = key.indexOf('-', 0);
+                            
+                            property = key.substr(0, index);
+                             sensorId = key.substring(index + 1);
+
+                            if (property === 'setting') {
+                                vm = this.viewModel.rootVM.settingVM;
+
+                            }
+                                else {
+
+                                    vm = this.viewModel.sensorDictionary[sensorId]; // get viewmodel
+                                }
+
+                            if (vm)
+                            {
+                                value = data.items[key];
+                                if (value)  // Don't update with undefined
+                                    vm[property](value);
+
+                            } else
+                            {
+                                if (this.logger && this.logger.logging) this.logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available');
+                            }
+
+                            // Startswith common in Ecmascript 6?
+                            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
+
+                        }
+                    } else
+                    {
+                        if (this.logger && this.logger.logging) this.logger.log('warn', 'Unable to process items, expected an object',data.items);
                     }
 
                     break;
@@ -184,17 +202,17 @@
             }
            
 
-        } catch (e) { // Maybe a dataclone error
-            if (this.logger && this.logger.logging)
-                this.logger.log('error', ' error', 'Event', event, e);
-        }
+     //   } catch (e) { // Maybe a dataclone error
+     //       if (this.logger && this.logger.logging)
+     //           this.logger.log('error', ' error', 'Event', event, e);
+     //   }
         
 
     };
 
     ANTMonitorUI.prototype.sendReadyEvent = function () {
        
-        this.postMessage({ response: 'ready' });
+        this.postMessage({ request: 'ready' });
     };
 
     ANTMonitorUI.prototype.postMessage = function (obj)
@@ -217,7 +235,7 @@
             if (obj.items) {
 
                 if (typeof obj.items === 'object')
-                    firstSetKey = Object.keys(obj.items)
+                    firstSetKey = Object.keys(obj.items);
                 else if (typeof obj.items === 'string')
                     firstSetKey = obj.items;
 
@@ -230,8 +248,8 @@
         if (this.hostFrame)
             this.hostFrame.postMessage(obj, '*');
         else
-            window.parent.postMessage(obj, '*'); // UI is embedded in a host frame
-    }
+            window.parent.postMessage(obj, '*'); // UI is embedded in a host frame that has access to API's which requires higher priveliges
+    };
 
     ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer, Logger, TemperatureConverter) {
 
@@ -262,9 +280,6 @@
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
 
         this.viewModel.sensorDictionary = {};
-
-        //if (Storage)
-        //    this.storage = new Storage();
 
         this.tempConverter = new TemperatureConverter();
 
@@ -309,10 +324,7 @@
 
             },
 
-            timerVM: new TimerVM({
-                log: true,
-                timezoneOffsetInMilliseconds : this.timezoneOffsetInMilliseconds
-            }),
+
 
             //  ui: this, // For referencing ui.prototype functions inside viewmodel callbacks,
             // Hook up event listeners instead
@@ -324,6 +336,13 @@
         };
 
         rootVM = this.viewModel.rootVM;
+
+        rootVM.settingVM.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
+
+         rootVM.timerVM = new TimerVM({
+                log: true,
+                timezoneOffsetInMilliseconds : rootVM.settingVM.timezoneOffsetInMilliseconds
+            });
 
 
         rootVM.timerVM.addEventListener('stop', function (latestLocalStopTime) {
@@ -970,20 +989,25 @@
 
     };
 
+    // Subscribe to changes in viewmodel and send a request message for storage
     ANTMonitorUI.prototype.subscribeAndStore = function (vm,properties,sensorId)
     {
        
         var subscribe = function (singleProperty) {
+
             vm[singleProperty].subscribe(function (newValue) {
                 var key,
                    items = {};
 
-                key = singleProperty + '-' + sensorId;
+
+                key = singleProperty;
+                if (sensorId)
+                    key += ('-' + sensorId);
 
                 items[key] = newValue;
 
                 this.postMessage({
-                    response: 'set',
+                    request: 'set',
                     items: items
                 });
 
@@ -1007,9 +1031,9 @@
                 this.logger.log('warn', 'Unable to subscribe to properties of type', typeof properties);
         }
         
-    }
+    };
 
-    ANTMonitorUI.prototype.addTemperatureSeries = function (page) {
+    ANTMonitorUI.prototype.initTemperatureSeries = function (page) {
 
         var addedSeries,
             rootVM = this.viewModel.rootVM,
@@ -1042,42 +1066,24 @@
                 }
             }, false, false);
 
-        
-        this.postMessage({  response: 'get', items: 'location-' + sensorId }); // Fetch previous location of sensor if available
 
         deviceTypeVM = new TemperatureVM({
             logger: handlerLogger,
 
             temperatureMode: rootVM.settingVM.temperatureMode,
-            sensorId: sensorId
+
+            page: page,
+
+            // Allow possibility for listening to message events directed to ui frame window inside viewmodel
+            uiFrameWindow : window,
+
+            series : addedSeries,
+
+            temperatureConverter : this.tempConverter, // Share code,
+
+            settingVM : rootVM.settingVM
         });
 
-        // Subscribe to change in temperature setting
-
-        rootVM.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit) {
-                                                        newSeriesData = [];
-                                                          if (useFahrenheit)
-                                                            {
-                                                                this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
-
-                                                                  for (tempMeasurementNr=0, len = addedSeries.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
-                                                                  {
-                                                                        newSeriesData.push([addedSeries.xData[tempMeasurementNr],this.tempConverter.fromCelciusToFahrenheit(addedSeries.yData[tempMeasurementNr])]);
-                                                                  }
-
-
-                                                            }
-                                                            else {
-
-                                                               this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
-                                                                 for (tempMeasurementNr=0, len = addedSeries.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
-                                                                  {
-                                                                        newSeriesData.push([addedSeries.xData[tempMeasurementNr],this.tempConverter.fromFahrenheitToCelcius(addedSeries.yData[tempMeasurementNr])]);
-                                                                  }
-                                                            }
-
-                                                            addedSeries.setData(newSeriesData,true);
-}.bind(deviceTypeVM));
 
 
         // In case user changes location, copy to storage
@@ -1088,30 +1094,15 @@
 
         this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
 
-        deviceTypeVM.updateFromPage(page);
 
         rootVM.sensorVM.devices.ENVIRONMENT.push(deviceTypeVM);
 
         rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
 
 
-        if (page.currentTemp !== undefined) {
+        deviceTypeVM.addPoint(page);
 
-            if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
-
-            }
-            else {
-
-                addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
-
-
-            }
-
-            this.redrawIntegratedChart();
-
-
-        }
+        this.redrawIntegratedChart();
     };
 
     ANTMonitorUI.prototype.addHRMSeries = function (page) {
@@ -1256,7 +1247,7 @@
 
            }, false, false);
 
-        this.postMessage({ response: 'get', items: ['wheelCircumference-' + sensorId,'speedMode-'+sensorId] }); // Fetch previous wheel circumference and speed mode
+        this.postMessage({ request: 'get', items: ['wheelCircumference-' + sensorId,'speedMode-'+sensorId] }); // Fetch previous wheel circumference and speed mode
 
         deviceTypeVM = new SPDCADVM({
             logger: handlerLogger,
@@ -1447,15 +1438,16 @@
 
         // Refresh viewmodel with new page data from sensor
 
-        if (deviceTypeVM)
-            deviceTypeVM.updateFromPage(page);
+//        if (deviceTypeVM)
+//            deviceTypeVM.updateFromPage(page);
 
-        switch (deviceType) {
+        if (!deviceTypeVM)
+         switch (deviceType) {
 
             case 25:
-                if (!deviceTypeVM)
-                    this.addTemperatureSeries(page);
-                else {
+
+                    this.initTemperatureSeries(page);
+                /*else {
                     if (deviceTypeVM instanceof TemperatureVM && page.currentTemp !== undefined) {
 
                         currentSeries = this.sensorChart.integrated.chart.get('ENVIRONMENT-current-' + sensorId);
@@ -1473,7 +1465,7 @@
                         // this.redrawIntegratedChart();
 
                     }
-                }
+                }*/
 
                 break;
 

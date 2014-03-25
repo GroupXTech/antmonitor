@@ -1,13 +1,14 @@
 ﻿define(['logger'], function _requireDefineSettingVM(Logger) {
-    'use strict'
+
+     'use strict';
 
     function SettingVM(configuration)
     {
         this._logger = new Logger(configuration);
 
-        this.showAdditionalInfo = ko.observable(false),
+        this.showAdditionalInfo = ko.observable(false);
 
-        this.showCredits = ko.observable(false),
+        this.showCredits = ko.observable(false);
 
         this.show24HMaxMin = ko.observable(false);
 
@@ -82,7 +83,7 @@
 
             }
         
-    }
+    };
 
 
     //rootVM.settingVM.temperatureMode.subscribe(function (newMode) {
@@ -132,4 +133,4 @@
 
 
     return SettingVM;
-})
+});

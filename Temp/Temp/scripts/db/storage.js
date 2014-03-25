@@ -1,7 +1,8 @@
 ﻿/* global define: true */
 
-// Main viewmodel class
-define(['require', 'module', 'exports', 'logger'], function (require, module, exports, Logger) {
+
+define([ 'logger'], function (Logger) {
+
     'use strict';
 
     function Storage(configuration) {
@@ -17,16 +18,17 @@ define(['require', 'module', 'exports', 'logger'], function (require, module, ex
 
     };
 
-    Storage.prototype.get = function (key) {
+    Storage.prototype.get = function (getItems,callback) {
         throw new Error('Override in specialized object');
 
     };
 
-    Storage.prototype.set = function (key,value)
+    Storage.prototype.set = function (setItems,callback)
     {
         throw new Error('Override in specialized object');
-    }
+    };
 
-    module.exports = Storage;
-    return module.exports;
+
+   return Storage;
+
 });
