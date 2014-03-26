@@ -159,7 +159,7 @@
                             }
                                 else {
 
-                                    vm = this.viewModel.sensorDictionary[sensorId]; // get viewmodel
+                                    vm = this.viewModel.dictionary[sensorId]; // get viewmodel
                                 }
 
                             if (vm)
@@ -279,7 +279,7 @@
 
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
 
-        this.viewModel.sensorDictionary = {};
+        this.viewModel.dictionary = {};
 
         this.tempConverter = new TemperatureConverter();
 
@@ -448,7 +448,7 @@
     // Reset sensor viewmodels
     ANTMonitorUI.prototype._resetViewModels = function () {
       
-        var sensorDictionary = this.viewModel.sensorDictionary;
+        var sensorDictionary = this.viewModel.dictionary;
 
         for (var sensorId in sensorDictionary) {
             if (typeof sensorDictionary[sensorId].reset === 'function')
@@ -1081,7 +1081,7 @@
 
             temperatureConverter : this.tempConverter, // Share code,
 
-            settingVM : rootVM.settingVM
+            settingVM : rootVM.settingVM // Uses timezoneOffset
         });
 
 
@@ -1092,15 +1092,10 @@
             this.subscribeAndStore(deviceTypeVM, 'location',sensorId);
         }.bind(this), 500); // Wait 500ms before hooking up -> give a chance to update location on initialization without overwrite again
 
-        this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
+        this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
 
         rootVM.sensorVM.devices.ENVIRONMENT.push(deviceTypeVM);
-
-        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
-
-
-        deviceTypeVM.addPoint(page);
 
         this.redrawIntegratedChart();
     };
@@ -1149,14 +1144,11 @@
             sensorId: sensorId
         });
 
-        this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
+        this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
         rootVM.sensorVM.devices.HRM.push(deviceTypeVM);
 
         deviceTypeVM.updateFromPage(page);
-
-        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
-
 
         if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
 
@@ -1266,13 +1258,13 @@
             this.subscribeAndStore(deviceTypeVM, ['wheelCircumference','speedMode'],sensorId);
         }.bind(this), 500);
 
-        this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
+        this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
         deviceTypeVM.updateFromPage(page);
 
         rootVM.sensorVM.devices.SPDCAD.push(deviceTypeVM);
 
-        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
+
 
         if (page.cadence !== undefined) {
 
@@ -1364,11 +1356,11 @@
             sensorId: sensorId
         });
 
-        this.viewModel.sensorDictionary[sensorId] = deviceTypeVM;
+        this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
         deviceTypeVM.updateFromPage(page);
 
-        rootVM.sensorVM.deviceTypeVM.push(deviceTypeVM);
+
 
         if (page.speed !== undefined) {
 
@@ -1434,7 +1426,7 @@
             FootpodVM = this.viewModel.FootpodVM,
             SPDCADVM = this.viewModel.SPDCADVM;
 
-        deviceTypeVM = this.viewModel.sensorDictionary[sensorId];
+        deviceTypeVM = this.viewModel.dictionary[sensorId];
 
         // Refresh viewmodel with new page data from sensor
 
@@ -1447,25 +1439,6 @@
             case 25:
 
                     this.initTemperatureSeries(page);
-                /*else {
-                    if (deviceTypeVM instanceof TemperatureVM && page.currentTemp !== undefined) {
-
-                        currentSeries = this.sensorChart.integrated.chart.get('ENVIRONMENT-current-' + sensorId);
-
-                        if (rootVM.settingVM.temperature_fahrenheit && rootVM.settingVM.temperature_fahrenheit()) {
-                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)],false);
-                        } else {
-                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.currentTemp], false,
-                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                false,
-                                false);
-                        }
-
-                        // Immediate redraw due to slow update frequency (1 minute)
-                        // this.redrawIntegratedChart();
-
-                    }
-                }*/
 
                 break;
 

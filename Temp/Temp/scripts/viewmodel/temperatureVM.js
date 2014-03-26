@@ -140,15 +140,22 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         if (configuration.series)
             this.series = configuration.series;
 
-        // Run update on page (must be the last operation -> properties must be defined on viewmodel)
-        if (configuration.page)
-          this.updateFromPage(configuration.page);
 
         this.initFromDB();
 
-        // Subscribe to change in global temperature setting
+         if (configuration.settingVM)
+        {
+            this.settingVM = configuration.settingVM;
 
-        this.subscribeToTempChange(configuration);
+            // Subscribe to change in global temperature setting
+
+            this.subscribeToTempChange();
+        }
+
+
+        // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+        if (configuration.page)
+          this.updateFromPage(configuration.page);
 
 
     }
@@ -158,12 +165,14 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     
     TemperatureVM.prototype.addPoint = function (page)
     {
+
         // Ignore pages without currentTemp, e.g supported pages from temp. sensor
+
 
         if (page.currentTemp === undefined)
            return;
 
-        if (this.settingVM.temperatureMode && this.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
+        if (this.temperatureMode && this.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
             this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
 
         }
@@ -173,14 +182,12 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         }
 
-
     };
 
-    TemperatureVM.prototype.subscribeToTempChange = function (configuration)
+    // Convert series from/to fahrenheit when user changes setting
+    TemperatureVM.prototype.subscribeToTempChange = function ()
     {
-         if (configuration.settingVM)
-        {
-            this.settingVM = configuration.settingVM;
+
             this.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit) {
                                                             var newSeriesData = [],
                                                                 tempMeasurementNr,
@@ -208,7 +215,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
                                                                 this.series.setData(newSeriesData,true);
                                                         }.bind(this));
-        }
+
     };
 
     TemperatureVM.prototype.initFromDB = function ()
@@ -254,6 +261,8 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         // if ((page.profile && page.profile.hasCommonPages) || !page.profile)
              this.updateCommonPage(page);
+
+         this.addPoint(page);
      };
      
     TemperatureVM.prototype.getTemplateName = function (item)
@@ -290,20 +299,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
                 case 'page' :
 
                     this.updateFromPage(page);
-
-                  if (page.currentTemp !== undefined) {
-
-                        if (this.settingVM.temperature_fahrenheit && this.settingVM.temperature_fahrenheit()) {
-                            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)],false);
-                        } else {
-                            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false,
-                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                false,
-                                false);
-                        }
-
-
-                    }
 
                     break;
 

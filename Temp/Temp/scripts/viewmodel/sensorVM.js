@@ -1,14 +1,14 @@
 ﻿/* global define: true */
 
 // Main viewmodel class
-define(['require','module','exports','logger','vm/HRMVM','vm/temperatureVM'], function(require,module,exports,Logger,HRMVM, TemperatureVM) {
+define(['logger','vm/HRMVM','vm/temperatureVM'], function(Logger,HRMVM, TemperatureVM) {
+
     'use strict';
     
     function SensorVM(configuration) 
     {
         this._logger = new Logger(configuration);
 
-        this.deviceTypeVM = ko.observableArray();
 
             this.devices = {
                 HRM: ko.observableArray(),
@@ -16,31 +16,12 @@ define(['require','module','exports','logger','vm/HRMVM','vm/temperatureVM'], fu
                 SPDCAD: ko.observableArray()
             };
 
-
-        //this.HRMDevices = ko.computed(function ()
-            
-        //{
-        //    var sensorNr, len,
-        //        deviceTypeVM,
-        //        HRMDevices = ko.observableArray();
-
-        //    for (sensorNr=0,len=this.deviceTypeVM().length;sensorNr<len;sensorNr++)
-        //    {
-        //        deviceTypeVM = this.deviceTypeVM()[sensorNr];
-        //        if (deviceTypeVM instanceof HRMVM)
-        //            HRMDevices.push(deviceTypeVM);
-               
-        //    }
-
-        //    return HRMDevices;
-
-        //}, this);
     }
     
     SensorVM.prototype.getLogger = function ()
     {
         return this._logger;
-    }
+    };
     
     SensorVM.prototype.getTemplateName = function (viewModelItem)
     {
@@ -53,6 +34,6 @@ define(['require','module','exports','logger','vm/HRMVM','vm/temperatureVM'], fu
         return templateName;
     };
     
-    module.exports = SensorVM;
-    return module.exports;
+   return SensorVM;
+
 });
