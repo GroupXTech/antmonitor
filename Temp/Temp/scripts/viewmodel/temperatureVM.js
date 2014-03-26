@@ -142,9 +142,8 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         {
             this.rootVM = configuration.rootVM;
 
-            // Subscribe to change in global temperature setting
 
-            this.subscribeToTempChange();
+            this.subscribeToTemperatureModeChange();
         }
 
 
@@ -154,11 +153,9 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
               this.addSeries(configuration.page);
         }
 
-
         // Run update on page (must be the last operation -> properties must be defined on viewmodel)
         if (configuration.page)
           this.updateFromPage(configuration.page);
-
 
     }
     
@@ -215,7 +212,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     };
 
     // Convert series from/to fahrenheit when user changes setting
-    TemperatureVM.prototype.subscribeToTempChange = function ()
+    TemperatureVM.prototype.subscribeToTemperatureModeChange = function ()
     {
 
         var settingVM = this.rootVM.settingVM;
@@ -317,14 +314,20 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     {
         var data = event.data,
             page = event.data.page,
-            currentSeries = this.series;
+            currentSeries = this.series,
+            sensorId,
+            key,
+
+            index,
+            property,
+            value;
 
         // Ignore data without a sensorId or message destination is for another id
 
         if (!data.sensorId || data.sensorId !== this.sensorId())
             return;
 
-        console.info(Date.now(),'TempVM',this.sensorId(),'got event',event,data);
+        //console.info(Date.now(),'TempVM',this.sensorId(),'got event',event,data);
 
         switch (data.response)
         {
@@ -336,9 +339,32 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
                 case 'get' :
 
-                   console.info(Date.now(),'TempVM GET',data);
-                   break;
+                if (typeof data.items === 'object') {
 
+                        for (key in data.items)
+                        {
+
+                            index = key.indexOf('-', 0);
+
+                            property = key.substr(0, index);
+                            sensorId = key.substring(index + 1);
+
+                             if (data.sensorId !== sensorId)
+                             {
+                                 if (this._logger && this._logger.logging) this._logger.log('warn', 'Sensor id. in header',data.sensorId,'does not match sensorId in key',sensorId);
+                             } else {
+                                value = data.items[key];
+                                if (value)  // Don't update with undefined
+                                    this[property](value);
+                             }
+
+                        }
+                    } else
+                    {
+                        if (this._logger && this._logger.logging) this._logger.log('warn', data.response+' Unable to process items, expected an object',data.items);
+                    }
+
+                   break;
 
         }
 

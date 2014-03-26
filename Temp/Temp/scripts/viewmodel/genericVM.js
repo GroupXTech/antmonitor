@@ -1,4 +1,4 @@
-﻿/* global define: true */
+/* global define: true, ko: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,EventEmitter) {
@@ -88,6 +88,8 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
                 break;
         }
     };
+
+
 
     return GenericVM;
 

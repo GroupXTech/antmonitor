@@ -137,10 +137,12 @@
 
                 case 'get':
 
+                    console.info('UI got a get!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+
                     // Sensor specific : Properties are stored in the format; property-sensorid = value
                     // Setting : setting-settingname = value
                     
-                    if (typeof data.items === 'object') {
+                   /* if (typeof data.items === 'object') {
 
                         for (key in data.items)
                         {
@@ -168,7 +170,7 @@
 
                             } else
                             {
-                                if (this.logger && this.logger.logging) this.logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available');
+                                if (this._logger && this._logger.logging) this._logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available');
                             }
 
                             // Startswith common in Ecmascript 6?
@@ -177,14 +179,14 @@
                         }
                     } else
                     {
-                        if (this.logger && this.logger.logging) this.logger.log('warn', 'Unable to process items, expected an object',data.items);
-                    }
+                        if (this._logger && this._logger.logging) this._logger.log('warn', 'Unable to process items, expected an object',data.items);
+                    }*/
 
                     break;
 
                 case 'set': // ECHO when keys has been stored
 
-                    firstSetKey = Object.keys(data.items)[0];
+                    firstSetKey = Object.keys(data.items).join('-');
                     if (firstSetKey)
                         console.timeEnd('set-' + firstSetKey);
 
@@ -210,44 +212,9 @@
 
     ANTMonitorUI.prototype.sendReadyEvent = function () {
        
-        this.postMessage({ request: 'ready' });
+        window.parent.postMessage({ request: 'ready' },'*');
     };
 
-    ANTMonitorUI.prototype.postMessage = function (obj)
-    {
-        var firstSetKey;
-
-        // For Chrome App pr. 29012014 : Sending message from a sandboxed page (in manifest.json) gives origin = 'null' on the receiving window
-        // Only '* targetOrigin is supported in Chrome App, tried with '/', but got "Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('null') does not match the recipient window's origin ('chrome-extension://njnnocbhcjoigjfpfgkglahgjhppagmp')."
-
-        if (!obj)
-        {
-            if (this.logger && this.logger.logging)
-                this.logger.log('warn', 'Attempt to post an undefined or null object to host frame, something is wrong');
-        }
-
-        // Performance metric for access to storage
-        if (obj && (obj.response === 'get' || obj.response === 'set'))
-        {
-          
-            if (obj.items) {
-
-                if (typeof obj.items === 'object')
-                    firstSetKey = Object.keys(obj.items);
-                else if (typeof obj.items === 'string')
-                    firstSetKey = obj.items;
-
-                if (firstSetKey)
-                    console.time(obj.response + '-' + firstSetKey);
-            }
-           
-        }
-
-        if (this.hostFrame)
-            this.hostFrame.postMessage(obj, '*');
-        else
-            window.parent.postMessage(obj, '*'); // UI is embedded in a host frame that has access to API's which requires higher priveliges
-    };
 
     ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer, Logger, TemperatureConverter) {
 
@@ -1004,10 +971,10 @@
 
                 items[key] = newValue;
 
-                this.postMessage({
+                window.parent.postMessage({
                     request: 'set',
                     items: items
-                });
+                },'*');
 
             }.bind(this));
         }.bind(this);
@@ -1214,7 +1181,7 @@
 
            }, false, false);
 
-        this.postMessage({ request: 'get', items: ['wheelCircumference-' + sensorId,'speedMode-'+sensorId] }); // Fetch previous wheel circumference and speed mode
+        window.parent.postMessage({ request: 'get', items: ['wheelCircumference-' + sensorId,'speedMode-'+sensorId] },'*'); // Fetch previous wheel circumference and speed mode
 
         deviceTypeVM = new SPDCADVM({
             logger: handlerLogger,
