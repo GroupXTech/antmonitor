@@ -1,3 +1,4 @@
+/* global define: true, ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
 (function _ANTMonitorUI() {
     'use strict';
 
@@ -128,10 +129,7 @@
 
                 case 'page':
 
-                    if (this.logger && this.logger.logging)
-                        this.logger.log('log', this.name + ' received page', data.page);
-
-                    this.onpage(data.page);
+                    this.initViewModelForPage(data.page);
 
                     break;
 
@@ -455,7 +453,7 @@
                 sensorDictionary[sensorId].reset();
 
         }
-    }
+    };
 
     ANTMonitorUI.prototype.addPlotLine = function (color, time)
     {
@@ -899,7 +897,7 @@
 
          
                 if (this.logger && this.logger.logging)
-                    this.logger.log('info', 'Tick positions local time', tickConfiguration.axis.tickPositions)
+                    this.logger.log('info', 'Tick positions local time', tickConfiguration.axis.tickPositions);
 
                 this.sensorChart.integrated.elapsedTime = 0;
 
@@ -1035,8 +1033,7 @@
 
     ANTMonitorUI.prototype.initTemperatureSeries = function (page) {
 
-        var addedSeries,
-            rootVM = this.viewModel.rootVM,
+        var rootVM = this.viewModel.rootVM,
             TemperatureVM = this.viewModel.TemperatureVM,
             deviceTypeVM,
             sensorId = page.broadcast.channelId.sensorId,
@@ -1045,46 +1042,25 @@
             len,
             newSeriesData;
 
-        addedSeries = this.sensorChart.integrated.chart.addSeries(
-            {
-                name: this.viewModel.rootVM.languageVM.temperature().message + ' '+ sensorId,
-                id: 'ENVIRONMENT-current-' + sensorId,
-                color: 'black',
-                data: [], // tuples [timestamp,value]
-                type: 'spline',
-
-                //marker : {
-                //    enabled : true,
-                //    radius : 2
-                //},
-
-                yAxis: 0,
-
-                tooltip: {
-                    valueDecimals: 2,
-                    valueSuffix: ' °'
-                }
-            }, false, false);
-
-
         deviceTypeVM = new TemperatureVM({
+
             logger: handlerLogger,
 
             temperatureMode: rootVM.settingVM.temperatureMode,
 
             page: page,
 
-            // Allow possibility for listening to message events directed to ui frame window inside viewmodel
+            // Allow possibility for listening to message events directed to ui frame window inside viewmodel -> gives oppotunities for
+
             uiFrameWindow : window,
 
-            series : addedSeries,
+            rootVM : rootVM,
 
-            temperatureConverter : this.tempConverter, // Share code,
+            chart : this.sensorChart.integrated.chart,
 
-            settingVM : rootVM.settingVM // Uses timezoneOffset
+            temperatureConverter : this.tempConverter, // Share code
+
         });
-
-
 
         // In case user changes location, copy to storage
 
@@ -1093,7 +1069,6 @@
         }.bind(this), 500); // Wait 500ms before hooking up -> give a chance to update location on initialization without overwrite again
 
         this.viewModel.dictionary[sensorId] = deviceTypeVM;
-
 
         rootVM.sensorVM.devices.ENVIRONMENT.push(deviceTypeVM);
 
@@ -1408,9 +1383,8 @@
         }
     };
 
-    ANTMonitorUI.prototype.onpage = function (page) {
+    ANTMonitorUI.prototype.initViewModelForPage = function (page) {
 
-        //  console.log('Knockout App got message', page,e);
         var antUI = this,
             rootVM = this.viewModel.rootVM,
             sensorId = page.broadcast.channelId.sensorId,
@@ -1421,110 +1395,113 @@
 
         // Viewmodels - alias
 
-            TemperatureVM = this.viewModel.TemperatureVM,
+           // TemperatureVM = this.viewModel.TemperatureVM,
             HRMVM = this.viewModel.HRMVM,
             FootpodVM = this.viewModel.FootpodVM,
             SPDCADVM = this.viewModel.SPDCADVM;
 
         deviceTypeVM = this.viewModel.dictionary[sensorId];
 
-        // Refresh viewmodel with new page data from sensor
+        // Ignore initialization of viewmodel if its already created
 
-//        if (deviceTypeVM)
-//            deviceTypeVM.updateFromPage(page);
+        if (deviceTypeVM)
+            return;
 
-        if (!deviceTypeVM)
-         switch (deviceType) {
+            if (this.logger && this.logger.logging)
+                this.logger.log('log', this.name + ' received init/first page', page,'for sensor',sensorId);
 
-            case 25:
+             switch (deviceType) {
 
-                    this.initTemperatureSeries(page);
+                case 25:
 
-                break;
+                        this.initTemperatureSeries(page);
 
-            case 120:
+                    break;
 
-                if (!deviceTypeVM)
-                    this.addHRMSeries(page);
-                else {
-                    if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
-                        currentSeries = this.sensorChart.integrated.chart.get('HRM-current-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false,
-                            //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                             // currentSeries.data.length > 5,
-                             false,
-                            false);
+                case 120:
 
-                        this.processRR(page);
+                    if (!deviceTypeVM)
+                        this.addHRMSeries(page);
+                    else {
+                        if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
+                            currentSeries = this.sensorChart.integrated.chart.get('HRM-current-' + sensorId);
+                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false,
+                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                                 // currentSeries.data.length > 5,
+                                 false,
+                                false);
 
-                        // Maybe: use a setInterval redraw that loops all series and check for the first series that has series.isDirty && series.isDirtyData === true -> redraw
+                            this.processRR(page);
+
+                            // Maybe: use a setInterval redraw that loops all series and check for the first series that has series.isDirty && series.isDirtyData === true -> redraw
+                            //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
+                            //    this.redrawIntegratedChart();
+                            //}
+
+                        }
+                    }
+
+                    break;
+
+                case 121:
+
+                    if (!deviceTypeVM)
+                        this.addSPDCADSeries(page);
+                    else {
+                        if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
+                            currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-cadence-' + sensorId);
+                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false,
+                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                                 // currentSeries.data.length > 5,
+                                 false,
+                                false);
+                        } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
+                            currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-speed-' + sensorId);
+                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
+                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                                 // currentSeries.data.length > 5,
+                                 false,
+                                false);
+                        }
+
                         //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
                         //    this.redrawIntegratedChart();
                         //}
-
-                    }
-                }
-
-                break;
-
-            case 121:
-
-                if (!deviceTypeVM)
-                    this.addSPDCADSeries(page);
-                else {
-                    if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
-                        currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-cadence-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false,
-                            //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                             // currentSeries.data.length > 5,
-                             false,
-                            false);
-                    } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
-                        currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-speed-' + sensorId);
-                        currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
-                            //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                             // currentSeries.data.length > 5,
-                             false,
-                            false);
                     }
 
-                    //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                    //    this.redrawIntegratedChart();
-                    //}
-                }
+                    break;
 
-                break;
+                //case 124:
 
-            //case 124:
+                //    if (!deviceTypeVM)
+                //        this.addFootpodSeries(page);
+                //    else {
 
-            //    if (!deviceTypeVM)
-            //        this.addFootpodSeries(page);
-            //    else {
-
-            //        if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
-            //            currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
-            //            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false,
-            //                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-            //                false,
-            //                false);
+                //        if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
+                //            currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
+                //            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false,
+                //                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
+                //                false,
+                //                false);
 
 
-            //        }
+                //        }
 
-            //        //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-            //        //    this.redrawIntegratedChart();
-            //        //}
+                //        //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
+                //        //    this.redrawIntegratedChart();
+                //        //}
 
-            //    }
+                //    }
 
-            //    break;
+                //    break;
 
-            default:
+                default:
 
-                handlerLogger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
+                    handlerLogger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
 
-                break;
-        }
+                    break;
+            }
+
 
     };
 

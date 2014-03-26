@@ -1,4 +1,4 @@
-/* global define: true */
+/* global define: true, ko:true */
 
 // Main viewmodel class
 define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(Logger,GenericPage, GenericVM, TemperatureConverter) {
@@ -37,7 +37,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         else
           this.tempConverter = new TemperatureConverter(); // Fallback, if sharing code is not available
 
-        // Idea: Hook up temperatureMode observable to settingsVM
         this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
 
         this.number = ko.observable();
@@ -137,19 +136,22 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         this._page = undefined;
 
-        if (configuration.series)
-            this.series = configuration.series;
-
-
         this.initFromDB();
 
-         if (configuration.settingVM)
+         if (configuration.rootVM)
         {
-            this.settingVM = configuration.settingVM;
+            this.rootVM = configuration.rootVM;
 
             // Subscribe to change in global temperature setting
 
             this.subscribeToTempChange();
+        }
+
+
+        if (configuration.chart) {
+            this.chart = configuration.chart;
+            if (configuration.page)
+              this.addSeries(configuration.page);
         }
 
 
@@ -163,8 +165,36 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
      TemperatureVM.prototype = Object.create(GenericVM.prototype);
      TemperatureVM.prototype.constructor = TemperatureVM;
     
+    TemperatureVM.prototype.addSeries = function (page)
+    {
+       var sensorId = page.broadcast.channelId.sensorId;
+
+       this.series = this.chart.addSeries(
+            {
+                name: this.rootVM.languageVM.temperature().message + ' '+ sensorId,
+                id: 'ENVIRONMENT-current-' + sensorId,
+                color: 'black',
+                data: [], // tuples [timestamp,value]
+                type: 'spline',
+
+                //marker : {
+                //    enabled : true,
+                //    radius : 2
+                //},
+
+                yAxis: 0,
+
+                tooltip: {
+                    valueDecimals: 2,
+                    valueSuffix: ' °'
+                }
+            }, false, false);
+    };
+
     TemperatureVM.prototype.addPoint = function (page)
     {
+
+        var settingVM = this.rootVM.settingVM;
 
         // Ignore pages without currentTemp, e.g supported pages from temp. sensor
 
@@ -173,12 +203,12 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
            return;
 
         if (this.temperatureMode && this.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
+            this.series.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
 
         }
         else {
 
-            this.series.addPoint([page.timestamp + this.settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
+            this.series.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
 
         }
 
@@ -188,7 +218,9 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     TemperatureVM.prototype.subscribeToTempChange = function ()
     {
 
-            this.settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit) {
+        var settingVM = this.rootVM.settingVM;
+
+        settingVM.temperature_fahrenheit.subscribe(function (useFahrenheit) {
                                                             var newSeriesData = [],
                                                                 tempMeasurementNr,
                                                                 len;
@@ -302,13 +334,14 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
                     break;
 
+                case 'get' :
+
+                   console.info(Date.now(),'TempVM GET',data);
+                   break;
+
 
         }
 
-    };
-
-    TemperatureVM.prototype.addSeries = function ()
-    {
     };
 
     return TemperatureVM;
