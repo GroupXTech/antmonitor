@@ -57,16 +57,28 @@
 
                 this.logger = new Logger({ log: true });
 
+                // Keeps track of timeouts and intervals
                 this.timerID = {
                     interval: {},
                     timeout: {}
                 };
 
+                // For referencing viewmodel constructors
+                this.module = {
+                    FootpodVM : FootpodVM,
+                    TemperatureVM : TemperatureVM,
+                    HRMVM : HRMVM,
+                    SPDCADVM : SPDCADVM,
+                    TimerVM : TimerVM,
+                    SettingVM : SettingVM,
+                    LanguageVM : LanguageVM,
+                    Timer : Timer,
+                    Logger : Logger,
+                    TempConverter : TempConverter,
+                    SensorVM : SensorVM
+                };
 
-
-                this.initViewModels(SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer,Logger, TempConverter);
-
-    
+                this.initRootVM();
 
         }.bind(this));
 
@@ -216,46 +228,33 @@
     };
 
 
-    ANTMonitorUI.prototype.initViewModels = function (SensorVM, TemperatureVM, FootpodVM, HRMVM, SPDCADVM, TimerVM, SettingVM, LanguageVM, Timer, Logger, TemperatureConverter) {
+    ANTMonitorUI.prototype.initRootVM = function () {
 
         var rootVM; // Root viewmodel, contains all the other sub-view models
         var tempModeKey;
         var sensorChart;
         
-       
 
-        // Holds chart instances
+        // Holds chart instance
         this.sensorChart = {};
         sensorChart = this.sensorChart;
 
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
 
-        // Viewmodel constructors
-
-        this.viewModel.SensorVM = SensorVM;
-        this.viewModel.TemperatureVM = TemperatureVM;
-        this.viewModel.FootpodVM = FootpodVM;
-        this.viewModel.HRMVM = HRMVM;
-        this.viewModel.SPDCADVM = SPDCADVM;
-        this.viewModel.TimerVM = TimerVM;
-        this.viewModel.SettingVM = SettingVM;
-        this.viewModel.LanguageVM = LanguageVM;
-
         // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
-
         this.viewModel.dictionary = {};
 
-        this.tempConverter = new TemperatureConverter();
+        this.tempConverter = new this.module.TempConverter();
 
         this.viewModel.rootVM = {
 
-            languageVM : new LanguageVM({log : true}),
+            languageVM : new this.module.LanguageVM({log : true}),
 
-            settingVM: new SettingVM({log : true}),
+            settingVM: new this.module.SettingVM({log : true}),
 
             // Holds an array on viewmodels for the sensors that are discovered
-            sensorVM: new SensorVM({ log: false }),
+            sensorVM: new this.module.SensorVM({ log: false }),
 
             // Contains all enumerated devices that fullfill the USB selector
             deviceVM: {
@@ -296,15 +295,13 @@
 
             sensorChart: sensorChart,
 
-
-
         };
 
         rootVM = this.viewModel.rootVM;
 
-        rootVM.settingVM.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
 
-         rootVM.timerVM = new TimerVM({
+
+         rootVM.timerVM = new this.module.TimerVM({
                 log: true,
                 timezoneOffsetInMilliseconds : rootVM.settingVM.timezoneOffsetInMilliseconds
             });
@@ -497,7 +494,7 @@
                     },
 
                     min: (function (antUI) {
-                        var TemperatureVM = antUI.viewModel.TemperatureVM;
+                        var TemperatureVM = antUI.module.TemperatureVM;
 
                         if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.CELCIUS)
                             return -20;
@@ -1001,15 +998,11 @@
     ANTMonitorUI.prototype.initTemperatureSeries = function (page) {
 
         var rootVM = this.viewModel.rootVM,
-            TemperatureVM = this.viewModel.TemperatureVM,
             deviceTypeVM,
             sensorId = page.broadcast.channelId.sensorId,
-            handlerLogger = rootVM.sensorVM.getLogger(),
-            tempMeasurementNr,
-            len,
-            newSeriesData;
+            handlerLogger = rootVM.sensorVM.getLogger();
 
-        deviceTypeVM = new TemperatureVM({
+        deviceTypeVM = new this.module.TemperatureVM({
 
             logger: handlerLogger,
 
@@ -1042,48 +1035,26 @@
         this.redrawIntegratedChart();
     };
 
-    ANTMonitorUI.prototype.addHRMSeries = function (page) {
+    ANTMonitorUI.prototype.initHRMSeries = function (page) {
 
         var addedSeries,
            rootVM = this.viewModel.rootVM,
-           HRMVM = this.viewModel.HRMVM,
+           HRMVM = this.module.HRMVM,
            deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId,
            handlerLogger = rootVM.sensorVM.getLogger();
 
-        addedSeries = this.sensorChart.integrated.chart.addSeries(
-          {
-              name: this.viewModel.rootVM.languageVM.heartrate().message+' ' + sensorId,
-              id: 'HRM-current-' + sensorId,
-              color: 'red',
-              data: [], // tuples [timestamp,value]
-              type: 'spline',
-
-              marker: {
-                  enabled: false
-                  // radius : 2
-              },
-
-              yAxis: 1,
-
-              tooltip: {
-                  enabled: false
-              },
-
-              //tooltip: {
-              //    valueDecimals: 0,
-              //    valueSuffix: ' bpm'
-              //},
-
-              // Disable generation of tooltip data for mouse tracking - improve performance
-
-              enableMouseTracking: false
-
-          }, false, false);
 
         deviceTypeVM = new HRMVM({
             logger: handlerLogger,
-            sensorId: sensorId
+            // sensorId: sensorId,
+             page: page,
+
+            uiFrameWindow : window,
+
+            rootVM : rootVM,
+
+            chart : this.sensorChart.integrated.chart,
         });
 
         this.viewModel.dictionary[sensorId] = deviceTypeVM;
@@ -1099,43 +1070,6 @@
 
         }
 
-        // RR
-
-        addedSeries = this.sensorChart.integrated.chart.addSeries(
-          {
-              name: 'RR ' + sensorId,
-              id: 'RR-' + sensorId,
-              color: 'gray',
-              data: [], // tuples [timestamp,value]
-              type: 'spline',
-
-              marker: {
-                  enabled: false
-                  // radius : 2
-              },
-
-              yAxis: 5,
-              xAxis: 0,
-
-              tooltip: {
-                  enabled: false
-              },
-
-              //tooltip: {
-              //    valueDecimals: 0,
-              //    valueSuffix: ' bpm'
-              //},
-
-              // Disable generation of tooltip data for mouse tracking - improve performance
-
-              enableMouseTracking: false,
-
-              visible: false,
-
-          }, false, false);
-
-        this.processRR(page);
-
         this.redrawIntegratedChart();
 
     };
@@ -1144,7 +1078,7 @@
 
         var addedSeries,
            rootVM = this.viewModel.rootVM,
-           SPDCADVM = this.viewModel.SPDCADVM,
+           SPDCADVM = this.module.SPDCADVM,
              deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId,
             handlerLogger = rootVM.sensorVM.getLogger();
@@ -1205,8 +1139,6 @@
         deviceTypeVM.updateFromPage(page);
 
         rootVM.sensorVM.devices.SPDCAD.push(deviceTypeVM);
-
-
 
         if (page.cadence !== undefined) {
 
@@ -1302,8 +1234,6 @@
 
         deviceTypeVM.updateFromPage(page);
 
-
-
         if (page.speed !== undefined) {
 
             addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false, false, false);
@@ -1358,14 +1288,8 @@
             deviceType = page.broadcast.channelId.deviceType,
             deviceTypeVM,
             handlerLogger = rootVM.sensorVM.getLogger(),
-            currentSeries,
+            currentSeries;
 
-        // Viewmodels - alias
-
-           // TemperatureVM = this.viewModel.TemperatureVM,
-            HRMVM = this.viewModel.HRMVM,
-            FootpodVM = this.viewModel.FootpodVM,
-            SPDCADVM = this.viewModel.SPDCADVM;
 
         deviceTypeVM = this.viewModel.dictionary[sensorId];
 
@@ -1387,7 +1311,9 @@
 
                 case 120:
 
-                    if (!deviceTypeVM)
+                     this.initHRMSeries(page);
+
+                   /* if (!deviceTypeVM)
                         this.addHRMSeries(page);
                     else {
                         if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
@@ -1406,7 +1332,7 @@
                             //}
 
                         }
-                    }
+                    }*/
 
                     break;
 
@@ -1470,10 +1396,6 @@
             }
 
 
-    };
-
-    ANTMonitorUI.prototype.getTimezoneOffsetInMilliseconds = function () {
-        return (new Date()).getTimezoneOffset() * -60000; // 1000 ms pr second = 60000 ms / minute
     };
 
     ANTMonitorUI.prototype.startRedrawInterval = function (delay) {

@@ -29,6 +29,8 @@
 
         this.temperature_fahrenheit = ko.observable(false);
 
+        this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
+
        
         // Behavior
 
@@ -38,6 +40,10 @@
         this.toggleShowSensor = SettingVM.prototype.toggleShowSensor.bind(this); 
 
     }
+
+    SettingVM.prototype.getTimezoneOffsetInMilliseconds = function () {
+        return (new Date()).getTimezoneOffset() * -60000; // 1000 ms pr second = 60000 ms / minute
+    };
 
     SettingVM.prototype.toggleShowCredits = function (data, event) {
         this.showCredits(!this.showCredits());

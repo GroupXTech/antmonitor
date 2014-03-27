@@ -55,6 +55,8 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         this.hardwareVersion = ko.observable();
         this.modelNumber = ko.observable();
 
+        this.init(configuration);
+
     }
 
     HRMVM.prototype = Object.create(GenericVM.prototype);
@@ -62,6 +64,49 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
     HRMVM.prototype.INVALID_HR = 0x00;
     
+    HRMVM.prototype.init = function (configuration)
+    {
+
+        this.addSeries(configuration.page);
+
+        this.updateFromPage(configuration.page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+
+    };
+
+    HRMVM.prototype.addSeries = function ()
+    {
+         addedSeries = this.sensorChart.integrated.chart.addSeries(
+          {
+              name: this.viewModel.rootVM.languageVM.heartrate().message+' ' + sensorId,
+              id: 'HRM-current-' + sensorId,
+              color: 'red',
+              data: [], // tuples [timestamp,value]
+              type: 'spline',
+
+              marker: {
+                  enabled: false
+                  // radius : 2
+              },
+
+              yAxis: 1,
+
+              tooltip: {
+                  enabled: false
+              },
+
+              //tooltip: {
+              //    valueDecimals: 0,
+              //    valueSuffix: ' bpm'
+              //},
+
+              // Disable generation of tooltip data for mouse tracking - improve performance
+
+              enableMouseTracking: false
+
+          }, false, false);
+
+    }
+
     HRMVM.prototype.updateFromPage = function (page) {
         
         this._page = page;
