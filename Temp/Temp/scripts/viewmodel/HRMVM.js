@@ -1,7 +1,8 @@
-/* global define: true */
+/* global define: true, ko: true */
 
 // Main viewmodel class
-define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM'], function (require, module, exports, Logger, GenericPage, GenericVM) {
+define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPage, GenericVM) {
+
     'use strict';
 
     function HRMVM(configuration) {
@@ -73,11 +74,51 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
     };
 
-    HRMVM.prototype.addSeries = function ()
+    HRMVM.prototype.processRR = function (page) {
+
+        var  currentTimestamp,
+            len,
+            RRmeasurementNr,
+            sensorId = page.broadcast.channelId.sensorId;
+
+        // If aggregated RR data is available process it (buffered data in deviceProfile)
+
+        if (page.aggregatedRR) {
+
+            currentTimestamp = page.timestamp + this.rootVM.settingVM.timezoneOffsetInMilliseconds;
+            // Start with the latest measurement and go back in time
+            for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
+                this.seriesRR.addPoint([currentTimestamp, page.aggregatedRR[RRmeasurementNr]], false,false,false);
+
+                //if (this.log && this.log.logging)
+                //    this.log.log('info', currentTimestamp, RRmeasurementNr, page.aggregatedRR[RRmeasurementNr]);
+                currentTimestamp -= page.aggregatedRR[RRmeasurementNr];
+            }
+        }
+    };
+
+    HRMVM.prototype.addPoint = function (page)
     {
-         addedSeries = this.sensorChart.integrated.chart.addSeries(
+
+        var settingVM = this.rootVM.settingVM;
+
+         if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
+
+
+            this.series.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
+
+        }
+
+          this.processRR(page);
+    };
+
+    HRMVM.prototype.addSeries = function (page)
+    {
+        var sensorId = page.broadcast.channelId.sensorId;
+
+         this.series = this.chart.addSeries(
           {
-              name: this.viewModel.rootVM.languageVM.heartrate().message+' ' + sensorId,
+              name: this.rootVM.languageVM.heartrate().message+' ' + sensorId,
               id: 'HRM-current-' + sensorId,
               color: 'red',
               data: [], // tuples [timestamp,value]
@@ -105,7 +146,42 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
           }, false, false);
 
-    }
+        // RR
+
+        this.seriesRR = this.chart.addSeries(
+          {
+              name: 'RR ' + sensorId,
+              id: 'RR-' + sensorId,
+              color: 'gray',
+              data: [], // tuples [timestamp,value]
+              type: 'spline',
+
+              marker: {
+                  enabled: false
+                  // radius : 2
+              },
+
+              yAxis: 5,
+              xAxis: 0,
+
+              tooltip: {
+                  enabled: false
+              },
+
+              //tooltip: {
+              //    valueDecimals: 0,
+              //    valueSuffix: ' bpm'
+              //},
+
+              // Disable generation of tooltip data for mouse tracking - improve performance
+
+              enableMouseTracking: false,
+
+              visible: false,
+
+          }, false, false);
+
+    };
 
     HRMVM.prototype.updateFromPage = function (page) {
         
@@ -176,6 +252,8 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
 
         if (page.modelNumber)
             this.modelNumber(page.modelNumber);
+
+        this.addPoint(page);
     };
     
     HRMVM.prototype.reset = function ()
@@ -195,14 +273,13 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         this.hardwareVersion(undefined);
         this.softwareVersion(undefined);
         this.modelNumber(undefined);
-    }
+    };
 
     HRMVM.prototype.getTemplateName = function (item) {
         // return undefined;
         return "HRM-template";
     };
 
-    module.exports = HRMVM;
-        
-    return module.exports;
+    return HRMVM;
+
 });

@@ -831,169 +831,12 @@
 
         });
 
-        // Get default x-Axis formatter;
-
-        var xAxis = this.sensorChart.integrated.chart.get('datetime-axis');
-
-        this.sensorChart.integrated.options.defaultxAxisLabelFormatter = xAxis.labelFormatter; // Keep reference to avoid possible garbage collection of formatter
-
-        
-
-        
-        this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter = function _liveTrackingxAxisLabelFormatter(tickConfiguration) {
-
-            var offset = this.timezoneOffsetInMilliseconds,
-                value = tickConfiguration.value - offset, // UTC
-                newTickLabel,
-                startTime,
-                stopTime,
-                segment,
-                len,
-                segmentElapsedTime = 0,
-                firstSegmentStartTime,
-                lastSegmentStopTime,
-                defaultFormatter = integratedChart.options.defaultxAxisLabelFormatter;
-
-            // Timer not running or not available - use default
-
-            if (!this.timer || (this.timer.state === this.timer.__proto__.STATE.INIT))
-                return defaultFormatter.call(tickConfiguration); // Highcharts.Axis.prototype.defaultLabelFormatter
-
-         
-                if (this.logger && this.logger.logging)
-                    this.logger.log('info', 'Tick positions local time', tickConfiguration.axis.tickPositions);
-
-                this.sensorChart.integrated.elapsedTime = 0;
-
-                firstSegmentStartTime = this.timer.startTime[0];
-                lastSegmentStopTime = this.timer.stopTime[this.timer.stopTime.length - 1];
-
-
-                //if (value < firstSegmentStartTime || value > lastSegmentStopTime)
-                //    return defaultFormatter.call(tickConfiguration);
-
-
-                for (segment = 0, len = this.timer.startTime.length; segment < len; segment++) {
-
-                    startTime = this.timer.startTime[segment];
-                    stopTime = this.timer.stopTime[segment];
-
-                    if (value >= startTime && (stopTime === undefined))
-                        return "Inside";
-
-                    if (this.logger && this.logger.logging)
-                        this.logger.log('info', 'Segment', segment, 'elapsed time', this.sensorChart.integrated.elapsedTime, 'segment elapsed time', segmentElapsedTime,'starttime',startTime,'value',value,'stoptime',stopTime);
-
-                }
-         
-
-              
-            //    // Tick is before first segment and after the last segment
-
-            //    if (value < startTime && segment === 0 || segment === len-1 && value > stopTime)
-            //    {
-            //        //newTickLabel = integratedChart.options.defaultxAxisLabelFormatter.call(tickConfiguration);
-            //       // newTickLabel = undefined;
-            //        break;
-            //    } 
-
-            //    // Tick is associated with segment where the timer is running - the last segment - [startTime,undefined]
-
-            //    else if (value >= startTime && stopTime === undefined) { 
-            //        newTickLabel = rootVM.timerVM.timeFormatter.format(this.sensorChart.integrated.elapsedTime + value - startTime);
-            //        break;
-
-            //        }  
-                
-            //    // Tick is associated with a particular segment n [startTime,stopTime]
-
-            //    else if (value >= startTime && value <= stopTime)  
-            //    {
-            //        segmentElapsedTime = stopTime - startTime;
-
-            //        newTickLabel = rootVM.timerVM.timeFormatter.format(this.sensorChart.integrated.elapsedTime + value - startTime);
-
-            //        this.sensorChart.integrated.elapsedTime += segmentElapsedTime;
-
-                 
-
-            //       break;
-
-            //    }
-
-               
-
-            //}
-
-            //return newTickLabel;
-
-        }.bind(this);
-
-        // highcharts call this function with a this object literal and sends no arguments -> antUI closure variable used instead  to keep a reference to our this
-
-       
-        this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatterWrapper = function _liveTrackingxAxisLabelFormatterWrapper()
-        {
-           return antUI.sensorChart.integrated.options.liveTrackingxAxisLabelFormatter.call(antUI,this);
-        };
-
-        // Override default formatter with our new live tracking formatter
-        xAxis.labelFormatter = this.sensorChart.integrated.options.liveTrackingxAxisLabelFormatterWrapper;
-
         this.startRedrawInterval(1000);
 
         this.sendReadyEvent();
 
-        // TEST change formatter on x-Axis 
-        // setInterval(function () {
-        //    integratedChart.options.liveTracking = !integratedChart.options.liveTracking;
-        //}, 5000);
-
     };
 
-    // Subscribe to changes in viewmodel and send a request message for storage
-    ANTMonitorUI.prototype.subscribeAndStore = function (vm,properties,sensorId)
-    {
-       
-        var subscribe = function (singleProperty) {
-
-            vm[singleProperty].subscribe(function (newValue) {
-                var key,
-                   items = {};
-
-
-                key = singleProperty;
-                if (sensorId)
-                    key += ('-' + sensorId);
-
-                items[key] = newValue;
-
-                window.parent.postMessage({
-                    request: 'set',
-                    items: items
-                },'*');
-
-            }.bind(this));
-        }.bind(this);
-
-        if (typeof properties === 'string') { // Single property
-          
-            subscribe(properties);
-        }
-        else if (Array.isArray(properties)) // Multiple properties [p1,p2,...]
-        {
-            for (var prop in properties)
-            {
-              
-                subscribe(properties[prop]);
-            }
-        } else
-        {
-            if (this.logger && this.logger.logging)
-                this.logger.log('warn', 'Unable to subscribe to properties of type', typeof properties);
-        }
-        
-    };
 
     ANTMonitorUI.prototype.initTemperatureSeries = function (page) {
 
@@ -1010,8 +853,6 @@
 
             page: page,
 
-            // Allow possibility for listening to message events directed to ui frame window inside viewmodel -> gives oppotunities for
-
             uiFrameWindow : window,
 
             rootVM : rootVM,
@@ -1022,12 +863,6 @@
 
         });
 
-        // In case user changes location, copy to storage
-
-        setTimeout(function () {
-            this.subscribeAndStore(deviceTypeVM, 'location',sensorId);
-        }.bind(this), 500); // Wait 500ms before hooking up -> give a chance to update location on initialization without overwrite again
-
         this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
         rootVM.sensorVM.devices.ENVIRONMENT.push(deviceTypeVM);
@@ -1037,38 +872,26 @@
 
     ANTMonitorUI.prototype.initHRMSeries = function (page) {
 
-        var addedSeries,
-           rootVM = this.viewModel.rootVM,
-           HRMVM = this.module.HRMVM,
-           deviceTypeVM,
+        var  deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId,
-           handlerLogger = rootVM.sensorVM.getLogger();
+           handlerLogger = this.viewModel.rootVM.sensorVM.getLogger();
 
+        deviceTypeVM = new this.module.HRMVM({
 
-        deviceTypeVM = new HRMVM({
             logger: handlerLogger,
-            // sensorId: sensorId,
-             page: page,
+
+            page: page,
 
             uiFrameWindow : window,
 
-            rootVM : rootVM,
+            rootVM : this.viewModel.rootVM,
 
             chart : this.sensorChart.integrated.chart,
         });
 
         this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
-        rootVM.sensorVM.devices.HRM.push(deviceTypeVM);
-
-        deviceTypeVM.updateFromPage(page);
-
-        if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
-
-
-            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
-
-        }
+        this.viewModel.rootVM.sensorVM.devices.HRM.push(deviceTypeVM);
 
         this.redrawIntegratedChart();
 
@@ -1253,32 +1076,7 @@
         }
     };
 
-    ANTMonitorUI.prototype.processRR = function (page) {
 
-        var currentSeries,
-            currentTimestamp,
-            len,
-            RRmeasurementNr,
-            sensorId = page.broadcast.channelId.sensorId,
-            shiftSeries = false;
-
-        // If aggregated RR data is available process it (buffered data in deviceProfile)
-
-        if (page.aggregatedRR) {
-            currentSeries = this.sensorChart.integrated.chart.get('RR-' + sensorId);
-            currentTimestamp = page.timestamp + this.timezoneOffsetInMilliseconds;
-            // Start with the latest measurement and go back in time
-            for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
-                currentSeries.addPoint([currentTimestamp, page.aggregatedRR[RRmeasurementNr]], false,
-          // currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024), false);
-          //currentSeries.data.length >= 30, false);
-          shiftSeries, false);
-                //if (this.log && this.log.logging)
-                //    this.log.log('info', currentTimestamp, RRmeasurementNr, page.aggregatedRR[RRmeasurementNr]);
-                currentTimestamp -= page.aggregatedRR[RRmeasurementNr];
-            }
-        }
-    };
 
     ANTMonitorUI.prototype.initViewModelForPage = function (page) {
 
@@ -1305,34 +1103,13 @@
 
                 case 25:
 
-                        this.initTemperatureSeries(page);
+                     this.initTemperatureSeries(page);
 
                     break;
 
                 case 120:
 
                      this.initHRMSeries(page);
-
-                   /* if (!deviceTypeVM)
-                        this.addHRMSeries(page);
-                    else {
-                        if (deviceTypeVM instanceof HRMVM && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
-                            currentSeries = this.sensorChart.integrated.chart.get('HRM-current-' + sensorId);
-                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.computedHeartRate], false,
-                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                 // currentSeries.data.length > 5,
-                                 false,
-                                false);
-
-                            this.processRR(page);
-
-                            // Maybe: use a setInterval redraw that loops all series and check for the first series that has series.isDirty && series.isDirtyData === true -> redraw
-                            //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                            //    this.redrawIntegratedChart();
-                            //}
-
-                        }
-                    }*/
 
                     break;
 

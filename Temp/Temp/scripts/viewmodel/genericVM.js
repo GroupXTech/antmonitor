@@ -121,10 +121,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         }
     };
 
-    GenericVM.prototype.onmessage = function (event)
-    {
-        throw new Error('onmessage should be overridden in descendant viewmodel');
-    };
+
 
     GenericVM.prototype.getSetting = function (items,isPendingStoreSubscription)
     {
@@ -192,6 +189,81 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
                 this._logger.log('warn', 'Unable to subscribe to properties of type', typeof properties);
         }
 
+    };
+
+    GenericVM.prototype.updateFromPage = function (page)
+    {
+        throw new Error('Cannot update page, do not know the viewmodel properties, updateFromPage should be overridden in descandant objcets');
+    };
+
+     GenericVM.prototype.onmessage = function (event)
+    {
+     var data = event.data,
+            page = event.data.page,
+            currentSeries = this.series,
+            sensorId,
+            key,
+
+            index,
+            property,
+            value;
+
+        // Ignore data without a sensorId or message destination is for another id
+
+        if (!data.sensorId || data.sensorId !== this.sensorId())
+            return;
+
+        switch (data.response)
+        {
+                case 'page' :
+
+                    this.updateFromPage(page);
+
+                    break;
+
+                case 'get' :
+
+                if (typeof data.items === 'object') {
+
+                        for (key in data.items)
+                        {
+
+                            index = key.indexOf('-', 0);
+
+                            property = key.substr(0, index);
+                            sensorId = key.substring(index + 1);
+
+                             if (data.sensorId !== sensorId)
+                             {
+                                 if (this._logger && this._logger.logging) this._logger.log('warn', 'Sensor id. in header',data.sensorId,'does not match sensorId in key',sensorId);
+                             } else {
+                                value = data.items[key];
+                                if (value)  // Don't update with undefined
+                                {
+                                    this[property](value);
+
+                                    if (this.pendingStoreSubscription[property]) {
+                                        this.pendingStoreSubscription[property] = false;
+                                        this.subscribeAndStore(property,sensorId);
+                                    }
+
+
+                                }
+                             }
+
+                        }
+                    } else
+                    {
+                        if (this._logger && this._logger.logging) this._logger.log('warn', data.response+' Unable to process items, expected an object',data.items);
+                    }
+
+                   break;
+
+                default :
+                    if (this._logger && this._logger.logging) this._logger.log('error', "Don't known what to do with response",data.response);
+
+                break;
+     }
     };
 
     return GenericVM;
