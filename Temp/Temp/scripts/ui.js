@@ -253,7 +253,7 @@
 
             settingVM: new this.module.SettingVM({log : true}),
 
-            // Holds an array on viewmodels for the sensors that are discovered
+            // Holds an array with viewmodels for the sensors that are discovered
             sensorVM: new this.module.SensorVM({ log: false }),
 
             // Contains all enumerated devices that fullfill the USB selector
@@ -897,7 +897,7 @@
 
     };
 
-    ANTMonitorUI.prototype.addSPDCADSeries = function (page) {
+    ANTMonitorUI.prototype.initSPDCADSeries = function (page) {
 
         var addedSeries,
            rootVM = this.viewModel.rootVM,
@@ -906,43 +906,19 @@
            sensorId = page.broadcast.channelId.sensorId,
             handlerLogger = rootVM.sensorVM.getLogger();
 
-        addedSeries = this.sensorChart.integrated.chart.addSeries(
-           {
-               name: this.viewModel.rootVM.languageVM.cadence().message+' ' + sensorId,
-               id: 'SPDCAD-cadence-' + sensorId,
-               color: 'magenta',
-               data: [], // tuples [timestamp,value]
-               type: 'spline',
 
-               marker: {
-                   enabled: false
-                   // radius : 2
-               },
+        deviceTypeVM = new this.module.SPDCADVM({
 
-               yAxis: 4,
-
-               tooltip: {
-                   enabled: false
-               },
-
-               //tooltip: {
-               //    valueDecimals: 0,
-               //    valueSuffix: ' bpm'
-               //},
-
-               // Disable generation of tooltip data for mouse tracking - improve performance
-
-               enableMouseTracking: false,
-
-               visible : false // Turn of cadence, often just having speed available is the most relevant
-
-           }, false, false);
-
-        window.parent.postMessage({ request: 'get', items: ['wheelCircumference-' + sensorId,'speedMode-'+sensorId] },'*'); // Fetch previous wheel circumference and speed mode
-
-        deviceTypeVM = new SPDCADVM({
             logger: handlerLogger,
-            sensorId: sensorId
+
+            page: page,
+
+            uiFrameWindow : window,
+
+            rootVM : this.viewModel.rootVM,
+
+            chart : this.sensorChart.integrated.chart,
+
         });
 
         deviceTypeVM.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
@@ -951,59 +927,10 @@
                 observable(observable()+relativeDistance);
         }.bind(this));
 
-        // Any changes to viewmodel properies will be propagated back to storage
-
-        setTimeout(function () {
-            this.subscribeAndStore(deviceTypeVM, ['wheelCircumference','speedMode'],sensorId);
-        }.bind(this), 500);
 
         this.viewModel.dictionary[sensorId] = deviceTypeVM;
 
-        deviceTypeVM.updateFromPage(page);
-
         rootVM.sensorVM.devices.SPDCAD.push(deviceTypeVM);
-
-        if (page.cadence !== undefined) {
-
-            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false, false, false);
-        }
-
-        addedSeries = this.sensorChart.integrated.chart.addSeries(
-           {
-               name: this.viewModel.rootVM.languageVM.speed().message+' ' + sensorId,
-               id: 'SPDCAD-speed-' + sensorId,
-               color: 'blue',
-               data: [], // tuples [timestamp,value]
-               type: 'spline',
-
-               marker: {
-                   enabled: false
-                   // radius : 2
-               },
-
-               yAxis: 3,
-
-               tooltip: {
-                   enabled: false
-               },
-
-               //tooltip: {
-               //    valueDecimals: 0,
-               //    valueSuffix: ' bpm'
-               //},
-
-               // Disable generation of tooltip data for mouse tracking - improve performance
-
-               enableMouseTracking: false
-
-           }, false, false);
-
-        if (page.unCalibratedSpeed !== undefined) {
-
-            // Converted speed taking wheel circumference into account
-            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false, false, false);
-
-        }
 
         this.redrawIntegratedChart();
 
@@ -1115,29 +1042,7 @@
 
                 case 121:
 
-                    if (!deviceTypeVM)
-                        this.addSPDCADSeries(page);
-                    else {
-                        if (deviceTypeVM instanceof SPDCADVM && page.cadence !== undefined) {
-                            currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-cadence-' + sensorId);
-                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.cadence], false,
-                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                 // currentSeries.data.length > 5,
-                                 false,
-                                false);
-                        } else if (deviceTypeVM instanceof SPDCADVM && page.unCalibratedSpeed !== undefined) {
-                            currentSeries = this.sensorChart.integrated.chart.get('SPDCAD-speed-' + sensorId);
-                            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, deviceTypeVM.speed()], false,
-                                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                                 // currentSeries.data.length > 5,
-                                 false,
-                                false);
-                        }
-
-                        //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                        //    this.redrawIntegratedChart();
-                        //}
-                    }
+                     this.initSPDCADSeries(page);
 
                     break;
 

@@ -62,6 +62,9 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
         this.pendingStoreSubscription = {};
 
+        // Holds viewmodel series
+        this.series = {};
+
     }
 
     GenericVM.prototype = EventEmitter.prototype;
@@ -196,6 +199,18 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         throw new Error('Cannot update page, do not know the viewmodel properties, updateFromPage should be overridden in descandant objcets');
     };
 
+    GenericVM.prototype.addSeries = function (page,seriesOptions)
+    {
+        var sensorId = page.broadcast.channelId.sensorId;
+
+        for (var series in seriesOptions) {
+            seriesOptions[series].name += ' '+sensorId;
+            seriesOptions[series].id += sensorId;
+            this.series[series] = this.chart.addSeries(seriesOptions[series],false,false);
+        }
+
+    };
+
      GenericVM.prototype.onmessage = function (event)
     {
      var data = event.data,
@@ -218,6 +233,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
                 case 'page' :
 
                     this.updateFromPage(page);
+                    this.addPoint(page);
 
                     break;
 

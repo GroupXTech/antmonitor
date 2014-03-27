@@ -67,59 +67,12 @@ define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPa
     
     HRMVM.prototype.init = function (configuration)
     {
+        var page = configuration.page;
 
-        this.addSeries(configuration.page);
-
-        this.updateFromPage(configuration.page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
-
-    };
-
-    HRMVM.prototype.processRR = function (page) {
-
-        var  currentTimestamp,
-            len,
-            RRmeasurementNr,
-            sensorId = page.broadcast.channelId.sensorId;
-
-        // If aggregated RR data is available process it (buffered data in deviceProfile)
-
-        if (page.aggregatedRR) {
-
-            currentTimestamp = page.timestamp + this.rootVM.settingVM.timezoneOffsetInMilliseconds;
-            // Start with the latest measurement and go back in time
-            for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
-                this.seriesRR.addPoint([currentTimestamp, page.aggregatedRR[RRmeasurementNr]], false,false,false);
-
-                //if (this.log && this.log.logging)
-                //    this.log.log('info', currentTimestamp, RRmeasurementNr, page.aggregatedRR[RRmeasurementNr]);
-                currentTimestamp -= page.aggregatedRR[RRmeasurementNr];
-            }
-        }
-    };
-
-    HRMVM.prototype.addPoint = function (page)
-    {
-
-        var settingVM = this.rootVM.settingVM;
-
-         if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
-
-
-            this.series.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
-
-        }
-
-          this.processRR(page);
-    };
-
-    HRMVM.prototype.addSeries = function (page)
-    {
-        var sensorId = page.broadcast.channelId.sensorId;
-
-         this.series = this.chart.addSeries(
-          {
-              name: this.rootVM.languageVM.heartrate().message+' ' + sensorId,
-              id: 'HRM-current-' + sensorId,
+        this.addSeries(page, {
+            hrm :  {
+              name: this.rootVM.languageVM.heartrate().message,
+              id: 'HRM-current-',
               color: 'red',
               data: [], // tuples [timestamp,value]
               type: 'spline',
@@ -144,14 +97,10 @@ define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPa
 
               enableMouseTracking: false
 
-          }, false, false);
-
-        // RR
-
-        this.seriesRR = this.chart.addSeries(
-          {
-              name: 'RR ' + sensorId,
-              id: 'RR-' + sensorId,
+          },
+          rr : {
+              name: 'RR',
+              id: 'RR-' ,
               color: 'gray',
               data: [], // tuples [timestamp,value]
               type: 'spline',
@@ -179,8 +128,49 @@ define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPa
 
               visible: false,
 
-          }, false, false);
+          }});
 
+        this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+
+        this.addPoint(page);
+    };
+
+    HRMVM.prototype.processRR = function (page) {
+
+        var  currentTimestamp,
+            len,
+            RRmeasurementNr,
+            sensorId = page.broadcast.channelId.sensorId;
+
+        // If aggregated RR data is available process it (buffered data in deviceProfile)
+
+        if (page.aggregatedRR) {
+
+            currentTimestamp = page.timestamp + this.rootVM.settingVM.timezoneOffsetInMilliseconds;
+            // Start with the latest measurement and go back in time
+            for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
+                this.series.rr.addPoint([currentTimestamp, page.aggregatedRR[RRmeasurementNr]], false,false,false);
+
+                //if (this.log && this.log.logging)
+                //    this.log.log('info', currentTimestamp, RRmeasurementNr, page.aggregatedRR[RRmeasurementNr]);
+                currentTimestamp -= page.aggregatedRR[RRmeasurementNr];
+            }
+        }
+    };
+
+    HRMVM.prototype.addPoint = function (page)
+    {
+
+        var settingVM = this.rootVM.settingVM;
+
+         if (page.computedHeartRate !== undefined && page.computedHeartRate !== HRMVM.prototype.INVALID_HR) {
+
+
+            this.series.hrm.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.computedHeartRate], false, false, false);
+
+        }
+
+          this.processRR(page);
     };
 
     HRMVM.prototype.updateFromPage = function (page) {
@@ -253,7 +243,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPa
         if (page.modelNumber)
             this.modelNumber(page.modelNumber);
 
-        this.addPoint(page);
+
     };
     
     HRMVM.prototype.reset = function ()

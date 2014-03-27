@@ -1,4 +1,4 @@
-/* global define: true */
+/* global define: true, ko: true */
 
 // Main viewmodel class
 define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Logger, GenericPage, GenericVM, deviceProfileSPDCAD) {
@@ -131,6 +131,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
             }.bind(this)
         });
 
+        this.init(configuration);
 
 
     }
@@ -152,8 +153,98 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
     SPDCADVM.prototype.CONVERSION_FACTOR = {
         INTERNATIONAL: 1609.344,
       //  US: 1609.347219
-    }
+    };
 
+    SPDCADVM.prototype.init = function (configuration)
+    {
+        var page = configuration.page;
+
+         this.getSetting(['wheelCircumference','speedMode'],true);
+
+        this.addSeries(page, {
+            cadence : {
+               name: this.rootVM.languageVM.cadence().message,
+               id: 'SPDCAD-cadence-' ,
+               color: 'magenta',
+               data: [], // tuples [timestamp,value]
+               type: 'spline',
+
+               marker: {
+                   enabled: false
+                   // radius : 2
+               },
+
+               yAxis: 4,
+
+               tooltip: {
+                   enabled: false
+               },
+
+               //tooltip: {
+               //    valueDecimals: 0,
+               //    valueSuffix: ' bpm'
+               //},
+
+               // Disable generation of tooltip data for mouse tracking - improve performance
+
+               enableMouseTracking: false,
+
+               visible : false // Turn of cadence, often just having speed available is the most relevant
+
+           },
+
+          speed : {
+               name: this.rootVM.languageVM.speed().message,
+               id: 'SPDCAD-speed-',
+               color: 'blue',
+               data: [], // tuples [timestamp,value]
+               type: 'spline',
+
+               marker: {
+                   enabled: false
+                   // radius : 2
+               },
+
+               yAxis: 3,
+
+               tooltip: {
+                   enabled: false
+               },
+
+               //tooltip: {
+               //    valueDecimals: 0,
+               //    valueSuffix: ' bpm'
+               //},
+
+               // Disable generation of tooltip data for mouse tracking - improve performance
+
+               enableMouseTracking: false
+
+           }});
+
+        this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+
+         this.addPoint(page);
+    };
+
+    SPDCADVM.prototype.addPoint = function (page)
+
+    {
+        var settingVM = this.rootVM.settingVM;
+
+        if (page.cadence !== undefined) {
+
+            this.series.cadence.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.cadence], false, false, false);
+        }
+
+
+        if (page.unCalibratedSpeed !== undefined) {
+
+            // Converted speed taking wheel circumference into account
+            this.series.speed.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.speed()], false, false, false);
+
+        }
+    };
 
     SPDCADVM.prototype.updateFromPage = function (page) {
 
@@ -175,7 +266,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
             if (this.distanceMode() === 1) // km/h
                 this.speed(3.6 * this.wheelCircumference() * page.unCalibratedSpeed);
             else if (this.distanceMode() ===2) // mph
-                this.speed(2.2369362920544 * this.wheelCircumference() * page.unCalibratedSpeed)
+                this.speed(2.2369362920544 * this.wheelCircumference() * page.unCalibratedSpeed);
         }
 
         if (page.cadence !== undefined)
@@ -209,7 +300,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         this.cadence(undefined);
         this.cumulativeDistance(0);
 
-    }
+    };
 
    return SPDCADVM;
    

@@ -123,44 +123,39 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     
     TemperatureVM.prototype.init = function (configuration)
     {
+        var page = configuration.page;
+
         this.getSetting('location',true);
 
         // Integration with global temperature setting
 
         this.rootVM.settingVM.temperature_fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
 
-        this.addSeries(configuration.page);
+        this.addSeries(page,{ temperature : {
+                                    name: this.rootVM.languageVM.temperature().message,
+                                    id: 'ENVIRONMENT-current-',
+                                    color: 'black',
+                                    data: [], // tuples [timestamp,value]
+                                    type: 'spline',
 
-        this.updateFromPage(configuration.page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+                                    //marker : {
+                                    //    enabled : true,
+                                    //    radius : 2
+                                    //},
 
+                                    yAxis: 0,
+
+                                    tooltip: {
+                                        valueDecimals: 2,
+                                        valueSuffix: ' °'
+                                    }
+                                }});
+
+        this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+
+        this.addPoint(page);
     };
 
-    TemperatureVM.prototype.addSeries = function (page)
-    {
-
-       var sensorId = page.broadcast.channelId.sensorId;
-
-       this.series = this.chart.addSeries(
-            {
-                name: this.rootVM.languageVM.temperature().message + ' '+ sensorId,
-                id: 'ENVIRONMENT-current-' + sensorId,
-                color: 'black',
-                data: [], // tuples [timestamp,value]
-                type: 'spline',
-
-                //marker : {
-                //    enabled : true,
-                //    radius : 2
-                //},
-
-                yAxis: 0,
-
-                tooltip: {
-                    valueDecimals: 2,
-                    valueSuffix: ' °'
-                }
-            }, false, false);
-    };
 
     TemperatureVM.prototype.addPoint = function (page)
     {
@@ -174,12 +169,12 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
            return;
 
         if (this.temperatureMode && this.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-            this.series.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
+            this.series.temperature.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
 
         }
         else {
 
-            this.series.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
+            this.series.temperature.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
 
         }
 
@@ -196,9 +191,9 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
             {
                 this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
 
-                  for (tempMeasurementNr=0, len = this.series.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                  for (tempMeasurementNr=0, len = this.series.temperature.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
                   {
-                        newSeriesData.push([this.series.xData[tempMeasurementNr],this.tempConverter.fromCelciusToFahrenheit(this.series.yData[tempMeasurementNr])]);
+                        newSeriesData.push([this.series.temperature.xData[tempMeasurementNr],this.tempConverter.fromCelciusToFahrenheit(this.series.temperature.yData[tempMeasurementNr])]);
                   }
 
 
@@ -206,13 +201,13 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
             else {
 
                this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
-                 for (tempMeasurementNr=0, len = this.series.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                 for (tempMeasurementNr=0, len = this.series.temperature.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
                   {
-                        newSeriesData.push([this.series.xData[tempMeasurementNr],this.tempConverter.fromFahrenheitToCelcius(this.series.yData[tempMeasurementNr])]);
+                        newSeriesData.push([this.series.temperature.xData[tempMeasurementNr],this.tempConverter.fromFahrenheitToCelcius(this.series.temperature.yData[tempMeasurementNr])]);
                   }
             }
 
-            this.series.setData(newSeriesData,true);
+            this.series.temperature.setData(newSeriesData,true);
     };
 
 
@@ -261,7 +256,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         // if ((page.profile && page.profile.hasCommonPages) || !page.profile)
              this.updateCommonPage(page);
 
-         this.addPoint(page);
      };
      
     TemperatureVM.prototype.getTemplateName = function (item)
