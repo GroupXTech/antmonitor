@@ -123,13 +123,14 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     
     TemperatureVM.prototype.init = function (configuration)
     {
-        var page = configuration.page;
+        var page = configuration.page,
+            sensorId = this.sensorId();
 
-        this.getSetting('location',true);
+        this.getSetting('location-'+this.sensorId(),true);
 
         // Integration with global temperature setting
 
-        this.rootVM.settingVM.temperature_fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
+        this.rootVM.settingVM.ENVIRONMENT.fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
 
         this.addSeries(page,{ temperature : {
                                     name: this.rootVM.languageVM.temperature().message,

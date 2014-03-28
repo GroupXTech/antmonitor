@@ -1,3 +1,5 @@
+/* globals define: true, window: true, require: true */
+
 define(['logger'], function _requireDefine(Logger) {
     'use strict';
 
@@ -70,10 +72,9 @@ define(['logger'], function _requireDefine(Logger) {
                 this.uiFrameReady = true;
 
                 this.uiFrame = window.frames[0];
+
                 if (this.logger && this.logger.logging)
                     this.logger.log('log', this.name + ' UI frame ready to process messages');
-
-                this.postMessage({ response: 'ready' });
 
                 break;
 
@@ -81,38 +82,18 @@ define(['logger'], function _requireDefine(Logger) {
 
             case 'get':
 
-                if (data.sensorId) {
+                if (!data.sensorId)
+                {
+                     if (this.logger && this.logger.logging)
+                        this.logger.log('error', this.name + ' No sensor id. available in get request, cannot proceed with get request',data);
 
-                    // Must append sensorId to items if available
+                     return;
 
-                    // First case items is of type string -> only a single property
-
-                    if  (typeof data.items === 'string')
-                    {
-
-                            data.items += '-'+data.sensorId; // Add sensorId to property
-
-                    }
-
-                    // Second case, multiple properties
-
-                    else if (Array.isArray(data.items))
-                    {
-                        for (var itemNr=0, len= data.items.length; itemNr < len; itemNr++)
-                        {
-
-                            data.items[itemNr] += '-'+data.sensorId;
-
-                        }
-                    }
                 }
 
                 this.storage.get(data.items, function _getkey(items) {
 
-                    var getResponse = { response: 'get', items : items };
-
-                    if (data.sensorId)
-                        getResponse.sensorId = data.sensorId;
+                    var getResponse = { response: 'get', sensorId : data.sensorId,items : items };
 
                     this.postMessage(getResponse);
 
@@ -153,6 +134,8 @@ define(['logger'], function _requireDefine(Logger) {
     // Initialization of ANT host and USB
     GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, TEMPprofile, RxScanMode, Storage, Logger) {
 
+
+
         this.storage = new Storage({ log: true });
 
         this.host = new ANTHost();
@@ -160,7 +143,9 @@ define(['logger'], function _requireDefine(Logger) {
         this.module.usb = USBHost;
         this.module.rxscanmode = RxScanMode;
        
+        window.frames[0].postMessage({ response: 'ready' },'*'); // Signal to UI frame that host is ready
         
+
         // Get default device specified by user
         this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
    

@@ -157,9 +157,10 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
     SPDCADVM.prototype.init = function (configuration)
     {
-        var page = configuration.page;
+        var page = configuration.page,
+            sensorId = this.sensorId();
 
-         this.getSetting(['wheelCircumference','speedMode'],true);
+         this.getSetting(['wheelCircumference-'+sensorId(),'speedMode-'+sensorId()],true);
 
         this.addSeries(page, {
             cadence : {

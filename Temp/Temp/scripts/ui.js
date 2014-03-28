@@ -20,6 +20,8 @@
 
         window.addEventListener('message', this.onmessage.bind(this));
 
+        window.parent.postMessage({ 'request' : 'ready'},'*'); // Signal that UI frame will accept messages now
+
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
                 if (this.logger && this.logger.logging) this.logger.log('warn', this.name+' has not received ready from host environment - messages will probably not reach host');
@@ -78,8 +80,6 @@
                     SensorVM : SensorVM
                 };
 
-                this.initRootVM();
-
         }.bind(this));
 
        
@@ -130,6 +130,10 @@
 
                     if (this.logger && this.logger.logging)
                         this.logger.log('log', this.name + ' ready to process messages');
+
+
+                    // Only start UI, when host environment is ready (e.g must have access to storage)
+                    this.initRootVM();
 
                     break;
 
@@ -251,7 +255,10 @@
 
             languageVM : new this.module.LanguageVM({log : true}),
 
-            settingVM: new this.module.SettingVM({log : true}),
+            settingVM: new this.module.SettingVM({
+                log : true,
+                uiFrameWindow : window
+            }),
 
             // Holds an array with viewmodels for the sensors that are discovered
             sensorVM: new this.module.SensorVM({ log: false }),

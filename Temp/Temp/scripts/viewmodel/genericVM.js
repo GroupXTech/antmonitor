@@ -129,28 +129,24 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
     GenericVM.prototype.getSetting = function (items,isPendingStoreSubscription)
     {
 
-    if (this.sensorId()) {
-        this.hostWin.postMessage({  request: 'get', sensorId : this.sensorId(),  items: items },'*'); // Fetch previous location of sensor if available
-        if (typeof items === 'string')
-        {
+    this.hostWin.postMessage({  request: 'get', sensorId : this.sensorId(),  items: items },'*');
+
+    if (typeof items === 'string')
+    {
+        if (isPendingStoreSubscription)
+            this.pendingStoreSubscription[items] = true;
+    } else if (Array.isArray(items))
+    {
+        for (var item in items)
             if (isPendingStoreSubscription)
-                this.pendingStoreSubscription[items] = true;
-        } else if (Array.isArray(items))
-        {
-            for (var item in items)
-                if (isPendingStoreSubscription)
-                    this.pendingStoreSubscription[items[item]] = true;
-        }
+                this.pendingStoreSubscription[items[item]] = true;
     }
-        else
-        {
-            if (this._logger && this._logger.logging)
-                this._logger.log('error','Cannot get settings for',items,'without a sensorId');
-        }
+
 
     };
 
     // Subscribe to changes in viewmodel and send a request message for storage
+    // Optional parameter sensorId for a particular sensor
     GenericVM.prototype.subscribeAndStore = function (properties,sensorId)
     {
 
@@ -162,6 +158,8 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
 
                 key = singleProperty;
+
+                // Sensor specific
                 if (sensorId)
                     key += ('-' + sensorId);
 
@@ -221,7 +219,8 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
             index,
             property,
-            value;
+            value,
+         noMatch = false;
 
         // Ignore data without a sensorId or message destination is for another id
 
@@ -239,35 +238,36 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 case 'get' :
 
-                if (typeof data.items === 'object') {
+                    if (typeof data.items === 'object') {
 
                         for (key in data.items)
                         {
 
-                            index = key.indexOf('-', 0);
+                             index = key.indexOf('-', 0);
 
-                            property = key.substr(0, index);
-                            sensorId = key.substring(index + 1);
+                            if (index !== -1) {
+                                // Sensor specific
+                               property = key.substr(0, index);
+                              sensorId = key.substring(index + 1);
+                            }
+                            else
+                               property = key; // General
 
-                             if (data.sensorId !== sensorId)
-                             {
-                                 if (this._logger && this._logger.logging) this._logger.log('warn', 'Sensor id. in header',data.sensorId,'does not match sensorId in key',sensorId);
-                             } else {
-                                value = data.items[key];
-                                if (value)  // Don't update with undefined
-                                {
-                                    this[property](value);
+                            value = data.items[key];
 
-                                    if (this.pendingStoreSubscription[property]) {
-                                        this.pendingStoreSubscription[property] = false;
-                                        this.subscribeAndStore(property,sensorId);
-                                    }
+                            if (value)  // Don't update with undefined
+                            {
+                                this[property](value);
 
-
+                                if (this.pendingStoreSubscription[property]) {
+                                    this.pendingStoreSubscription[property] = false;
+                                    this.subscribeAndStore(property,sensorId);
                                 }
-                             }
+                            }
 
                         }
+
+
                     } else
                     {
                         if (this._logger && this._logger.logging) this._logger.log('warn', data.response+' Unable to process items, expected an object',data.items);

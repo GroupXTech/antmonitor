@@ -1,4 +1,4 @@
-/* global define: true */
+/* global define: true, chrome: true */
 
 // window.localStorage not available pr. 19/11-2013 for chrome packaged apps
 // Reason for not using: Blocking synchronous I/O
@@ -44,7 +44,7 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
         this.storage.set(setItems, function _setItem() {
 
             if (chrome.runtime.lastError) {
-                if (this.logger && this.logger.logging) this.logger.log('error', 'Failed to set items',items,' in storage', chrome.runtime.lastError);
+                if (this.logger && this.logger.logging) this.logger.log('error', 'Failed to set items',setItems,' in storage', chrome.runtime.lastError);
                 return;
             }
 

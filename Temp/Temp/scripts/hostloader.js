@@ -1,4 +1,4 @@
-﻿/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true */
+﻿/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true, WinJS: true, Windows: true */
 
 // Requirejs
 
@@ -14,6 +14,7 @@
 
 
 (function HostLoaderIIFE() {
+
     'use strict';
 
     // Determine execution environment and load the appropiate host module

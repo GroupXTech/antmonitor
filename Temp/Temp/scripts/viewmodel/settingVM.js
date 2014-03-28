@@ -1,20 +1,22 @@
-﻿define(['logger'], function _requireDefineSettingVM(Logger) {
+/* global define: true, ko:true */
+
+define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
      'use strict';
 
     function SettingVM(configuration)
     {
-        this._logger = new Logger(configuration);
+         GenericVM.call(this, configuration);
 
         this.showAdditionalInfo = ko.observable(false);
 
         this.showCredits = ko.observable(false);
 
-        this.show24HMaxMin = ko.observable(false);
+         this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
 
-        //this.temperatureModes: TemperatureVM.prototype.MODES,
 
         // Keeps track of visibility of sensors in short sensor overview and in the integrated chart
+
         this.showSensors = {
 
             HRM : ko.observable(true),
@@ -27,9 +29,13 @@
 
         this.showTimer = ko.observable(true);
 
-        this.temperature_fahrenheit = ko.observable(false);
+        // ENVIRONMENT
 
-        this.timezoneOffsetInMilliseconds = this.getTimezoneOffsetInMilliseconds();
+        this.ENVIRONMENT = {};
+
+        this.ENVIRONMENT.show24HMaxMin = ko.observable(false);
+
+        this.ENVIRONMENT.fahrenheit = ko.observable(false);
 
        
         // Behavior
@@ -39,6 +45,18 @@
     
         this.toggleShowSensor = SettingVM.prototype.toggleShowSensor.bind(this); 
 
+        this.sensorId = ko.observable('settingVM');
+
+        this.init(configuration);
+
+    }
+
+    SettingVM.prototype = Object.create(GenericVM.prototype);
+    SettingVM.constructor = SettingVM;
+
+    SettingVM.prototype.init = function ()
+    {
+        this.getSetting('ENVIRONMENT.fahrenheit',true);
     }
 
     SettingVM.prototype.getTimezoneOffsetInMilliseconds = function () {

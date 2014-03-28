@@ -1,4 +1,4 @@
-﻿/* global define: true */
+﻿/* global define: true, ko: true */
 
 // Main viewmodel class
 define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM'], function (require, module, exports, Logger, GenericPage, GenericVM) {
@@ -15,7 +15,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
                 if (this.timestamp)
                     return (new Date(this.timestamp())).toLocaleTimeString();
             }.bind(this)
-        })
+        });
 
         this._page = undefined;
 
@@ -136,7 +136,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
     FootpodVM.prototype.CONVERSION_FACTOR = {
         INTERNATIONAL : 1609.344,
         US : 1609.347219
-    }
+    };
 
    
     FootpodVM.prototype.updateFromPage = function (page) {

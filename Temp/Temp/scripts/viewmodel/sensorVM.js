@@ -1,13 +1,12 @@
-﻿/* global define: true */
+/* global define: true, ko : true */
 
-// Main viewmodel class
-define(['logger','vm/HRMVM','vm/temperatureVM'], function(Logger,HRMVM, TemperatureVM) {
+define(['vm/genericVM'], function(GenericVM) {
 
     'use strict';
     
     function SensorVM(configuration) 
     {
-        this._logger = new Logger(configuration);
+       GenericVM.call(this,configuration);
 
 
             this.devices = {
@@ -18,6 +17,9 @@ define(['logger','vm/HRMVM','vm/temperatureVM'], function(Logger,HRMVM, Temperat
 
     }
     
+    SensorVM.prototype = Object.create(GenericVM.prototype);
+    SensorVM.constructor = SensorVM;
+
     SensorVM.prototype.getLogger = function ()
     {
         return this._logger;
