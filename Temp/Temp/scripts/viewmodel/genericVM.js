@@ -147,21 +147,18 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
     // Subscribe to changes in viewmodel and send a request message for storage
     // Optional parameter sensorId for a particular sensor
-    GenericVM.prototype.subscribeAndStore = function (properties,sensorId)
+    GenericVM.prototype.subscribeAndStore = function (property,sensorId)
     {
 
         var subscribe = function (singleProperty) {
 
-            this[singleProperty].subscribe(function (newValue) {
+            var store = function (newValue) {
+
                 var key,
                    items = {};
 
 
-                key = singleProperty;
-
-                // Sensor specific
-                if (sensorId)
-                    key += ('-' + sensorId);
+                key = singleProperty+'-'+sensorId;
 
                 items[key] = newValue;
 
@@ -170,21 +167,28 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
                     items: items
                 },'*');
 
-            }.bind(this));
+            };
+
+            if (this._logger && this._logger.logging)
+                this._logger.log('log','Subscription to property '+singleProperty+' hooked up to storage for viewmodel',this);
+
+            this[singleProperty].subscribe(store.bind(this));
+
         }.bind(this);
 
-        if (typeof properties === 'string') { // Single property
+        if (typeof property === 'string') { // Single property
 
-            subscribe(properties);
+            subscribe(property);
         }
-        else if (Array.isArray(properties)) // Multiple properties [p1,p2,...]
-        {
-            for (var prop in properties)
-            {
+       // else if (Array.isArray(properties)) // Multiple properties [p1,p2,...]
+       // {
+       //     for (var prop in properties)
+       //     {
 
-                subscribe(properties[prop]);
-            }
-        } else
+       //         subscribe(properties[prop]);
+       //     }
+       // }
+        else
         {
             if (this._logger && this._logger.logging)
                 this._logger.log('warn', 'Unable to subscribe to properties of type', typeof properties);
@@ -209,18 +213,43 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
     };
 
+    GenericVM.prototype.updateFromStorage = function (data,key)
+    {
+    var index = key.indexOf('-', 0),
+        property,
+        sensorId,
+        value;
+
+
+        if (index !== -1) {
+
+           property = key.substr(0, index);
+          sensorId = key.substring(index + 1);
+        }
+        else {
+           if (this._logger && this._logger.logging)
+           this._logger.log('error','Did not find - delemiter in key, wrong key (format property-sensorid)');
+        }
+
+        value = data.items[key]; // Contains result
+
+        if (value)  // Don't update with undefined
+          this[property](value);
+
+
+        if (this.pendingStoreSubscription[key]) {
+            this.pendingStoreSubscription[key] = false;
+            this.subscribeAndStore(property,sensorId);
+        }
+
+    };
+
      GenericVM.prototype.onmessage = function (event)
     {
      var data = event.data,
             page = event.data.page,
             currentSeries = this.series,
-            sensorId,
-            key,
-
-            index,
-            property,
-            value,
-         noMatch = false;
+         key;
 
         // Ignore data without a sensorId or message destination is for another id
 
@@ -238,39 +267,16 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 case 'get' :
 
-                    if (typeof data.items === 'object') {
+                    if (typeof data.requestitems === 'object') {
 
-                        for (key in data.items)
-                        {
-
-                             index = key.indexOf('-', 0);
-
-                            if (index !== -1) {
-                                // Sensor specific
-                               property = key.substr(0, index);
-                              sensorId = key.substring(index + 1);
-                            }
-                            else
-                               property = key; // General
-
-                            value = data.items[key];
-
-                            if (value)  // Don't update with undefined
-                            {
-                                this[property](value);
-
-                                if (this.pendingStoreSubscription[property]) {
-                                    this.pendingStoreSubscription[property] = false;
-                                    this.subscribeAndStore(property,sensorId);
-                                }
-                            }
-
-                        }
-
-
-                    } else
+                        for (key in data.requestitems)
+                           this.updateFromStorage(data,key);
+}
+                    else if (typeof data.requestitems === 'string')
+                          this.updateFromStorage(data,data.requestitems);
+                    else
                     {
-                        if (this._logger && this._logger.logging) this._logger.log('warn', data.response+' Unable to process items, expected an object',data.items);
+                        if (this._logger && this._logger.logging) this._logger.log('warn', data.response+' Unable to process items, expected an object or string',data.requestitems);
                     }
 
                    break;

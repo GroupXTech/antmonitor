@@ -11,6 +11,13 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
         this.logger = new Logger(configuration.log);
         this.storage = chrome.storage.local; // || chrome.storage.sync
 
+        this.storage.get(null, function (db) {
+
+          if (this.logger && this.logger.logging)
+            this.logger.log('info','DB - Local storage contents',db);
+
+        }.bind(this));
+
     }
 
     StorageChrome.prototype = Object.create(Storage.prototype);
@@ -21,14 +28,14 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
 
       var requestedItems = getItems; // Enable scope variable inspection on outer closure (why isnt getItems available? Maybe due to .bind)
 
-      if (this.logger && this.logger.logging) this.logger.log('log', 'DB get items',getItems);
-
         this.storage.get(getItems, function _getItems(items) {
 
             if (chrome.runtime.lastError) {
                 if (this.logger && this.logger.logging) this.logger.log('error', 'Failed to get items',requestedItems,'from storage', chrome.runtime.lastError);
                 return;
             }
+
+            if (this.logger && this.logger.logging) this.logger.log('log', 'DB - READ',getItems,items);
 
             callback(items);
 
@@ -47,6 +54,8 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
                 if (this.logger && this.logger.logging) this.logger.log('error', 'Failed to set items',setItems,' in storage', chrome.runtime.lastError);
                 return;
             }
+
+            if (this.logger && this.logger.logging) this.logger.log('log', 'DB - WRITE',setItems);
 
             callback();
 

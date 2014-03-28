@@ -66,7 +66,7 @@
                 <div  class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
                 </div>
 
-                <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.ENVIRONMENT.show24HMaxMin()" >
+                <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.show24HMaxMin()" >
                         <span data-bind="html: formattedLow24H , style: { color : low24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
                         <span>&darr;</span>
                          <span style="margin-left: 10px" data-bind="html: formattedHigh24H , style: { color : high24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
@@ -136,7 +136,7 @@
                             <span  data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" ></span>
                         </div>
                         
-                        <div data-bind="visible: $root.settingVM.ENVIRONMENT.show24HMaxMin()" >
+                        <div data-bind="visible: $root.settingVM.show24HMaxMin()" >
 
                             <div class="temperatureParagraph">
                                 <span  data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}" ></span>
@@ -145,7 +145,7 @@
                         
                         </div>
                         
-                        <div data-bind="visible: $root.settingVM.ENVIRONMENT.show24HMaxMin()">
+                        <div data-bind="visible: $root.settingVM.show24HMaxMin()">
 
                             <div class="temperatureParagraph">
                                 <span  data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}" ></span>
@@ -745,7 +745,7 @@
                    <h3 data-bind="text: $root.languageVM.temperature().message"></h3>
 
                    <li>
-                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.ENVIRONMENT.fahrenheit" />
+                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.fahrenheit" />
                         <label data-bind="text:languageVM.setting_temperature_fahrenheit().message"></label>
                         &degF
                     </li>

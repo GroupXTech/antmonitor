@@ -80,6 +80,8 @@
                     SensorVM : SensorVM
                 };
 
+                 this.sendReadyEvent();
+
         }.bind(this));
 
        
@@ -840,7 +842,7 @@
 
         this.startRedrawInterval(1000);
 
-        this.sendReadyEvent();
+
 
     };
 

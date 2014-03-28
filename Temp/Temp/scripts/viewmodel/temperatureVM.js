@@ -1,6 +1,5 @@
 /* global define: true, ko:true */
 
-// Main viewmodel class
 define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(Logger,GenericPage, GenericVM, TemperatureConverter) {
 
     'use strict';
@@ -14,7 +13,9 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         else
           this.tempConverter = new TemperatureConverter(); // Fallback, if sharing code is not available
 
-        this.temperatureMode = configuration.temperatureMode || ko.observable(TemperatureVM.prototype.MODE.CELCIUS);
+
+
+        this.temperatureMode = ko.observable(undefined);
 
         this.number = ko.observable();
 
@@ -128,9 +129,15 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         this.getSetting('location-'+this.sensorId(),true);
 
-        // Integration with global temperature setting
+        // Init with global temperature setting
 
-        this.rootVM.settingVM.ENVIRONMENT.fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
+        if (this.rootVM.settingVM.fahrenheit)
+           this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
+        else
+           this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
+
+        // Update on subsequent changes
+        this.rootVM.settingVM.fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
 
         this.addSeries(page,{ temperature : {
                                     name: this.rootVM.languageVM.temperature().message,

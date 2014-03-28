@@ -93,7 +93,7 @@ define(['logger'], function _requireDefine(Logger) {
 
                 this.storage.get(data.items, function _getkey(items) {
 
-                    var getResponse = { response: 'get', sensorId : data.sensorId,items : items };
+                    var getResponse = { response: 'get', sensorId : data.sensorId,items : items, requestitems : data.items };
 
                     this.postMessage(getResponse);
 

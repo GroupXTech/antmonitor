@@ -31,11 +31,10 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
         // ENVIRONMENT
 
-        this.ENVIRONMENT = {};
 
-        this.ENVIRONMENT.show24HMaxMin = ko.observable(false);
+        this.show24HMaxMin = ko.observable(false);
 
-        this.ENVIRONMENT.fahrenheit = ko.observable(false);
+        this.fahrenheit = ko.observable(false);
 
        
         // Behavior
@@ -56,8 +55,8 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
     SettingVM.prototype.init = function ()
     {
-        this.getSetting('ENVIRONMENT.fahrenheit',true);
-    }
+        this.getSetting('fahrenheit'+'-'+this.sensorId(),true);
+    };
 
     SettingVM.prototype.getTimezoneOffsetInMilliseconds = function () {
         return (new Date()).getTimezoneOffset() * -60000; // 1000 ms pr second = 60000 ms / minute
