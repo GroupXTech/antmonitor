@@ -10,8 +10,6 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
         this._page = undefined;
 
-        this.sensorId = ko.observable();
-
         this.number = ko.observable();
 
         this.timestamp = ko.observable();
@@ -117,8 +115,6 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
                         //    break;
 
-                        
-
                         default:
 
                             speedStr = this.speed().toFixed(1);
@@ -130,6 +126,8 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
             }.bind(this)
         });
+
+        this.name = ko.observable();
 
         this.init(configuration);
 
@@ -160,7 +158,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         var page = configuration.page,
             sensorId = this.sensorId();
 
-         this.getSetting(['wheelCircumference-'+sensorId(),'speedMode-'+sensorId()],true);
+         this.getSetting(['wheelCircumference-'+sensorId,'speedMode-'+sensorId],true);
 
         this.addSeries(page, {
             cadence : {

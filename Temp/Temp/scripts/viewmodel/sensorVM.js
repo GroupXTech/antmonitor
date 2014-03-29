@@ -19,11 +19,6 @@ define(['vm/genericVM'], function(GenericVM) {
     
     SensorVM.prototype = Object.create(GenericVM.prototype);
     SensorVM.constructor = SensorVM;
-
-    SensorVM.prototype.getLogger = function ()
-    {
-        return this._logger;
-    };
     
     SensorVM.prototype.getTemplateName = function (viewModelItem)
     {

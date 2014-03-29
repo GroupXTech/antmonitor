@@ -13,15 +13,11 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         else
           this.tempConverter = new TemperatureConverter(); // Fallback, if sharing code is not available
 
-
-
         this.temperatureMode = ko.observable(undefined);
 
         this.number = ko.observable();
 
-        // Current temperature
         this.currentTemp = ko.observable();
-
 
         var getFormattedTemp = function (tempObs, toFixedDigits) {
 
@@ -100,7 +96,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         });
 
-        this.location = ko.observable();
+        this.name = ko.observable();
       
 
         this.timestamp = ko.observable();
@@ -127,11 +123,11 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         var page = configuration.page,
             sensorId = this.sensorId();
 
-        this.getSetting('location-'+this.sensorId(),true);
+        this.getSetting('name-'+this.sensorId(),true);
 
         // Init with global temperature setting
 
-        if (this.rootVM.settingVM.fahrenheit)
+        if (this.rootVM.settingVM.fahrenheit())
            this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
         else
            this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
@@ -249,13 +245,13 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
          if (page.number !== undefined)
              this.number(page.number);
 
-         if (page.currentTemp)
+         if (page.currentTemp !== undefined)
              this.currentTemp(page.currentTemp);
 
-         if (page.hour24Low)
+         if (page.hour24Low !== undefined)
              this.low24H(page.hour24Low);
 
-         if (page.hour24High)
+         if (page.hour24High !== undefined)
              this.high24H(page.hour24High);
 
          if (page.timestamp)

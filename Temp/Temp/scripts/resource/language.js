@@ -65,6 +65,14 @@ define(function _defineLanguageResource() {
                 message: 'er utviklet i Javascript av Henning Knut Skoglund'
             },
 
+            about_licence_label : {
+                message: 'Lisens'
+            },
+
+             about_licence_noncommercial : {
+                message: 'Åpen, ikke-kommersiell'
+            },
+
             libraries: {
                 message: 'Biblioteker'
             },
@@ -214,6 +222,14 @@ define(function _defineLanguageResource() {
 
             about_part4: {
                 message: 'is developed in Javascript by Henning Knut Skoglund'
+            },
+
+            about_licence_label : {
+                message: 'Licence'
+            },
+
+            about_licence_noncommercial : {
+                message: 'Open, non-commercial'
             },
 
             libraries: {

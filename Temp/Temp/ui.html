@@ -73,7 +73,7 @@
                           <span>&uarr;</span>
                 </div>
 
-                <div class="secondary-short-heading"  data-bind="visible: location() !== undefined, text: location">
+                <div class="secondary-short-heading"  data-bind="visible: name() !== undefined, text: name">
                 </div>
 
             </div>
@@ -125,8 +125,8 @@
             <li>
                 
                     <!--<div id="flexIcon">
-                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: location, attr: {title: ('Sensor id. : '+sensorId+' '+location()) }" />
-                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !location, attr: {title: ('Sensor id. : '+sensorId) }" />
+                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: name, attr: {title: ('Sensor id. : '+sensorId+' '+name()) }" />
+                        <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !name, attr: {title: ('Sensor id. : '+sensorId) }" />
 
                     </div>-->
 
@@ -154,7 +154,7 @@
 
                         </div>
 
-                        <input class="location" data-bind="value: location, valueUpdate: 'afterkeydown', attr: { placeholder : $root.languageVM.location().message }"  />
+                        <input class="location" data-bind="value: name, valueUpdate: 'afterkeydown', attr: { placeholder : $root.languageVM.location().message }"  />
 
                             <span class="timestamp" data-bind="text: formattedTimestamp" ></span>
                     </div>
@@ -635,8 +635,11 @@
                         <a href="http://www.visualpharm.com"  target="_blank">Visual Pharm</a>
                     </li>
                 </ul>
+
+
                 <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
                 <p><span data-bind="text: languageVM.about_part3().message"></span> <a href="https://github.com/hkskoglund/libant"  target="_blank">Libant</a> <span data-bind="text: languageVM.about_part4().message"></span>, <time datetime="2013/2014">2013&ndash;2014</time></p>
+                 <p><span data-bind="text: languageVM.about_licence_label().message"></span><a style="margin-left: 5px" href="https://creativecommons.org/licenses/by-nc-nd/3.0/"  target="_blank" data-bind="text: languageVM.about_licence_noncommercial().message"></a></p>
             </div>
 
         </div>

@@ -114,7 +114,7 @@
 
             //}
 
-            if (this.logger && this.logger.logging) this.logger.log('info', this.name+' received message event', event);
+            if (this.logger && this.logger.logging) this.logger.log('info', this.name+' received message', event);
 
             if (!data)
             {
@@ -155,59 +155,15 @@
 
                 case 'get':
 
-                    console.info('UI got a get!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-
-                    // Sensor specific : Properties are stored in the format; property-sensorid = value
-                    // Setting : setting-settingname = value
-                    
-                   /* if (typeof data.items === 'object') {
-
-                        for (key in data.items)
-                        {
-
-                            console.timeEnd('get-' + key);
-                            index = key.indexOf('-', 0);
-                            
-                            property = key.substr(0, index);
-                             sensorId = key.substring(index + 1);
-
-                            if (property === 'setting') {
-                                vm = this.viewModel.rootVM.settingVM;
-
-                            }
-                                else {
-
-                                    vm = this.viewModel.dictionary[sensorId]; // get viewmodel
-                                }
-
-                            if (vm)
-                            {
-                                value = data.items[key];
-                                if (value)  // Don't update with undefined
-                                    vm[property](value);
-
-                            } else
-                            {
-                                if (this._logger && this._logger.logging) this._logger.log('warn', 'Received data from storage for key ' + key + ', but viewmodel is not available');
-                            }
-
-                            // Startswith common in Ecmascript 6?
-                            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
-
-                        }
-                    } else
-                    {
-                        if (this._logger && this._logger.logging) this._logger.log('warn', 'Unable to process items, expected an object',data.items);
-                    }*/
 
                     break;
 
                 case 'set': // ECHO when keys has been stored
 
-                    firstSetKey = Object.keys(data.items).join('-');
+                   /* firstSetKey = Object.keys(data.items).join('-');
                     if (firstSetKey)
                         console.timeEnd('set-' + firstSetKey);
-
+*/
                     break;
 
 
@@ -852,13 +808,13 @@
         var rootVM = this.viewModel.rootVM,
             deviceTypeVM,
             sensorId = page.broadcast.channelId.sensorId,
-            handlerLogger = rootVM.sensorVM.getLogger();
+            handlerLogger = this.logger;
 
         deviceTypeVM = new this.module.TemperatureVM({
 
             logger: handlerLogger,
 
-            temperatureMode: rootVM.settingVM.temperatureMode,
+            //temperatureMode: rootVM.settingVM.temperatureMode,
 
             page: page,
 
@@ -883,7 +839,7 @@
 
         var  deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId,
-           handlerLogger = this.viewModel.rootVM.sensorVM.getLogger();
+           handlerLogger = this.logger;
 
         deviceTypeVM = new this.module.HRMVM({
 
@@ -913,7 +869,7 @@
            SPDCADVM = this.module.SPDCADVM,
              deviceTypeVM,
            sensorId = page.broadcast.channelId.sensorId,
-            handlerLogger = rootVM.sensorVM.getLogger();
+            handlerLogger = this.logger;
 
 
         deviceTypeVM = new this.module.SPDCADVM({
@@ -952,7 +908,7 @@
          FootpodVM = this.viewModel.FootpodVM,
          deviceTypeVM,
          sensorId = page.broadcast.channelId.sensorId,
-         handlerLogger = rootVM.sensorVM.getLogger();
+         handlerLogger = this.logger;
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
@@ -1021,7 +977,7 @@
             sensorId = page.broadcast.channelId.sensorId,
             deviceType = page.broadcast.channelId.deviceType,
             deviceTypeVM,
-            handlerLogger = rootVM.sensorVM.getLogger(),
+            handlerLogger = this.logger,
             currentSeries;
 
 

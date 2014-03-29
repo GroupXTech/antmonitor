@@ -56,7 +56,7 @@ define(['logger'], function _requireDefine(Logger) {
 
         //}
 
-        if (this.logger && this.logger.logging) this.logger.log('info',  this.name+' received message event', event);
+        if (this.logger && this.logger.logging) this.logger.log('info',  this.name+' received message', event);
 
         if (!data) {
             if (this.logger && this.logger.logging) this.logger.log('warn', this.name + ' no data received');

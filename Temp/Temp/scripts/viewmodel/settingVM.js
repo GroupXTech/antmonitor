@@ -54,8 +54,10 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
     SettingVM.constructor = SettingVM;
 
     SettingVM.prototype.init = function ()
+
     {
-        this.getSetting('fahrenheit'+'-'+this.sensorId(),true);
+        var sensorId = this.sensorId();
+        this.getSetting(['fahrenheit-'+sensorId,'show24HMaxMin-'+sensorId],true);
     };
 
     SettingVM.prototype.getTimezoneOffsetInMilliseconds = function () {

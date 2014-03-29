@@ -11,7 +11,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         EventEmitter.call(this, configuration);
 
         // this._logger = new Logger(configuration);
-        this._logger = configuration.logger || new Logger(configuration); // Use sensorVM logger, or create a new one
+        this._logger = configuration.logger || new Logger(configuration); // Use a configured logger, or create a new one
 
         // Common page 80 - Manufacturer info.
 
@@ -170,7 +170,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
             };
 
             if (this._logger && this._logger.logging)
-                this._logger.log('log','Subscription to property '+singleProperty+' hooked up to storage for viewmodel',this);
+                this._logger.log('log','Storage subscription to property '+singleProperty+' on viewmodel',this);
 
             this[singleProperty].subscribe(store.bind(this));
 
@@ -228,13 +228,21 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         }
         else {
            if (this._logger && this._logger.logging)
-           this._logger.log('error','Did not find - delemiter in key, wrong key (format property-sensorid)');
+           this._logger.log('error','Did not find - delemiter in key, wrong key (format property-sensorid)',key);
         }
 
         value = data.items[key]; // Contains result
 
-        if (value)  // Don't update with undefined
-          this[property](value);
+        if (value !== undefined) {
+            if (this._logger && this._logger.logging)
+              this._logger.log('log','Updating property '+property+' with value',value,'on viewmodel',this);
+
+            this[property](value);
+
+        } else {
+            if (this._logger && this._logger.logging)
+              this._logger.log('log','Refused updating property '+property+' with value',value,'on viewmodel',this);
+        }
 
 
         if (this.pendingStoreSubscription[key]) {
@@ -249,7 +257,9 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
      var data = event.data,
             page = event.data.page,
             currentSeries = this.series,
-         key;
+         key,
+         itemNr,
+         len;
 
         // Ignore data without a sensorId or message destination is for another id
 
@@ -267,10 +277,10 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 case 'get' :
 
-                    if (typeof data.requestitems === 'object') {
+                    if (Array.isArray(data.requestitems)) {
 
-                        for (key in data.requestitems)
-                           this.updateFromStorage(data,key);
+                        for (itemNr=0, len=data.requestitems.length; itemNr < len; itemNr++)
+                           this.updateFromStorage(data,data.requestitems[itemNr]);
 }
                     else if (typeof data.requestitems === 'string')
                           this.updateFromStorage(data,data.requestitems);

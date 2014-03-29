@@ -1,3 +1,5 @@
+/* globals ko: true, define: true, window: true */
+
 define(['scripts/resource/language','logger'], function _defineLanguageVM(resource,Logger) {
 
     'use strict';
@@ -62,6 +64,14 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
 
         this.about_part4 = ko.computed(function () {
             return this.getMessage('about_part4');
+        }.bind(this));
+
+        this.about_licence_label = ko.computed(function () {
+            return this.getMessage('about_licence_label');
+        }.bind(this));
+
+         this.about_licence_noncommercial = ko.computed(function () {
+            return this.getMessage('about_licence_noncommercial');
         }.bind(this));
 
         this.libraries = ko.computed(function () {
