@@ -96,8 +96,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         });
 
-        this.name = ko.observable();
-      
 
         this.timestamp = ko.observable();
         this.formattedTimestamp = ko.computed({

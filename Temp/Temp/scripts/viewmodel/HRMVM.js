@@ -56,8 +56,6 @@ define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPa
         this.hardwareVersion = ko.observable();
         this.modelNumber = ko.observable();
 
-        this.name = ko.observable();
-
         this.init(configuration);
 
     }
