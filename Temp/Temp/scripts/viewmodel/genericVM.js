@@ -13,6 +13,8 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         // this._logger = new Logger(configuration);
         this._logger = configuration.logger || new Logger(configuration); // Use a configured logger, or create a new one
 
+        this.name = ko.observable();
+
         // Common page 80 - Manufacturer info.
 
         this.HWRevision = ko.observable();

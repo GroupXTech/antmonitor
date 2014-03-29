@@ -127,7 +127,6 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
             }.bind(this)
         });
 
-        this.name = ko.observable();
 
         this.init(configuration);
 
