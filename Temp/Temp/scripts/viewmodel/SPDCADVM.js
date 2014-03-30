@@ -291,7 +291,6 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
     };
 
     SPDCADVM.prototype.reset = function () {
-        this.sensorId(undefined);
         this.number(undefined);
         this.timestamp(undefined);
         this.speed(undefined);

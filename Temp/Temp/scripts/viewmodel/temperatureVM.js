@@ -100,7 +100,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         this.timestamp = ko.observable();
         this.formattedTimestamp = ko.computed({
             read: function () {
-                if (this.timestamp)
+                if (this.timestamp())
                     return (new Date(this.timestamp())).toLocaleTimeString();
             }.bind(this)
         });
@@ -268,7 +268,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
     TemperatureVM.prototype.reset = function ()
     {
-        this.sensorId(undefined);
         this.number(undefined);
         this.currentTemp(undefined);
         this.low24H(undefined);
