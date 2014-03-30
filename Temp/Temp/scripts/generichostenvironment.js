@@ -1,6 +1,7 @@
 /* globals define: true, window: true, require: true */
 
 define(['logger'], function _requireDefine(Logger) {
+
     'use strict';
 
     function GenericHostEnvironment(options) {
@@ -46,15 +47,6 @@ define(['logger'], function _requireDefine(Logger) {
         var sourceWindow = event.source,
             data = event.data;
 
-        // Skip unknown protocols if available
-        //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME))
-        //{
-        //    if (this.logger && this.logger.logging) {
-        //        this.logger.log('error', 'Received message event from source with a protocol that cannot be handled');
-        //        return;
-        //    }
-
-        //}
 
         if (this.logger && this.logger.logging) this.logger.log('info',  this.name+' received message', event);
 
@@ -74,7 +66,7 @@ define(['logger'], function _requireDefine(Logger) {
                 this.uiFrame = window.frames[0];
 
                 if (this.logger && this.logger.logging)
-                    this.logger.log('log', this.name + ' UI frame ready to process messages');
+                    this.logger.log('log', this.name + ' got READY signal from UI');
 
                 break;
 
@@ -118,8 +110,6 @@ define(['logger'], function _requireDefine(Logger) {
 
     };
 
-
-
     GenericHostEnvironment.prototype.init = function ()
     {
         throw new Error('Generic Init should be overridden/shadowed in descendant objects');
@@ -142,9 +132,6 @@ define(['logger'], function _requireDefine(Logger) {
         
         this.module.usb = USBHost;
         this.module.rxscanmode = RxScanMode;
-       
-        window.frames[0].postMessage({ response: 'ready' },'*'); // Signal to UI frame that host is ready
-        
 
         // Get default device specified by user
         this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
@@ -252,8 +239,10 @@ GenericHostEnvironment.prototype.configureUSB = function(deviceId) {
             var onChannelEstablished = function (error, _pchannel) {
                 //console.profileEnd();
 
-                if (!error && this.log.logging)
+                if (!error && this.log.logging) {
+                    window.frames[0].postMessage({ response: 'ready' },'*'); // Signal to UI frame that host is ready
                     this.log.log('log', 'Channel established', _pchannel);
+                }
                 else if (this.log.logging)
                     this.log.log('log', 'Failed to establish channel', error.message);
 

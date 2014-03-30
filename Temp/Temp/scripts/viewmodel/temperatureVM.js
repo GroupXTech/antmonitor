@@ -74,7 +74,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         });
 
-
         this.eventCount = ko.observable();
 
         // 24 h high
@@ -212,9 +211,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
             this.series.temperature.setData(newSeriesData,true);
     };
 
-
-
-
     TemperatureVM.prototype.MODE = {
         CELCIUS : 'celcius',
         FAHRENHEIT : 'fahrenheit'
@@ -274,7 +270,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         this.high24H(undefined);
         this.timestamp(undefined);
     };
-
 
     return TemperatureVM;
 

@@ -1,14 +1,8 @@
 /* global define: true, ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
+
 (function _ANTMonitorUI() {
+
     'use strict';
-
-    function HostEnvironment()
-    {}
-
-    HostEnvironment.prototype.PROTOCOL = {
-        MS: 'ms-appx:',
-        CHROME: 'chrome-extension:'
-    };
 
     function ANTMonitorUI()
     {
@@ -19,8 +13,6 @@
         this.hostEnvironmentReady = false;
 
         window.addEventListener('message', this.onmessage.bind(this));
-
-        window.parent.postMessage({ 'request' : 'ready'},'*'); // Signal that UI frame will accept messages now
 
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
@@ -80,20 +72,12 @@
                     SensorVM : SensorVM
                 };
 
-                 this.sendReadyEvent();
-
         }.bind(this));
 
-       
     }
 
     ANTMonitorUI.prototype.onmessage = function (event)
     {
-
-        var firstSetKey;
-
-       // try {
-
 
             var sourceWindow = event.source,
                 data = event.data,
@@ -103,16 +87,6 @@
                 value,
                 property,
                 index;
-
-
-            //// Skip unknown protocols if available
-            //if (sourceWindow && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.MS) && (sourceWindow.location.protocol !== HostEnvironment.prototype.PROTOCOL.CHROME)) {
-            //    if (this.logger && this.logger.logging) {
-            //        this.logger.log('error', 'Received message event from source with a protocol that cannot be handled');
-            //        return;
-            //    }
-
-            //}
 
             if (this.logger && this.logger.logging) this.logger.log('info', this.name+' received message', event);
 
@@ -126,16 +100,19 @@
 
                 case 'ready':
 
+                    // UI relies on that the host environment first provides a READY signal (ANT+ channel established, access to storage API),
+                    // before initializing the UI and setup databinding
+
                     this.hostEnvironmentReady = true;
 
                     this.hostFrame = sourceWindow;
 
                     if (this.logger && this.logger.logging)
-                        this.logger.log('log', this.name + ' ready to process messages');
+                        this.logger.log('log', this.name + ' got READY signal from host environment');
 
-
-                    // Only start UI, when host environment is ready (e.g must have access to storage)
                     this.initRootVM();
+
+                    window.parent.postMessage({ request: 'ready' },'*');
 
                     break;
 
@@ -155,15 +132,13 @@
 
                 case 'get':
 
-
+                    // NOOP
                     break;
 
-                case 'set': // ECHO when keys has been stored
+                case 'set': // ECHO message when keys has been stored
 
-                   /* firstSetKey = Object.keys(data.items).join('-');
-                    if (firstSetKey)
-                        console.timeEnd('set-' + firstSetKey);
-*/
+                    // NOOP
+
                     break;
 
 
@@ -174,28 +149,13 @@
                     break;
 
             }
-           
-
-     //   } catch (e) { // Maybe a dataclone error
-     //       if (this.logger && this.logger.logging)
-     //           this.logger.log('error', ' error', 'Event', event, e);
-     //   }
-        
 
     };
-
-    ANTMonitorUI.prototype.sendReadyEvent = function () {
-       
-        window.parent.postMessage({ request: 'ready' },'*');
-    };
-
 
     ANTMonitorUI.prototype.initRootVM = function () {
 
-        var rootVM; // Root viewmodel, contains all the other sub-view models
-        var tempModeKey;
-        var sensorChart;
-        
+        var rootVM,
+            sensorChart; // Root viewmodel, contains all the other sub-view models
 
         // Holds chart instance
         this.sensorChart = {};
@@ -204,22 +164,30 @@
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
 
-        // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
-        this.viewModel.dictionary = {};
+
+        // Letting UI have a temp converted allows sharing of the same code by multiple temperature viewmodel instances
 
         this.tempConverter = new this.module.TempConverter();
 
         this.viewModel.rootVM = {
 
-            languageVM : new this.module.LanguageVM({log : true}),
+            // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
+            dictionary : {},
+
+            languageVM : new this.module.LanguageVM({
+                logger : this.logger,
+                log : true}),
 
             settingVM: new this.module.SettingVM({
+                logger : this.logger,
                 log : true,
                 uiFrameWindow : window
             }),
 
             // Holds an array with viewmodels for the sensors that are discovered
-            sensorVM: new this.module.SensorVM({ log: false }),
+            sensorVM: new this.module.SensorVM({
+                logger : this.logger,
+                log: false }),
 
             // Contains all enumerated devices that fullfill the USB selector
             deviceVM: {
@@ -253,100 +221,17 @@
 
             },
 
-
-
-            //  ui: this, // For referencing ui.prototype functions inside viewmodel callbacks,
-            // Hook up event listeners instead
-
             sensorChart: sensorChart,
 
         };
 
         rootVM = this.viewModel.rootVM;
 
-
-
          rootVM.timerVM = new this.module.TimerVM({
+                logger : this.logger,
                 log: true,
-                timezoneOffsetInMilliseconds : rootVM.settingVM.timezoneOffsetInMilliseconds
-            });
-
-
-        rootVM.timerVM.addEventListener('stop', function (latestLocalStopTime) {
-            this.addPlotLine('red', latestLocalStopTime);
-        }.bind(this));
-
-        rootVM.timerVM.addEventListener('start', function (latestLocalStartTime) {
-            this.addPlotLine('green', latestLocalStartTime);
-        }.bind(this));
-
-        rootVM.timerVM.addEventListener('lap', function (localLapTime) {
-            this.addPlotLine('gray', localLapTime);
-        }.bind(this));
-
-
-        rootVM.timerVM.addEventListener('firststart', function () {
-            this._resetViewModels();
-        }.bind(this));
-
-        rootVM.timerVM.addEventListener('reset', function () {
-            var viewModel = this.viewModel.rootVM,
-                chart,
-                dateTimeAxis,
-                seriesNr,
-                currentSeries,
-                len;
-
-            if (viewModel.sensorChart && viewModel.sensorChart.integrated) {
-
-
-                chart = viewModel.sensorChart.integrated.chart;
-
-                // Remove plot lines
-
-                dateTimeAxis = chart.get('datetime-axis');
-
-                if (dateTimeAxis) {
-
-                    dateTimeAxis.removePlotLine(); // undefined id will delete all plotlines (using id === undefined)
-
-                }
-
-                // Remove series data
-
-                for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
-
-                    currentSeries = chart.series[seriesNr];
-
-                    currentSeries.setData([], false);
-                }
-
-
-                this._resetViewModels();
-
-
-            }
-        }.bind(this));
-
-
-
-        //tempModeKey = this.storage.__proto__.key.temperaturemode;
-
-        //this.storage.get(tempModeKey, function _fetchTemperatureMode(db) {
-
-        //    var show24hMaxMinKey = this.storage.__proto__.key.show24hMaxMin;
-
-        //    rootVM.settingVM.temperatureMode = ko.observable(db[tempModeKey] || TemperatureVM.prototype.MODE.CELCIUS);
-
-        //    this.storage.get(show24hMaxMinKey, function _fetchShow24hMaxMin(db) {
-
-        //        rootVM.settingVM.show24HMaxMin = ko.observable(db[show24hMaxMinKey] === "true" || false);
-
-        //        this.configureKnockout();
-
-        //    }.bind(this));
-
-        //}.bind(this));
+                rootVM : rootVM
+               });
 
         // Activate main tab by simulating a click on the link
 
@@ -354,8 +239,10 @@
         mouseClick.initEvent('click', false, false); // Only on target
 
         var aMain = document.getElementById('aMain');
+
         if (this.logger && this.logger.logging)
             this.logger.log('info', 'Sent click event to main tab to toggle visibility of short sensor info and sensor chart', aMain,mouseClick);
+
         void aMain.dispatchEvent(mouseClick);
 
         // Activate knockoutjs on our root viewmodel
@@ -372,44 +259,7 @@
 
     };
 
-    // Reset sensor viewmodels
-    ANTMonitorUI.prototype._resetViewModels = function () {
-      
-        var sensorDictionary = this.viewModel.dictionary;
 
-        for (var sensorId in sensorDictionary) {
-            if (typeof sensorDictionary[sensorId].reset === 'function')
-                sensorDictionary[sensorId].reset();
-
-        }
-    };
-
-    ANTMonitorUI.prototype.addPlotLine = function (color, time)
-    {
-        var chart,
-            dateTimeAxis,
-            id,
-            sensorChart = this.sensorChart;
-
-        if (sensorChart && sensorChart.integrated) {
-            chart = sensorChart.integrated.chart;
-
-            dateTimeAxis = chart.get('datetime-axis');
-            if (dateTimeAxis) {
-                //id = 'plotline-' + rootVM.settingVM.tracking.plotLines.length
-                dateTimeAxis.addPlotLine({
-                    // id: id,
-                    color: color,
-                    dashStyle: 'dash',
-                    width: 1,
-                    value: time
-                });
-
-                //   rootVM.settingVM.tracking.plotLines.push(id);
-
-            }
-        }
-    };
 
     ANTMonitorUI.prototype.createIntegratedChart = function () {
 
@@ -791,113 +641,9 @@
 
             series: []
 
-
-
-
         });
 
         this.startRedrawInterval(1000);
-
-
-
-    };
-
-
-    ANTMonitorUI.prototype.initTemperatureSeries = function (page) {
-
-        var rootVM = this.viewModel.rootVM,
-            deviceTypeVM,
-            sensorId = page.broadcast.channelId.sensorId,
-            handlerLogger = this.logger;
-
-        deviceTypeVM = new this.module.TemperatureVM({
-
-            logger: handlerLogger,
-
-            //temperatureMode: rootVM.settingVM.temperatureMode,
-
-            page: page,
-
-            uiFrameWindow : window,
-
-            rootVM : rootVM,
-
-            chart : this.sensorChart.integrated.chart,
-
-            temperatureConverter : this.tempConverter, // Share code
-
-        });
-
-        this.viewModel.dictionary[sensorId] = deviceTypeVM;
-
-        rootVM.sensorVM.devices.ENVIRONMENT.push(deviceTypeVM);
-
-        this.redrawIntegratedChart();
-    };
-
-    ANTMonitorUI.prototype.initHRMSeries = function (page) {
-
-        var  deviceTypeVM,
-           sensorId = page.broadcast.channelId.sensorId,
-           handlerLogger = this.logger;
-
-        deviceTypeVM = new this.module.HRMVM({
-
-            logger: handlerLogger,
-
-            page: page,
-
-            uiFrameWindow : window,
-
-            rootVM : this.viewModel.rootVM,
-
-            chart : this.sensorChart.integrated.chart,
-        });
-
-        this.viewModel.dictionary[sensorId] = deviceTypeVM;
-
-        this.viewModel.rootVM.sensorVM.devices.HRM.push(deviceTypeVM);
-
-        this.redrawIntegratedChart();
-
-    };
-
-    ANTMonitorUI.prototype.initSPDCADSeries = function (page) {
-
-        var addedSeries,
-           rootVM = this.viewModel.rootVM,
-           SPDCADVM = this.module.SPDCADVM,
-             deviceTypeVM,
-           sensorId = page.broadcast.channelId.sensorId,
-            handlerLogger = this.logger;
-
-
-        deviceTypeVM = new this.module.SPDCADVM({
-
-            logger: handlerLogger,
-
-            page: page,
-
-            uiFrameWindow : window,
-
-            rootVM : this.viewModel.rootVM,
-
-            chart : this.sensorChart.integrated.chart,
-
-        });
-
-        deviceTypeVM.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
-            var timer = this.viewModel.rootVM.timerVM._timer;
-            if (timer.state === timer.__proto__.STATE.STARTED) // Only update cumulatated distance  when timer is running
-                observable(observable()+relativeDistance);
-        }.bind(this));
-
-
-        this.viewModel.dictionary[sensorId] = deviceTypeVM;
-
-        rootVM.sensorVM.devices.SPDCAD.push(deviceTypeVM);
-
-        this.redrawIntegratedChart();
 
     };
 
@@ -941,11 +687,11 @@
            }, false, false);
 
         deviceTypeVM = new FootpodVM({
-            logger: handlerLogger,
+            logger: this.logger,
             sensorId: sensorId
         });
 
-        this.viewModel.dictionary[sensorId] = deviceTypeVM;
+        this.viewModel.rootVM.dictionary[sensorId] = deviceTypeVM;
 
         deviceTypeVM.updateFromPage(page);
 
@@ -968,8 +714,6 @@
         }
     };
 
-
-
     ANTMonitorUI.prototype.initViewModelForPage = function (page) {
 
         var antUI = this,
@@ -977,16 +721,25 @@
             sensorId = page.broadcast.channelId.sensorId,
             deviceType = page.broadcast.channelId.deviceType,
             deviceTypeVM,
-            handlerLogger = this.logger,
-            currentSeries;
+            Viewmodel,
+            defaultOptions,
+            deviceSeries;
 
+        deviceTypeVM = rootVM.dictionary[sensorId];
 
-        deviceTypeVM = this.viewModel.dictionary[sensorId];
+        if (deviceTypeVM) // Ignore initialization of viewmodel if its already created
+         return;
 
-        // Ignore initialization of viewmodel if its already created
+        defaultOptions = {
 
-        if (deviceTypeVM)
-            return;
+            logger: this.logger,
+
+            page: page,
+
+            uiFrameWindow : window,
+
+            rootVM : rootVM,
+        };
 
             if (this.logger && this.logger.logging)
                 this.logger.log('log', this.name + ' received init/first page', page,'for sensor',sensorId);
@@ -995,19 +748,23 @@
 
                 case 25:
 
-                     this.initTemperatureSeries(page);
+                     Viewmodel = this.module.TemperatureVM;
+                     defaultOptions.temperatureConverter = this.tempConverter;
+                     deviceSeries = rootVM.sensorVM.devices.ENVIRONMENT;
 
                     break;
 
                 case 120:
 
-                     this.initHRMSeries(page);
+                      Viewmodel = this.module.HRMVM;
+                      deviceSeries = rootVM.sensorVM.devices.HRM;
 
-                    break;
+                     break;
 
                 case 121:
 
-                     this.initSPDCADSeries(page);
+                    Viewmodel = this.module.SPDCADVM;
+                     deviceSeries = rootVM.sensorVM.devices.SPDCAD;
 
                     break;
 
@@ -1037,11 +794,18 @@
 
                 default:
 
-                    handlerLogger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
+                    this.logger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
 
                     break;
             }
 
+        if (Viewmodel) {
+             this.viewModel.rootVM.dictionary[sensorId] = new Viewmodel(defaultOptions);
+
+            deviceSeries.push(this.viewModel.rootVM.dictionary[sensorId]);
+
+            this.redrawIntegratedChart();
+        }
 
     };
 
@@ -1099,8 +863,6 @@
                 this.logger.log('log', 'Cleared interval' + timerName + ' id/handle ' + this.timerID.interval[timerName]);
         }
 
-
-        
     };
 
     void new ANTMonitorUI();

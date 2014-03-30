@@ -52,11 +52,11 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
             configuration.uiFrameWindow.addEventListener('message',this.onmessage.bind(this));
         }
 
-         if (configuration.rootVM)
+         if (configuration.rootVM) {
            this.rootVM = configuration.rootVM;
+           this.chart = configuration.rootVM.sensorChart.integrated.chart;
 
-        if (configuration.chart)
-            this.chart = configuration.chart;
+         }
 
         // Wait before setting up subscription, otherwise the store handler for the property would kick in
         // when the property is initialized. So we would have a situation where the property is stored again

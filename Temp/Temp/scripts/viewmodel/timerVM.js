@@ -1,7 +1,9 @@
-﻿define(['converter/timeFormatter','scripts/timer','logger','events'],function _requireDefineTimerVM(TimeFormatter, Timer, Logger, EventEmitter) {
+/* globals define: true, ko: true, clearInterval: true, setInterval: true */
 
-  
+define(['converter/timeFormatter','scripts/timer','logger','events'],function _requireDefineTimerVM(TimeFormatter, Timer, Logger, EventEmitter) {
+
     // Timer model is highly connected to the viewmodel that's interfacing the declarative view in HTML
+
     function TimerVM(options)
     {
         EventEmitter.call(this);
@@ -11,9 +13,13 @@
         // Privates
 
         this._options = options;
+        if (options.rootVM) {
+            this.rootVM = options.rootVM;
+        }
+
         this._timeFormatter = new TimeFormatter();
         this._timer = new Timer(options);
-        this._logger = new Logger(options)
+        this._logger = options.logger || new Logger(options);
         this._timerID = {
             interval : {}
         };
@@ -35,22 +41,121 @@
         this.lap = TimerVM.prototype.lap.bind(this);
 
         this.reset = TimerVM.prototype.reset.bind(this);
+
+        this.init();
        
     }
 
     TimerVM.prototype = EventEmitter.prototype;
     TimerVM.constructor = TimerVM;
 
+    TimerVM.prototype.addPlotLine = function (color, time)
+    {
+        var chart,
+            dateTimeAxis,
+            id,TimerVM,
+            sensorChart = this.rootVM.sensorChart;
+
+        if (sensorChart && sensorChart.integrated) {
+            chart = sensorChart.integrated.chart;
+
+            dateTimeAxis = chart.get('datetime-axis');
+            if (dateTimeAxis) {
+                //id = 'plotline-' + rootVM.settingVM.tracking.plotLines.length
+                dateTimeAxis.addPlotLine({
+                    // id: id,
+                    color: color,
+                    dashStyle: 'dash',
+                    width: 1,
+                    value: time
+                });
+
+                //   rootVM.settingVM.tracking.plotLines.push(id);
+
+            }
+        }
+    };
+
+     // Reset sensor viewmodels
+   TimerVM.prototype.resetViewModels = function () {
+
+        var sensorDictionary = this.rootVM.dictionary;
+
+        for (var sensorId in sensorDictionary) {
+            if (typeof sensorDictionary[sensorId].reset === 'function')
+                sensorDictionary[sensorId].reset();
+
+        }
+    };
+
+    TimerVM.prototype.removePlotlinesAndSeriesData = function ()
+    {
+         var viewModel = this.rootVM,
+                chart,
+                dateTimeAxis,
+                seriesNr,
+                currentSeries,
+                len;
+
+        if (!(viewModel.sensorChart && viewModel.sensorChart.integrated))
+            return;
+
+        chart = viewModel.sensorChart.integrated.chart;
+
+        // Remove plot lines
+
+        dateTimeAxis = chart.get('datetime-axis');
+
+        if (dateTimeAxis) {
+
+            dateTimeAxis.removePlotLine(); // undefined id will delete all plotlines (using id === undefined)
+
+        }
+
+        // Remove series data
+
+        for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
+
+            currentSeries = chart.series[seriesNr];
+
+            currentSeries.setData([], false);
+        }
+
+        this.resetViewModels();
+
+    };
+
+    TimerVM.prototype.init = function ()
+    {
+         this.addEventListener('stop', function (latestLocalStopTime) {
+            this.addPlotLine('red', latestLocalStopTime);
+        }.bind(this));
+
+        this.addEventListener('start', function (latestLocalStartTime) {
+            this.addPlotLine('green', latestLocalStartTime);
+        }.bind(this));
+
+        this.addEventListener('lap', function (localLapTime) {
+            this.addPlotLine('gray', localLapTime);
+        }.bind(this));
+
+        this.addEventListener('firststart', function () {
+            this.resetViewModels();
+        }.bind(this));
+
+        this.addEventListener('reset', function () {
+           this.removePlotlinesAndSeriesData();
+        }.bind(this));
+    };
+
     TimerVM.prototype.stop = function _stop(viewModel, event) {
 
         if (!this._timer.stop())
             return;
 
-        clearInterval(this._timerID.interval['updateElapsedTime']);
+        clearInterval(this._timerID.interval.updateElapsedTime);
 
-        this.emit('stop', this._timer.getLatestStopTime() + this._options.timezoneOffsetInMilliseconds);
-
-        //viewModel.ui.addPlotLine('red', this._timer.getLatestStopTime() + viewModel.ui.timezoneOffsetInMilliseconds);
+        this.emit('stop', this._timer.getLatestStopTime() + this.rootVM.settingVM.timezoneOffsetInMilliseconds);
 
     };
 
@@ -62,24 +167,22 @@
         this.lapElapsedTime(0);
         this.lapNr(this._timer.lapTime.length);
 
-        this.emit('lap',this._timer.getLatestLapTime() + this._options.timezoneOffsetInMilliseconds)
+        this.emit('lap',this._timer.getLatestLapTime() + this.rootVM.settingVM.timezoneOffsetInMilliseconds);
 
-        
     };
 
-   
     TimerVM.prototype.start = function _start(viewModel, event) {
 
 
         if (!this._timer.start())
             return;
 
-        this._timerID.interval['updateElapsedTime'] = setInterval(function () {
+        this._timerID.interval.updateElapsedTime = setInterval(function () {
             this.totalElapsedTime(this._timer.getTotalElapsedTime());
             this.lapElapsedTime(this._timer.getLapElapsedTime());
         }.bind(this), 1000);
 
-        this.emit('start', this._timer.getLatestStartTime() + this._options.timezoneOffsetInMilliseconds);
+        this.emit('start', this._timer.getLatestStartTime() + this.rootVM.settingVM.timezoneOffsetInMilliseconds);
 
         //viewModel.ui.addPlotLine('green', this._timer.getLatestStartTime() + viewModel.ui.timezoneOffsetInMilliseconds);
 
@@ -88,11 +191,8 @@
 
     };
 
-    
-
     TimerVM.prototype.reset = function (viewModel,event) {
-        var 
-           updateElapsedTimeID = this._timerID.interval['updateElapsedTime'];
+        var updateElapsedTimeID = this._timerID.interval.updateElapsedTime;
 
         if (!this._timer.reset())
             return;

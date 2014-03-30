@@ -223,6 +223,15 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
         this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
 
          this.addPoint(page);
+
+        // Update cumulative distance
+
+       this.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
+            var timer = this.rootVM.timerVM._timer;
+            if (timer.state === timer.__proto__.STATE.STARTED) // Only update cumulatated distance  when timer is running
+                observable(observable()+relativeDistance);
+        }.bind(this));
+
     };
 
     SPDCADVM.prototype.addPoint = function (page)
@@ -274,14 +283,12 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
         if (page.relativeCumulativeSpeedRevolutionCount !== undefined)
         {
-            // this.cumulativeDistance(this.cumulativeDistance() + this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
-            // Update based on timer state === started
+
             this.emit('newRelativeDistance', this.cumulativeDistance, this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
         }
 
         //if (page.profile.hasCommonPages)
         //    this.updateCommonPage(page);
-
 
     };
 
