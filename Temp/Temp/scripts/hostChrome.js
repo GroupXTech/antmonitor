@@ -1,11 +1,14 @@
-﻿// Depends upon requirejs
+/* globals define: true, chrome: true, window: true */
 
 define(['root/generichostenvironment','messages/ResetSystemMessage'], function _requireDefineHostChrome(GenericHostEnvironment, ResetSystemMessage) {
+
     'use strict';
 
     function HostChrome(options) {
-        GenericHostEnvironment.call(this,options);
+
         this.name = "hostChrome";
+
+        GenericHostEnvironment.call(this,options);
 
         this.moduleId.storage = 'db/storageChrome';
         this.moduleId.usb = 'usb/USBChrome';
@@ -31,8 +34,6 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
 
         resetSystemMsg.usb = this.host.usb.clone(); // Attach usb object for connectionHandle and interfaceNumber
 
-       
-
         //// logBackgroundPage('log','Reset System Message',resetSystemMsg);
 
         try {
@@ -50,6 +51,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
 
     // Logs to the background page - changes default console source
     HostChrome.prototype.logBackgroundPage = function () {
+
         var myArgs = [],
             type;
 

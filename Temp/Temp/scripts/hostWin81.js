@@ -5,10 +5,10 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
 
     function HostWin81(options) {
 
+         this.name = 'hostWin81';
+
         GenericHostEnvironment.call(this,options);
 
-        this.name = 'hostWin81';
-      
         this.moduleId.storage = 'db/storageWindows';
         this.moduleId.usb = 'usb/USBWindows';
        

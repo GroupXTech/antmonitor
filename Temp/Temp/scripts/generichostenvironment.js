@@ -10,15 +10,17 @@ define(['logger'], function _requireDefine(Logger) {
 
         this.options = options;
 
+        if (options)
+            options.source = this.name;
+
         this.logger = new Logger(options);
        
         // Used for sending a page received form the device profile as  a message to UI frame 
 
         this.pageFromDeviceProfile = { page: undefined };
 
-        this.name = 'genericHost';
-
         // String id of module
+
         this.moduleId = {
             storage: undefined,
             usb: undefined
@@ -48,10 +50,10 @@ define(['logger'], function _requireDefine(Logger) {
             data = event.data;
 
 
-        if (this.logger && this.logger.logging) this.logger.log('info',  this.name+' received message', event);
+        if (this.logger && this.logger.logging) this.logger.log('info',  'received message', event);
 
         if (!data) {
-            if (this.logger && this.logger.logging) this.logger.log('warn', this.name + ' no data received');
+            if (this.logger && this.logger.logging) this.logger.log('warn','no/undefined data received');
             return;
         }
 
@@ -66,7 +68,7 @@ define(['logger'], function _requireDefine(Logger) {
                 this.uiFrame = window.frames[0];
 
                 if (this.logger && this.logger.logging)
-                    this.logger.log('log', this.name + ' got READY signal from UI');
+                    this.logger.log('log', 'got READY signal from UI');
 
                 break;
 
@@ -77,7 +79,7 @@ define(['logger'], function _requireDefine(Logger) {
                 if (!data.sensorId)
                 {
                      if (this.logger && this.logger.logging)
-                        this.logger.log('error', this.name + ' No sensor id. available in get request, cannot proceed with get request',data);
+                        this.logger.log('error', 'No sensor id. available in get request, cannot proceed with get request',data);
 
                      return;
 
@@ -104,7 +106,7 @@ define(['logger'], function _requireDefine(Logger) {
 
             default:
 
-                if (this.logger && this.logger.logging) this.logger.log('error', this.name + ' is unable to do anything with data ', data);
+                if (this.logger && this.logger.logging) this.logger.log('error', 'Unable to do anything with data response', data);
                 break;
         }
 
@@ -128,7 +130,7 @@ define(['logger'], function _requireDefine(Logger) {
 
         this.storage = new Storage({ log: true });
 
-        this.host = new ANTHost();
+        this.host = new ANTHost({log : true});
         
         this.module.usb = USBHost;
         this.module.rxscanmode = RxScanMode;
@@ -303,7 +305,7 @@ GenericHostEnvironment.prototype.configureUSB = function(deviceId) {
     // Receives page from device profile and forwards it to the UI frame
     GenericHostEnvironment.prototype.onpage = function (page) {
         if (this.logger && this.logger.logging)
-            this.logger.log('log', this.name + ' received page', page);
+            this.logger.log('log','received page', page);
 
         if (typeof page.clone === 'function')
             this.pageFromDeviceProfile = page.clone();

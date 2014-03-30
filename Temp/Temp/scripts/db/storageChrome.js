@@ -8,7 +8,7 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
     'use strict';
 
     function StorageChrome(configuration) {
-        this.logger = new Logger(configuration.log);
+        this.logger = new Logger(configuration);
         this.storage = chrome.storage.local; // || chrome.storage.sync
 
         this.storage.get(null, function (db) {

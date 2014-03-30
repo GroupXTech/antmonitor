@@ -8,7 +8,7 @@
     {
         var requirejsConfiguration;
 
-        this.name = 'UI frame';
+        this.name = 'UI';
 
         this.hostEnvironmentReady = false;
 
@@ -49,15 +49,17 @@
         requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger', 'converter/temperatureConverter'],
             function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger,TempConverter) {
 
-                this.logger = new Logger({ log: true });
+                this.logger = new Logger({ log: true, source : this.name });
 
                 // Keeps track of timeouts and intervals
+
                 this.timerID = {
                     interval: {},
                     timeout: {}
                 };
 
                 // For referencing viewmodel constructors
+
                 this.module = {
                     FootpodVM : FootpodVM,
                     TemperatureVM : TemperatureVM,
@@ -79,91 +81,92 @@
     ANTMonitorUI.prototype.onmessage = function (event)
     {
 
-            var sourceWindow = event.source,
-                data = event.data,
-                sensorId,
-                vm,
-                key,
-                value,
-                property,
-                index;
+        var sourceWindow = event.source,
+            data = event.data,
+            sensorId,
+            vm,
+            key,
+            value,
+            property,
+            index;
 
-            if (this.logger && this.logger.logging) this.logger.log('info', this.name+' received message', event);
+        if (this.logger && this.logger.logging)
+            this.logger.log('info', 'Received message', event);
 
-            if (!data)
-            {
-                if (this.logger && this.logger.logging) this.logger.log('warn', this.name + ' no data received');
-                return;
-            }
+        if (!data)
+        {
+            if (this.logger && this.logger.logging)
+                this.logger.log('warn', 'No/undefined data received');
 
-            switch (data.response) {
+            return;
+        }
 
-                case 'ready':
+        switch (data.response) {
 
-                    // UI relies on that the host environment first provides a READY signal (ANT+ channel established, access to storage API),
-                    // before initializing the UI and setup databinding
+            case 'ready':
 
-                    this.hostEnvironmentReady = true;
+                // UI relies on that the host environment first provides a READY signal (ANT+ channel established, access to storage API),
+                // before initializing the UI and setup databinding
 
-                    this.hostFrame = sourceWindow;
+                this.hostEnvironmentReady = true;
 
-                    if (this.logger && this.logger.logging)
-                        this.logger.log('log', this.name + ' got READY signal from host environment');
+                this.hostFrame = sourceWindow;
 
-                    this.initRootVM();
+                if (this.logger && this.logger.logging)
+                    this.logger.log('log','Got READY signal from host environment');
 
-                    window.parent.postMessage({ request: 'ready' },'*');
+                this.initRootVM();
 
-                    break;
+                window.parent.postMessage({ request: 'ready' },'*');
 
-                case 'clearTimers':
+                break;
 
-                    this.clearTimers();
+            case 'clearTimers':
 
-                    break;
+                this.clearTimers();
 
-                case 'page':
+                break;
 
-                    this.initViewModelForPage(data.page);
+            case 'page':
 
-                    break;
+                this.initViewModelForPage(data.page);
 
-                    // DB handling
+                break;
 
-                case 'get':
+            // DB handling
 
-                    // NOOP
-                    break;
+            case 'get':
 
-                case 'set': // ECHO message when keys has been stored
+                // NOOP
+                break;
 
-                    // NOOP
+            case 'set': // ECHO message when keys has been stored
 
-                    break;
+                // NOOP
 
+                break;
 
-                default:
+            default:
 
-                    if (this.logger && this.logger.logging) this.logger.log('error', this.name + ' is unable to do anything with data ', data);
+                if (this.logger && this.logger.logging)
+                    this.logger.log('error','Unable to do anything with data, unknown response from host ', data);
 
-                    break;
+                break;
 
-            }
+        }
 
     };
 
     ANTMonitorUI.prototype.initRootVM = function () {
 
-        var rootVM,
-            sensorChart; // Root viewmodel, contains all the other sub-view models
+        var rootVM, // Root viewmodel, contains all the other sub-view models
+            sensorChart; // Contains sensor charts - mainly the integrated chart
 
-        // Holds chart instance
         this.sensorChart = {};
         sensorChart = this.sensorChart;
 
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
-
 
         // Letting UI have a temp converted allows sharing of the same code by multiple temperature viewmodel instances
 
@@ -181,7 +184,7 @@
             settingVM: new this.module.SettingVM({
                 logger : this.logger,
                 log : true,
-                uiFrameWindow : window
+
             }),
 
             // Holds an array with viewmodels for the sensors that are discovered
@@ -259,8 +262,6 @@
 
     };
 
-
-
     ANTMonitorUI.prototype.createIntegratedChart = function () {
 
         var rootVM = this.viewModel.rootVM,
@@ -273,7 +274,6 @@
        
         integratedChart = this.sensorChart.integrated;
 
-       
         this.sensorChart.integrated.chart = new Highcharts.Chart({
 
             chart: {
@@ -480,9 +480,7 @@
                             fontSize: '16px'
                         }
                     }
-
-
-                 },
+                },
 
                  {
                      id: 'bike-cadence-axis',
@@ -736,71 +734,52 @@
 
             page: page,
 
-            uiFrameWindow : window,
-
             rootVM : rootVM,
         };
 
-            if (this.logger && this.logger.logging)
-                this.logger.log('log', this.name + ' received init/first page', page,'for sensor',sensorId);
+        if (this.logger && this.logger.logging)
+            this.logger.log('log', this.name + ' received init/first page', page,'for sensor',sensorId);
 
-             switch (deviceType) {
+         switch (deviceType) {
 
-                case 25:
+            case 25:
 
-                     Viewmodel = this.module.TemperatureVM;
-                     defaultOptions.temperatureConverter = this.tempConverter;
-                     deviceSeries = rootVM.sensorVM.devices.ENVIRONMENT;
+                 Viewmodel = this.module.TemperatureVM;
+                 defaultOptions.temperatureConverter = this.tempConverter;
+                 deviceSeries = rootVM.sensorVM.devices.ENVIRONMENT;
 
-                    break;
+                break;
 
-                case 120:
+            case 120:
 
-                      Viewmodel = this.module.HRMVM;
-                      deviceSeries = rootVM.sensorVM.devices.HRM;
+                  Viewmodel = this.module.HRMVM;
+                  deviceSeries = rootVM.sensorVM.devices.HRM;
 
-                     break;
+                 break;
 
-                case 121:
+            case 121:
 
-                    Viewmodel = this.module.SPDCADVM;
-                     deviceSeries = rootVM.sensorVM.devices.SPDCAD;
+                 Viewmodel = this.module.SPDCADVM;
+                 deviceSeries = rootVM.sensorVM.devices.SPDCAD;
 
-                    break;
+                break;
 
-                //case 124:
+            /* case 124:
 
-                //    if (!deviceTypeVM)
-                //        this.addFootpodSeries(page);
-                //    else {
+                 Viewmodel = this.module.FootpodVM;
+                 deviceSeries = rootVM.sensorVM.devices.SDM;
+                break; */
 
-                //        if (deviceTypeVM instanceof FootpodVM && page.speed !== undefined) {
-                //            currentSeries = this.sensorChart.integrated.chart.get('footpod-speed-' + sensorId);
-                //            currentSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false,
-                //                //currentSeries.data.length >= (currentSeries.chart.plotWidth || 1024),
-                //                false,
-                //                false);
+            default:
 
+                this.logger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
 
-                //        }
-
-                //        //if ((Date.now() - this.sensorChart.integrated.lastRedrawTimestamp >= 1000)) {
-                //        //    this.redrawIntegratedChart();
-                //        //}
-
-                //    }
-
-                //    break;
-
-                default:
-
-                    this.logger.log('warn', "Device type not currently supported, cannot add series on chart for device type ", deviceType);
-
-                    break;
-            }
+                break;
+        }
 
         if (Viewmodel) {
-             this.viewModel.rootVM.dictionary[sensorId] = new Viewmodel(defaultOptions);
+
+            this.viewModel.rootVM.dictionary[sensorId] = new Viewmodel(defaultOptions);
 
             deviceSeries.push(this.viewModel.rootVM.dictionary[sensorId]);
 

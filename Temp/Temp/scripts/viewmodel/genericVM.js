@@ -1,4 +1,4 @@
-/* global define: true, ko: true */
+/* global define: true, ko: true, window: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,EventEmitter) {
@@ -46,11 +46,10 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
           this.sensorId = ko.observable();
 
 
-        if (configuration && configuration.uiFrameWindow)
-        {
-            this.hostWin = configuration.uiFrameWindow.parent;
-            configuration.uiFrameWindow.addEventListener('message',this.onmessage.bind(this));
-        }
+
+        this.hostWin = window.parent;
+        window.addEventListener('message',this.onmessage.bind(this));
+
 
          if (configuration.rootVM) {
            this.rootVM = configuration.rootVM;

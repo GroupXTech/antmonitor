@@ -12,7 +12,6 @@
 
 // http://creativecommons.org/licenses/by-nc/3.0/
 
-
 (function HostLoaderIIFE() {
 
     'use strict';
@@ -119,7 +118,7 @@
        
         requirejs(deps, function (Logger, Host,Events) {
             // console.log(Date.now(),'require finished')
-            this.logger = new Logger({ log: true });
+            this.logger = new Logger({ log: true, source : this.name });
             this.host = new Host({ log: true });
            
                 this.host.init();
@@ -128,7 +127,6 @@
 
     HostLoader.prototype.init = function ()
    {
-       
 
         if (this.hostEnvironmentModuleId) {
 
