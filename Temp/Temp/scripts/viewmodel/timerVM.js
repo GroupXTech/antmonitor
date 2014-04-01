@@ -1,4 +1,4 @@
-/* globals define: true, ko: true, clearInterval: true, setInterval: true */
+/* global define: true, ko: true, clearInterval: true, setInterval: true */
 
 define(['converter/timeFormatter','scripts/timer','logger','events'],function _requireDefineTimerVM(TimeFormatter, Timer, Logger, EventEmitter) {
 
@@ -46,8 +46,8 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
        
     }
 
-    TimerVM.prototype = EventEmitter.prototype;
-    TimerVM.constructor = TimerVM;
+    TimerVM.prototype = Object.create(EventEmitter.prototype);
+    TimerVM.prototype.constructor = TimerVM;
 
     TimerVM.prototype.addPlotLine = function (color, time)
     {

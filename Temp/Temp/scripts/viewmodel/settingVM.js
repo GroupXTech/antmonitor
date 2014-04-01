@@ -6,7 +6,12 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
     function SettingVM(configuration)
     {
-         GenericVM.call(this, configuration);
+        if (!configuration)
+         configuration = {};
+
+        configuration.sensorId = 'settingVM';
+
+        GenericVM.call(this, configuration);
 
         this.showAdditionalInfo = ko.observable(false);
 
@@ -44,14 +49,12 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
     
         this.toggleShowSensor = SettingVM.prototype.toggleShowSensor.bind(this); 
 
-        this.sensorId = ko.observable('settingVM');
-
         this.init(configuration);
 
     }
 
     SettingVM.prototype = Object.create(GenericVM.prototype);
-    SettingVM.constructor = SettingVM;
+    SettingVM.prototype.constructor = SettingVM;
 
     SettingVM.prototype.init = function ()
 

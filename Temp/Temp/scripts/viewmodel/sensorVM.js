@@ -5,20 +5,25 @@ define(['vm/genericVM'], function(GenericVM) {
     'use strict';
     
     function SensorVM(configuration) 
+
     {
+        if (!configuration)
+          configuration = {};
+
+       configuration.sensorId = 'sensorVM';
+
        GenericVM.call(this,configuration);
 
-
-            this.devices = {
-                HRM: ko.observableArray(),
-                ENVIRONMENT: ko.observableArray(),
-                SPDCAD: ko.observableArray()
-            };
+        this.devices = {
+            HRM: ko.observableArray(),
+            ENVIRONMENT: ko.observableArray(),
+            SPDCAD: ko.observableArray()
+        };
 
     }
     
     SensorVM.prototype = Object.create(GenericVM.prototype);
-    SensorVM.constructor = SensorVM;
+    SensorVM.prototype.constructor = SensorVM;
     
     SensorVM.prototype.getTemplateName = function (viewModelItem)
     {

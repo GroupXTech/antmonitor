@@ -1,4 +1,4 @@
-﻿/* global define: true */
+/* global define: true */
 
 // Using blocking window.localStorage, simulating async behaviour with callback
 // Maybe todo: Use async. storage instead
@@ -7,13 +7,13 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
     'use strict';
 
     function StorageWindows(configuration) {
-        this.logger = new Logger(configuration);
+
+        Storage.call(this, configuration);
 
     }
 
     StorageWindows.prototype = Object.create(Storage.prototype);
     StorageWindows.prototype.constructor = StorageWindows;
-
 
     StorageWindows.prototype.get = function (items, callback) {
         var db,
@@ -50,7 +50,7 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
     StorageWindows.prototype.set = function (items, callback) {
         var key, value;
 
-       for (var key in items) {
+       for (key in items) {
             value = items[key];
             if (value !== undefined)
                 window.localStorage[key] = value;
@@ -58,7 +58,7 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
 
         if (typeof callback === 'function')
             callback();
-    }
+    };
 
     return StorageWindows;
   

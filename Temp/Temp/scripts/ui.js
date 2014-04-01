@@ -49,7 +49,7 @@
         requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger', 'converter/temperatureConverter'],
             function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger,TempConverter) {
 
-                this.logger = new Logger({ log: true, source : this.name });
+                this.logger = new Logger({ log: true, logSource : this.constructor });
 
                 // Keeps track of timeouts and intervals
 

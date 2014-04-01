@@ -1,4 +1,4 @@
-/* globals define: true, chrome: true, window: true */
+/* global define: true, chrome: true, window: true */
 
 define(['root/generichostenvironment','messages/ResetSystemMessage'], function _requireDefineHostChrome(GenericHostEnvironment, ResetSystemMessage) {
 
@@ -6,7 +6,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
 
     function HostChrome(options) {
 
-        this.name = "hostChrome";
+       // this.name = HostChrome.name;
 
         GenericHostEnvironment.call(this,options);
 
@@ -15,7 +15,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
     }
 
     HostChrome.prototype = Object.create(GenericHostEnvironment.prototype);
-    HostChrome.constructor = HostChrome;
+    HostChrome.prototype.constructor = HostChrome;
 
     HostChrome.prototype.onAppWindowClosed = function () {
 

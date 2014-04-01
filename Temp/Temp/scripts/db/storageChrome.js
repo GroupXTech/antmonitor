@@ -8,13 +8,15 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
     'use strict';
 
     function StorageChrome(configuration) {
-        this.logger = new Logger(configuration);
+
+        Storage.call(this, configuration);
+
         this.storage = chrome.storage.local; // || chrome.storage.sync
 
         this.storage.get(null, function (db) {
 
           if (this.logger && this.logger.logging)
-            this.logger.log('info','DB - Local storage contents',db);
+            this.logger.log('info','Local storage contents',db);
 
         }.bind(this));
 
@@ -35,7 +37,7 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
                 return;
             }
 
-            if (this.logger && this.logger.logging) this.logger.log('log', 'DB - READ',getItems,items);
+            if (this.logger && this.logger.logging) this.logger.log('log', 'READ',getItems,items);
 
             callback(items);
 
@@ -55,7 +57,7 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
                 return;
             }
 
-            if (this.logger && this.logger.logging) this.logger.log('log', 'DB - WRITE',setItems);
+            if (this.logger && this.logger.logging) this.logger.log('log', 'WRITE',setItems);
 
             callback();
 

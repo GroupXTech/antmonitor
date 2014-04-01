@@ -1,4 +1,4 @@
-/* globals ko: true, define: true, window: true */
+/* global ko: true, define: true, window: true */
 
 define(['scripts/resource/language','logger'], function _defineLanguageVM(resource,Logger) {
 

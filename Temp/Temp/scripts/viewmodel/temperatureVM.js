@@ -120,8 +120,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         var page = configuration.page,
             sensorId = this.sensorId();
 
-        this.getSetting('name-'+this.sensorId(),true);
-
         // Init with global temperature setting
 
         if (this.rootVM.settingVM.fahrenheit())
@@ -157,14 +155,12 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
         this.addPoint(page);
     };
 
-
     TemperatureVM.prototype.addPoint = function (page)
     {
 
         var settingVM = this.rootVM.settingVM;
 
         // Ignore pages without currentTemp, e.g supported pages from temp. sensor
-
 
         if (page.currentTemp === undefined)
            return;

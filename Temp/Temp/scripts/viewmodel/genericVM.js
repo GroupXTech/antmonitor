@@ -6,21 +6,19 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
     function GenericVM(configuration) {
 
-        var  sensorId;
-
         EventEmitter.call(this, configuration);
 
         // this._logger = new Logger(configuration);
         this._logger = configuration.logger || new Logger(configuration); // Use a configured logger, or create a new one
 
         this.name = ko.observable();
+         this.ownSensor = ko.observable(false); // Is this sensor users own sensor or others?
 
         // Common page 80 - Manufacturer info.
 
         this.HWRevision = ko.observable();
         this.manufacturerID = ko.observable();
         this.modelNumber = ko.observable();
-
 
         // Common page 81 - Product info.
 
@@ -36,20 +34,17 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         this.lastBatteryReset = ko.observable();
 
         if (configuration && configuration.page)
-        {
-            sensorId = configuration.page.broadcast.channelId.sensorId;
-
-          this.sensorId = ko.observable(sensorId);
-
-        }
-        else
+          this.sensorId = ko.observable( configuration.page.broadcast.channelId.sensorId);
+        else if (configuration && configuration.sensorId)
+          this.sensorId = ko.observable(configuration.sensorId);
+        else {
           this.sensorId = ko.observable();
-
-
+          if (this._logger.logging)
+            this._logger.log('error','All viewmodels inheriting from genericVM should have a unique sensorId');
+        }
 
         this.hostWin = window.parent;
         window.addEventListener('message',this.onmessage.bind(this));
-
 
          if (configuration.rootVM) {
            this.rootVM = configuration.rootVM;
@@ -66,10 +61,12 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         // Holds viewmodel series
         this.series = {};
 
+        this.getSetting(['name-'+this.sensorId(),'ownSensor-'+this.sensorId()],true);
+
     }
 
-    GenericVM.prototype = EventEmitter.prototype;
-    GenericVM.constructor = EventEmitter;
+    GenericVM.prototype = Object.create(EventEmitter.prototype);
+    GenericVM.prototype.constructor = EventEmitter;
 
     // Merge common page into viewmodel
     GenericVM.prototype.updateCommonPage = function (page)
@@ -127,6 +124,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
 
 
+    // items = string || array
     GenericVM.prototype.getSetting = function (items,isPendingStoreSubscription)
     {
 

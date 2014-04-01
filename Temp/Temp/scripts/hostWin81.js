@@ -1,11 +1,11 @@
-﻿// Depends upon requirejs
+// Depends upon requirejs
 
 define(['root/generichostenvironment'], function _requireDefineHostWin81 (GenericHostEnvironment) {
     'use strict';
 
     function HostWin81(options) {
 
-         this.name = 'hostWin81';
+        // this.name = HostWin81.name;
 
         GenericHostEnvironment.call(this,options);
 
@@ -15,7 +15,7 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
     }
 
     HostWin81.prototype = Object.create(GenericHostEnvironment.prototype);
-    HostWin81.constructor = HostWin81;
+    HostWin81.prototype.constructor = HostWin81;
 
     HostWin81.prototype.handleLifeCycleEvents = function () {
         var app = WinJS.Application;

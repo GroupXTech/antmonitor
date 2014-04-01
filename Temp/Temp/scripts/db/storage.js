@@ -6,7 +6,13 @@ define([ 'logger'], function (Logger) {
     'use strict';
 
     function Storage(configuration) {
-       // this._logger = new Logger(configuration);
+
+        if (!configuration)
+          configuration = {}
+
+           configuration.logSource = this.constructor || Storage;
+
+        this.logger = new Logger(configuration);
       
     }
 

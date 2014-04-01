@@ -132,6 +132,12 @@
 
                     <div  class="flex rowwrap spacearound centeritems">
 
+                    <!-- u = user own sensor, inspired by unix file permissions -->
+
+                    <div>
+                      <span>u</span>
+                      <input type="checkbox" data-bind="checked: ownSensor" />
+                    </div>
                         <div class="temperatureParagraph">
                             <span  data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" ></span>
                         </div>

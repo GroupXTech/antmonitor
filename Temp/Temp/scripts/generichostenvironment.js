@@ -1,4 +1,4 @@
-/* globals define: true, window: true, require: true */
+/* global define: true, window: true, require: true */
 
 define(['logger'], function _requireDefine(Logger) {
 
@@ -8,10 +8,12 @@ define(['logger'], function _requireDefine(Logger) {
 
         var log;
 
+       if (!options)
+            options = {};
+
         this.options = options;
 
-        if (options)
-            options.source = this.name;
+        options.logSource = this.constructor || GenericHostEnvironment;
 
         this.logger = new Logger(options);
        
