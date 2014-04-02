@@ -1,8 +1,16 @@
-﻿define(['logger'],function _requireDefineTimer(Logger) {
+/* global define: true */
+
+define(['logger'],function _requireDefineTimer(Logger) {
+
     'use strict';
 
     // Timer - UTC time - remember to add timezone offset for UI
     function Timer(options) {
+
+        if (!options)
+            options = {};
+
+        options.logSource = this;
 
         this.logger = new Logger(options);
 
@@ -53,7 +61,6 @@
                                }
                            });
 
-
         this.event = [];
 
         this.state = this.STATE.INIT;
@@ -62,16 +69,16 @@
     Timer.prototype.getLatestStartTime = function ()
     {
         return this.startTime[this.startTime.length - 1];
-    }
+    };
 
     Timer.prototype.getLatestStopTime = function ()
     {
         return this.stopTime[this.stopTime.length - 1];
-    }
+    };
 
     Timer.prototype.getLatestLapTime = function () {
         return this.lapTime[this.lapTime.length - 1];
-    }
+    };
 
     Timer.prototype.start = function () {
 
@@ -90,7 +97,7 @@
             this.logger.log("log", "Timer STARTED", startTime);
 
         return true;
-    }
+    };
 
     Timer.prototype.stop = function () {
 
@@ -114,8 +121,7 @@
 
         return true;
 
-
-    }
+    };
 
     Timer.prototype.getTotalElapsedTime = function ()
     {
@@ -130,7 +136,7 @@
             return this.totalElapsedTime + (currentTime - lastStartTime);
             
         }
-    }
+    };
 
     Timer.prototype.getLapElapsedTime = function () {
 
@@ -144,8 +150,7 @@
         else
             if (this.state === Timer.prototype.STATE.STOPPED)
                 return this.lapElapsedTime;
-
-    }
+};
 
     Timer.prototype.lap = function () {
         var lapTime = Date.now(),
@@ -163,7 +168,7 @@
             this.logger.log("log", "Timer LAP", lapTime, 'elapsed', lapTime - lastLapTime);
 
         return true;
-    }
+    };
 
     Timer.prototype.reset = function () {
 
@@ -191,7 +196,7 @@
             this.logger.log("log", "Timer RESET", resetTime);
 
         return true;
-    }
+    };
 
     Timer.prototype.STATE = {
 
@@ -203,12 +208,13 @@
 
         2: 'STOPPED',
         STOPPED: 2
-    }
+    };
 
     Timer.prototype.toString = function ()
     {
         return 'Timer state ' + Timer.prototype.STATE[this.state];
-    }
+    };
 
     return Timer;
+
 });

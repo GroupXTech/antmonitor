@@ -12,7 +12,8 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         this._logger = configuration.logger || new Logger(configuration); // Use a configured logger, or create a new one
 
         this.name = ko.observable();
-         this.ownSensor = ko.observable(false); // Is this sensor users own sensor or others?
+
+        this.ownSensor = ko.observable(false); // Is this sensor users own sensor or others?
 
         // Common page 80 - Manufacturer info.
 
@@ -76,7 +77,6 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         //TEST this.batteryStatus(2);
         //this.batteryStatusString("Good");
         //this.cumulativeOperatingTime(2);
-
 
         switch (page.number) {
 
@@ -149,13 +149,12 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
     GenericVM.prototype.subscribeAndStore = function (property,sensorId)
     {
 
-        var subscribe = function (singleProperty) {
+        var subscribe = function _subscribe(singleProperty) {
 
-            var store = function (newValue) {
+            var store = function _storeKey(newValue) {
 
                 var key,
                    items = {};
-
 
                 key = singleProperty+'-'+sensorId;
 

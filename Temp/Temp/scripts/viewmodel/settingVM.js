@@ -13,6 +13,8 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
         GenericVM.call(this, configuration);
 
+        this.mileDistanceUnit = ko.observable(false);
+
         this.showAdditionalInfo = ko.observable(false);
 
         this.showCredits = ko.observable(false);
@@ -60,7 +62,7 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
     {
         var sensorId = this.sensorId();
-        this.getSetting(['fahrenheit-'+sensorId,'show24HMaxMin-'+sensorId],true);
+        this.getSetting(['fahrenheit-'+sensorId,'show24HMaxMin-'+sensorId,'showAdditionalInfo-'+sensorId,'mileDistanceUnit-'+sensorId],true);
     };
 
     SettingVM.prototype.getTimezoneOffsetInMilliseconds = function () {
@@ -70,8 +72,6 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
     SettingVM.prototype.toggleShowCredits = function (data, event) {
         this.showCredits(!this.showCredits());
     };
-
-  
 
     // Function is also called during applyBindings at initialization
     SettingVM.prototype.toggleShowSensor = function (sensorType,viewModel,event) {
