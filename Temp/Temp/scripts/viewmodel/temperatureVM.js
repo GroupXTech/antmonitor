@@ -8,11 +8,6 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
 
         GenericVM.call(this, configuration);
 
-        if (configuration.tempConverter)
-            this.tempConverter = configuration.tempConverter; // Shared code
-        else
-          this.tempConverter = new TemperatureConverter(); // Fallback, if sharing code is not available
-
         this.temperatureMode = ko.observable(undefined);
 
         this.number = ko.observable();
@@ -30,7 +25,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
                 case TemperatureVM.prototype.MODE.FAHRENHEIT:
 
                     //formattedTemp = (tempObs()*(9/5)+32);
-                    formattedTemp = this.tempConverter.fromCelciusToFahrenheit(tempObs()).toFixed(toFixedDigits || 2);
+                    formattedTemp = this.convert.fromCelciusToFahrenheit(tempObs()).toFixed(toFixedDigits || 2);
 
                     break;
 
@@ -114,6 +109,8 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     
      TemperatureVM.prototype = Object.create(GenericVM.prototype);
      TemperatureVM.prototype.constructor = TemperatureVM;
+
+    TemperatureVM.prototype.convert = new TemperatureConverter();
     
     TemperatureVM.prototype.init = function (configuration)
     {
@@ -166,7 +163,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
            return;
 
         if (this.temperatureMode && this.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-            this.series.temperature.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.tempConverter.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
+            this.series.temperature.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.convert.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
 
         }
         else {
@@ -181,16 +178,16 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     {
 
         var newSeriesData = [],
-            tempMeasurementNr,
+            pointNr,
             len;
 
           if (useFahrenheit)
             {
                 this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
 
-                  for (tempMeasurementNr=0, len = this.series.temperature.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                  for (pointNr=0, len = this.series.temperature.xData.length; pointNr < len; pointNr++)
                   {
-                        newSeriesData.push([this.series.temperature.xData[tempMeasurementNr],this.tempConverter.fromCelciusToFahrenheit(this.series.temperature.yData[tempMeasurementNr])]);
+                        newSeriesData.push([this.series.temperature.xData[pointNr],this.convert.fromCelciusToFahrenheit(this.series.temperature.yData[pointNr])]);
                   }
 
 
@@ -198,9 +195,9 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
             else {
 
                this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
-                 for (tempMeasurementNr=0, len = this.series.temperature.xData.length; tempMeasurementNr < len; tempMeasurementNr++)
+                 for (pointNr=0, len = this.series.temperature.xData.length; pointNr < len; pointNr++)
                   {
-                        newSeriesData.push([this.series.temperature.xData[tempMeasurementNr],this.tempConverter.fromFahrenheitToCelcius(this.series.temperature.yData[tempMeasurementNr])]);
+                        newSeriesData.push([this.series.temperature.xData[pointNr],this.convert.fromFahrenheitToCelcius(this.series.temperature.yData[pointNr])]);
                   }
             }
 

@@ -43,8 +43,8 @@
 
         // Linux filenames are case sensitive -> can get resource loading problems if module id does not match filename exactly
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger', 'converter/temperatureConverter'],
-            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger,TempConverter) {
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger'],
+            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger) {
 
 
                 this.logger = new Logger({ log: true, logSource : this });
@@ -70,7 +70,6 @@
                     LanguageVM : LanguageVM,
                     Timer : Timer,
                     Logger : Logger,
-                    TempConverter : TempConverter,
                     SensorVM : SensorVM
                 };
 
@@ -167,10 +166,6 @@
 
         // Holds knockoutjs viewmodel constructor functions and root
         this.viewModel = {};
-
-        // Letting UI have a temp converted allows sharing of the same code by multiple temperature viewmodel instances
-
-        this.tempConverter = new this.module.TempConverter();
 
         this.viewModel.rootVM = {
 
@@ -435,7 +430,6 @@
                             fontSize: '16px'
                         }
                     }
-
 
                  },
 
@@ -745,7 +739,6 @@
             case 25:
 
                  Viewmodel = this.module.TemperatureVM;
-                 defaultOptions.temperatureConverter = this.tempConverter;
                  deviceSeries = rootVM.sensorVM.devices.ENVIRONMENT;
 
                 break;

@@ -152,12 +152,61 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
       //  US: 1609.347219
     };
 
+    SPDCADVM.prototype.onDistanceModeChange = function (useMile)
+    {
+        var newSeriesData = [],
+            pointNr,
+            len;
+
+        if (useMile)
+        {
+            this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL);
+
+            for (pointNr=0, len = this.series.speed.xData.length; pointNr < len; pointNr++)
+                  newSeriesData.push([this.series.speed.xData[pointNr],this.convert.fromKmToMile(this.series.speed.yData[pointNr])]);
+
+        } else {
+
+            this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.METRIC);
+
+            for (pointNr=0, len = this.series.speed.xData.length; pointNr < len; pointNr++)
+                    newSeriesData.push([this.series.speed.xData[pointNr],this.convert.fromMileToKm(this.series.speed.yData[pointNr])]);
+
+        }
+
+
+        this.series.speed.setData(newSeriesData,true);
+    };
+
+    SPDCADVM.prototype.convert = {
+
+        fromKmToMile : function (value)
+        {
+            return value;
+        },
+
+        fromMileToKm : function (value)
+        {
+            return value;
+        }
+    };
+
     SPDCADVM.prototype.init = function (configuration)
     {
         var page = configuration.page,
             sensorId = this.sensorId();
 
-         this.getSetting(['wheelCircumference-'+sensorId,'speedMode-'+sensorId],true);
+         this.getSetting(['wheelCircumference-'+sensorId],true);
+
+        // Init with global distance unit setting
+
+        if (this.rootVM.settingVM.mileDistanceUnit())
+           this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL);
+        else
+           this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.METRIC);
+
+        // Update on subsequent changes
+        this.rootVM.settingVM.mileDistanceUnit.subscribe(this.onDistanceModeChange.bind(this));
 
         this.addSeries(page, {
             cadence : {
@@ -270,9 +319,9 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
             this.timestamp(page.timestamp);
 
         if (page.unCalibratedSpeed !== undefined) {
-            if (this.distanceMode() === 1) // km/h
+            if (this.distanceMode() === SPDCADVM.prototype.DISTANCE_MODE.METRIC) // km/h
                 this.speed(3.6 * this.wheelCircumference() * page.unCalibratedSpeed);
-            else if (this.distanceMode() ===2) // mph
+            else if (this.distanceMode() === SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL) // mph
                 this.speed(2.2369362920544 * this.wheelCircumference() * page.unCalibratedSpeed);
         }
 
