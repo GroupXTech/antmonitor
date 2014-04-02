@@ -1,5 +1,4 @@
-﻿/* global define: true */
-
+/* global define: true */
 
 define([ 'logger'], function (Logger) {
 
@@ -8,9 +7,9 @@ define([ 'logger'], function (Logger) {
     function Storage(configuration) {
 
         if (!configuration)
-          configuration = {}
+          configuration = {};
 
-           configuration.logSource = this.constructor || Storage;
+           configuration.logSource = this;
 
         this.logger = new Logger(configuration);
       

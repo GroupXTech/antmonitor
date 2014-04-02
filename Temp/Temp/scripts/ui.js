@@ -8,19 +8,16 @@
     {
         var requirejsConfiguration;
 
-        this.name = 'UI';
-
         this.hostEnvironmentReady = false;
 
         window.addEventListener('message', this.onmessage.bind(this));
 
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
-                if (this.logger && this.logger.logging) this.logger.log('warn', this.name+' has not received ready from host environment - messages will probably not reach host');
+                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready from host environment - messages will probably not reach host');
             }
         }.bind(this), 3000);
 
-        console.info(this.name+' location: ' + window.location.href);
         
         requirejsConfiguration = {
 
@@ -49,7 +46,10 @@
         requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger', 'converter/temperatureConverter'],
             function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger,TempConverter) {
 
-                this.logger = new Logger({ log: true, logSource : this.constructor });
+
+                this.logger = new Logger({ log: true, logSource : this });
+
+                if (this.logger && this.logger.logging) this.logger.log('info','Location: ' + window.location.href)
 
                 // Keeps track of timeouts and intervals
 

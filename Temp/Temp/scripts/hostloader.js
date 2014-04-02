@@ -1,4 +1,4 @@
-﻿/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true, WinJS: true, Windows: true */
+/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true, WinJS: true, Windows: true */
 
 // Requirejs
 
@@ -20,10 +20,7 @@
 
     function HostLoader() {
 
-        var requirejsConfiguration,
-            deps;
-
-        this.name = 'Host loader';
+        var deps;
 
         this.executionEnvironment = undefined;
 
@@ -33,21 +30,16 @@
             console.error('Application depend upon using requirejs as a script loader, it was not found on the window object');
 
             return;
-        } else
-            console.info('Script module loader : Requirejs ' + requirejs.version);
+        }
 
         // Important that the startup code runs immediately, otherwise Windows App will not start (i.e cannot move this code inside the requirejs callback)
         // It seems like the app.onlaunched callback is not executed
 
         this.findExecutionEnvironment();
 
-        console.info(this.name + ' location: ' + window.location.href);
-
-        console.info('Host navigator', window.navigator.userAgent, window.navigator.platform);
-
         // Configure requirejs script loader
 
-        requirejsConfiguration = {
+        this.requirejsConfiguration = {
 
             baseUrl: '../bower_components/libant', // Relative to file directory
 
@@ -62,9 +54,9 @@
 
         };
 
-        console.info('Requirejs configuration', requirejsConfiguration);
 
-        requirejs.config(requirejsConfiguration);
+
+        requirejs.config(this.requirejsConfiguration);
 
     }
 
@@ -118,10 +110,20 @@
        
         requirejs(deps, function (Logger, Host,Events) {
             // console.log(Date.now(),'require finished')
-            this.logger = new Logger({ log: true, source : this.name });
+            this.logger = new Logger({ log: true, logSource : this });
+
+            if (this.logger && this.logger.logging)
+            {
+                this.logger.log('info','Location: ' + window.location.href);
+                this.logger.log('info','Navigator: ',window.navigator.userAgent, window.navigator.platform);
+                this.logger.log('info',this.requirejsConfiguration);
+                 this.logger.log('info','Script module loader : Requirejs ' + requirejs.version);
+            }
+
             this.host = new Host({ log: true });
            
-                this.host.init();
+            this.host.init();
+
         }.bind(this));
     };
 

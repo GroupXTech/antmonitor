@@ -13,9 +13,11 @@ define(['logger'], function _requireDefine(Logger) {
 
         this.options = options;
 
-        options.logSource = this.constructor || GenericHostEnvironment;
+        options.logSource = this;
 
         this.logger = new Logger(options);
+
+
        
         // Used for sending a page received form the device profile as  a message to UI frame 
 
@@ -127,8 +129,6 @@ define(['logger'], function _requireDefine(Logger) {
 
     // Initialization of ANT host and USB
     GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, TEMPprofile, RxScanMode, Storage, Logger) {
-
-
 
         this.storage = new Storage({ log: true });
 
