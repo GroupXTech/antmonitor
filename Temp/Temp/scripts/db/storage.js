@@ -16,7 +16,7 @@ define([ 'logger'], function (Logger) {
     }
 
     // Keys for localstorage - minimize chance for accessing wrong key
-    Storage.prototype.key = {
+    Storage.prototype.KEY = {
         temperaturemode: "temperaturemode",
         show24hMaxMin: "show24MaxMin",
         defaultDeviceId: "defaultDeviceId"

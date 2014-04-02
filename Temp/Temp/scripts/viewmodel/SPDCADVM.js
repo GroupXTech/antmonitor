@@ -277,7 +277,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
        this.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
             var timer = this.rootVM.timerVM._timer;
-            if (timer.state === timer.__proto__.STATE.STARTED) // Only update cumulatated distance  when timer is running
+            if (timer.state === Object.getPrototypeOf(timer).STATE.STARTED) // Only update cumulatated distance  when timer is running
                 observable(observable()+relativeDistance);
         }.bind(this));
 

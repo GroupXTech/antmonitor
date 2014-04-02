@@ -138,9 +138,9 @@ define(['logger'], function _requireDefine(Logger) {
         this.module.rxscanmode = RxScanMode;
 
         // Get default device specified by user
-        this.storage.get(this.storage.__proto__.key.defaultDeviceId, function (db) {
+        this.storage.get(Object.getPrototypeOf(this.storage).KEY.defaultDeviceId, function (db) {
    
-            this.configureUSB(db[this.storage.__proto__.key.defaultDeviceId]);
+            this.configureUSB(db[Object.getPrototypeOf(this.storage).KEY.defaultDeviceId]);
         }.bind(this));
 };
 
