@@ -268,18 +268,27 @@ h1 > img.tabHeading {
    font-size : small;
 }
 
-#tabEnvironment ul li, #tabSPDCAD ul li {
-  font-size : x-large;
-}
 
-#tabEnvironment ul li:nth-child(odd), #tabSPDCAD ul li:nth-child(odd) {
+/* Odd rows gets painted */
+#tabEnvironment ul li:nth-child(odd), #tabSPDCAD ul li:nth-child(odd), #tabHRM ul li:nth-child(odd) {
    background : lightgray;
 }
 
+/* > is a child selector -> only select particular child of ancestor, e.g sel1 > sel2
+   ' '/space is a descendant selector -> selects all descendants, e.g sel1 sel2
+*/
+
+/* Main page */
+
+#tabEnvironment ul li, #tabSPDCAD ul li, #tabHRM ul li {
+    font-size: large;
+}
+
 /* Background page information */
-    #tabEnvironment ul li > div:nth-child(2) {
-        font-size : medium;
-    }
+
+#tabEnvironment ul li > div:nth-child(2), #tabSPDCAD ul li > div:nth-child(2), #tabHRM ul li > div:nth-child(2) {
+    font-size : medium;
+}
 
 #sensorChart-integrated {
     /*padding : 3px;*/
