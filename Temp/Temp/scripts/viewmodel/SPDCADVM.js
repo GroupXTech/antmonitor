@@ -76,10 +76,10 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
                         case SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL:
 
-                            if (this.cumulativeDistance() > SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL)
-                                distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL).toFixed(2);
+                            if (this.cumulativeDistance() > SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_METERS)
+                                distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_METERS).toFixed(2);
                             else
-                                distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL).toFixed(3);
+                                distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_METERS).toFixed(3);
 
                             break;
 
@@ -127,6 +127,8 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
             }.bind(this)
         });
 
+        this.previousCumulativeSpeedRevolutionCount = undefined; // Just declare intention to use
+
 
         this.init(configuration);
 
@@ -148,7 +150,9 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
     };
 
     SPDCADVM.prototype.CONVERSION_FACTOR = {
-        INTERNATIONAL: 1609.344,
+        INTERNATIONAL_METERS: 1609.344,
+        INTERNATIONAL_KM : 1.609344,
+        KM_TO_1MILE : 0.621371192237334 // (1/1.609344)
       //  US: 1609.347219
     };
 
@@ -182,12 +186,12 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
         fromKmToMile : function (value)
         {
-            return value;
+            return SPDCADVM.prototype.CONVERSION_FACTOR.KM_TO_1MILE * value;
         },
 
         fromMileToKm : function (value)
         {
-            return value;
+            return SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_KM * value;
         }
     };
 
@@ -275,11 +279,11 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
         // Update cumulative distance
 
-       this.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
+    /*   this.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
             var timer = this.rootVM.timerVM._timer;
             if (timer.state === Object.getPrototypeOf(timer).STATE.STARTED) // Only update cumulatated distance  when timer is running
                 observable(observable()+relativeDistance);
-        }.bind(this));
+        }.bind(this)); */
 
     };
 
@@ -303,6 +307,11 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
     };
 
     SPDCADVM.prototype.updateFromPage = function (page) {
+
+       var timer = this.rootVM.timerVM._timer,
+           relativeCumulativeSpeedRevolutionCount,
+           revolutionDistance,
+           previousCumulativeDistance;
 
         // For debugging, i.e inspect broadcast data
         this._page = page;
@@ -330,11 +339,26 @@ define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfil
 
         // Distance
 
-        if (page.relativeCumulativeSpeedRevolutionCount !== undefined)
+
+
+        if (this.previousCumulativeSpeedRevolutionCount !== undefined && timer.state === Object.getPrototypeOf(timer).STATE.STARTED)
         {
 
-            this.emit('newRelativeDistance', this.cumulativeDistance, this.wheelCircumference() * page.relativeCumulativeSpeedRevolutionCount);
+             // Only update cumulatated distance  when timer is running
+
+              relativeCumulativeSpeedRevolutionCount = page.cumulativeSpeedRevolutionCount - this.previousCumulativeSpeedRevolutionCount;
+              if (relativeCumulativeSpeedRevolutionCount < 0) // In case of rollover
+                relativeCumulativeSpeedRevolutionCount += 0xFFFF; // Field is 2 bytes
+
+              revolutionDistance = this.wheelCircumference()*relativeCumulativeSpeedRevolutionCount;
+              previousCumulativeDistance = this.cumulativeDistance();
+              this.cumulativeDistance(previousCumulativeDistance + revolutionDistance);
+
+
         }
+
+
+        this.previousCumulativeSpeedRevolutionCount = page.cumulativeSpeedRevolutionCount;
 
         //if (page.profile.hasCommonPages)
         //    this.updateCommonPage(page);
