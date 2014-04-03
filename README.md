@@ -1,7 +1,7 @@
 antmonitor
 ==========
 
-A generic web app (aka Chrome packaged app/Windows Store app) that listen to ANT+ broadcasts from sensors (e.g heart rate) with visualization in a chart
+A generic web app (aka Chrome packaged app/Windows Store app) that listen to ANT+ broadcasts from sensors (e.g heart rate) with visualization in a chart. It supports receiving broadcast from multiple sensors of the same device profile.
 
 Open for non-commercial/personal use : https://creativecommons.org/licenses/by-nc-nd/3.0/
 
@@ -24,10 +24,16 @@ Tested platforms:
     Windows 8.1
     Chrome Canary/Chrome v.33
 
-Hardware requirements:
+USB ANT hardware requirements:
 
     USB sticks:
         ANT USB 2 - Bus 00? Device 00?: ID 0fcf:1008 Dynastream Innovations, Inc. Mini stick Suunto
         ANT USB-m - Bus 00? Device 00?: ID 0fcf:1009 Dynastream Innovations, Inc.
 
+    The app. wil only search for these vendor id/product id. on *nix based systems.
 
+Currently supported ANT+ device profiles:
+
+        Heart Rate Monitor HRM
+        Bike Speed And Cadence SPDCAD
+        Temperature ENVIRONMENT
