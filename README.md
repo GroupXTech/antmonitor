@@ -7,6 +7,9 @@ Open for non-commercial/personal use : https://creativecommons.org/licenses/by-n
 
 Ubuntu 13.10 or later:
 
+    * Listing of attached usb devices from Dynastream
+        'lsusb | grep Dynastream'
+
     * Listing of processes that owns USB devices
         'sudo lsof +D /dev/bus/usb'
 
@@ -20,3 +23,11 @@ Tested platforms:
 
     Windows 8.1
     Chrome Canary/Chrome v.33
+
+Hardware requirements:
+
+    USB sticks:
+        ANT USB 2 - Bus 00? Device 00?: ID 0fcf:1008 Dynastream Innovations, Inc. Mini stick Suunto
+        ANT USB-m - Bus 00? Device 00?: ID 0fcf:1009 Dynastream Innovations, Inc.
+
+
