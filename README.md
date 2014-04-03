@@ -17,3 +17,6 @@ Tested platforms:
 
     Ubuntu 13.10 - Linux kernel 3.11.0-19-generic
     Chrome (unstable) v 35.0.1916.6 dev aura/Chrome v. 33
+
+    Windows 8.1
+    Chrome Canary/Chrome v.33
