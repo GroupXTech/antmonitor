@@ -40,6 +40,7 @@
         <script type="text/html" id="HRM-short-template">
         
         <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+
             <div style="text-align: center" data-bind="if: computedHeartRate() > 0x00">
                 <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
                 <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
@@ -132,12 +133,13 @@
 
                     <div  class="flex rowwrap spacearound centeritems">
 
-                    <!-- u = user own sensor, inspired by unix file permissions -->
+                        <!-- u = user own sensor, inspired by unix file permissions -->
 
-                    <div>
-                      <span>u</span>
-                      <input type="checkbox" data-bind="checked: ownSensor" />
-                    </div>
+                        <div>
+                          <span style="vertical-align: middle">u</span>
+                          <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                        </div>
+
                         <div class="temperatureParagraph">
                             <span  data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}" ></span>
                         </div>
@@ -314,6 +316,11 @@
                             <input type="radio" value="1" data-bind="checked: speedMode() !== 2" />
 
                         </div>--> 
+
+                        <div>
+                          <span style="vertical-align: middle">u</span>
+                          <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                        </div>
                        
                         <div>
 
@@ -424,15 +431,26 @@
 
                         <!--<img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />-->
 
-                        <div data-bind="if: computedHeartRate !== 0x00">
-                            <span class="computedHeartRate" data-bind="text: computedHeartRate"></span>
+                        <div>
+                          <span style="vertical-align: middle">u</span>
+                          <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                        </div>
+
+                        <div style="text-align: center" data-bind="if: computedHeartRate !== 0x00">
+                            <span style="vertical-align: middle" data-bind="text: computedHeartRate"></span>
+                            <span style="vertical-align: middle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
                         </div>
 
                         <div data-bind="if: computedHeartRate === 0x00">
-                            <span class="computedHeartRate">---</span>
+                            <span tyle="vertical-align: middle">---</span>
+                             <span style="vertical-align: middle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
                         </div>
 
-                        <span data-bind="text: RRInterval"></span>
+                       <div style="text-align: center">
+                          <span style="vertical-align: middle" data-bind="text: RRInterval"></span>
+                          <span style="vertical-align: middle">ms (RR)</span>
+                       </div>
+
 
                     </div>
 
