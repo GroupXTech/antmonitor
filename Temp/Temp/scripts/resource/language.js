@@ -1,3 +1,5 @@
+/* global define: true */
+
 define(function _defineLanguageResource() {
     var resource;
 

@@ -1,7 +1,7 @@
 /* global define: true, ko: true */
 
 // Main viewmodel class
-define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPage, GenericVM) {
+define(['vm/genericVM'], function (GenericVM) {
 
     'use strict';
 
@@ -139,8 +139,7 @@ define(['logger', 'profiles/Page', 'vm/genericVM'], function ( Logger, GenericPa
 
         var  currentTimestamp,
             len,
-            RRmeasurementNr,
-            sensorId = page.broadcast.channelId.sensorId;
+            RRmeasurementNr;
 
         // If aggregated RR data is available process it (buffered data in deviceProfile)
 

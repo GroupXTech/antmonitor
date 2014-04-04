@@ -49,7 +49,7 @@
 
                 this.logger = new Logger({ log: true, logSource : this });
 
-                if (this.logger && this.logger.logging) this.logger.log('info','Location: ' + window.location.href)
+                if (this.logger && this.logger.logging) this.logger.log('info','Location: ' + window.location.href);
 
                 // Keeps track of timeouts and intervals
 
@@ -81,13 +81,7 @@
     {
 
         var sourceWindow = event.source,
-            data = event.data,
-            sensorId,
-            vm,
-            key,
-            value,
-            property,
-            index;
+            data = event.data;
 
         if (this.logger && this.logger.logging)
             this.logger.log('info', 'Received message', event);
@@ -642,11 +636,10 @@
     ANTMonitorUI.prototype.addFootpodSeries = function (page) {
 
         var addedSeries,
-         rootVM = this.viewModel.rootVM,
-         FootpodVM = this.viewModel.FootpodVM,
+          FootpodVM = this.viewModel.FootpodVM,
          deviceTypeVM,
-         sensorId = page.broadcast.channelId.sensorId,
-         handlerLogger = this.logger;
+         sensorId = page.broadcast.channelId.sensorId;
+
 
         addedSeries = this.sensorChart.integrated.chart.addSeries(
            {
@@ -708,8 +701,7 @@
 
     ANTMonitorUI.prototype.initViewModelForPage = function (page) {
 
-        var antUI = this,
-            rootVM = this.viewModel.rootVM,
+        var rootVM = this.viewModel.rootVM,
             sensorId = page.broadcast.channelId.sensorId,
             deviceType = page.broadcast.channelId.deviceType,
             deviceTypeVM,

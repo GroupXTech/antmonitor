@@ -52,8 +52,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
     // Logs to the background page - changes default console source
     HostChrome.prototype.logBackgroundPage = function () {
 
-        var myArgs = [],
-            type;
+        var myArgs = [];
 
         if (!this.logger) {
             return;

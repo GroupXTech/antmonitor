@@ -20,8 +20,6 @@
 
     function HostLoader() {
 
-        var deps;
-
         this.executionEnvironment = undefined;
 
         this.hostEnvironmentModuleId = undefined;
@@ -108,7 +106,7 @@
 
         deps.push(this.hostEnvironmentModuleId);
        
-        requirejs(deps, function (Logger, Host,Events) {
+        requirejs(deps, function (Logger, Host) {
             // console.log(Date.now(),'require finished')
             this.logger = new Logger({ log: true, logSource : this });
 

@@ -189,7 +189,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         else
         {
             if (this._logger && this._logger.logging)
-                this._logger.log('warn', 'Unable to subscribe to properties of type', typeof properties);
+                this._logger.log('warn', 'Unable to subscribe to property of type', typeof singleProperty);
         }
 
     };
@@ -203,11 +203,12 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
     {
         var sensorId = page.broadcast.channelId.sensorId;
 
-        for (var series in seriesOptions) {
-            seriesOptions[series].name += ' '+sensorId;
-            seriesOptions[series].id += sensorId;
-            this.series[series] = this.chart.addSeries(seriesOptions[series],false,false);
-        }
+        for (var series in seriesOptions)
+           // if (seriesOptions.hasOwnProperty(series)) { // Object.prototype has non-enumerable properties unless extended
+                seriesOptions[series].name += ' '+sensorId;
+                seriesOptions[series].id += sensorId;
+                this.series[series] = this.chart.addSeries(seriesOptions[series],false,false);
+          // }
 
     };
 
@@ -253,9 +254,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
      GenericVM.prototype.onmessage = function (event)
     {
      var data = event.data,
-            page = event.data.page,
-            currentSeries = this.series,
-         key,
+         page = event.data.page,
          itemNr,
          len;
 
@@ -297,6 +296,5 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
     };
 
     return GenericVM;
-
 
 });

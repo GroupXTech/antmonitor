@@ -1,7 +1,7 @@
 /* global define: true, ko: true */
 
 // Main viewmodel class
-define(['logger', 'profiles/Page', 'vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Logger, GenericPage, GenericVM, deviceProfileSPDCAD) {
+define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (GenericVM, deviceProfileSPDCAD) {
     'use strict';
 
     function SPDCADVM(configuration) {

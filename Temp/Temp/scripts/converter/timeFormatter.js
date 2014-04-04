@@ -1,4 +1,6 @@
-﻿define(function _requireDefineTimeFormatter() {
+/* global define: true */
+
+define(function _requireDefineTimeFormatter() {
 
     function TimeFormatter()
     {
@@ -22,7 +24,7 @@
         var result = hoursStr + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
 
         return result;
-    }
+    };
 
     return TimeFormatter;
-})
+});

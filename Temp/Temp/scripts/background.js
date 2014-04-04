@@ -1,11 +1,13 @@
+/* global requirejs: true, setTimeout: true, chrome: true, window: true */
+
 (function () {
 
     var loggerFunc;
-    
-
 
     function Background(configuration)
     {
+        var deps;
+
        this.timestamp = {
           startup : Date.now()
        };
@@ -49,7 +51,7 @@
     Background.prototype.releaseInterfaceAndCloseDevice = function(TXinformation)
     {
         var logger = this.logger,
-            CLOSE_BP_DELAY = 15000; // Give a chance for onSuspend to be called (its about 10 seconds)
+            CLOSE_BP_DELAY = 15000, // Give a chance for onSuspend to be called (its about 10 seconds)
             WAIT_FOR_RESET_DELAY = 500;
 
         if (TXinformation.resultCode !== 0) {

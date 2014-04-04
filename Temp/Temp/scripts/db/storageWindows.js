@@ -2,7 +2,7 @@
 
 // Using blocking window.localStorage, simulating async behaviour with callback
 // Maybe todo: Use async. storage instead
-define(['logger', 'db/storage'], function (Logger, Storage) {
+define(['db/storage'], function (Storage) {
 
     'use strict';
 

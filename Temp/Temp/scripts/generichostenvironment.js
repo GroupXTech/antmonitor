@@ -6,8 +6,6 @@ define(['logger'], function _requireDefine(Logger) {
 
     function GenericHostEnvironment(options) {
 
-        var log;
-
        if (!options)
             options = {};
 
@@ -50,9 +48,7 @@ define(['logger'], function _requireDefine(Logger) {
     // Get messages from embedded UI frame, in Chrome it runs in a sandbox mode to avoid content security policy restrictions
     GenericHostEnvironment.prototype.onmessage = function (event) {
 
-        var sourceWindow = event.source,
-            data = event.data;
-
+        var data = event.data;
 
         if (this.logger && this.logger.logging) this.logger.log('info',  'received message', event);
 
@@ -123,12 +119,12 @@ define(['logger'], function _requireDefine(Logger) {
 
     GenericHostEnvironment.prototype.loadSubSystems = function ()
     {
-        require(['anthost', this.moduleId.usb, 'profiles/environment/deviceProfile_ENVIRONMENT', 'profiles/RxScanMode', this.moduleId.storage, 'logger'],
+        require(['anthost', this.moduleId.usb,  'profiles/RxScanMode', this.moduleId.storage],
             this.onSubsystemLoaded.bind(this));
     };
 
     // Initialization of ANT host and USB
-    GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, TEMPprofile, RxScanMode, Storage, Logger) {
+    GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, RxScanMode, Storage) {
 
         this.storage = new Storage({ log: true });
 

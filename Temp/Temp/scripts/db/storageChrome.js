@@ -3,7 +3,7 @@
 // window.localStorage not available pr. 19/11-2013 for chrome packaged apps
 // Reason for not using: Blocking synchronous I/O
 // http://developer.chrome.com/extensions/storage.html
-define(['logger', 'db/storage'], function (Logger, Storage) {
+define(['db/storage'], function (Storage) {
 
     'use strict';
 
@@ -47,8 +47,6 @@ define(['logger', 'db/storage'], function (Logger, Storage) {
 
     // Override/shadow parent function
     StorageChrome.prototype.set = function (setItems, callback) {
-
-       var requestedItems = setItems;
 
         this.storage.set(setItems, function _setItem() {
 

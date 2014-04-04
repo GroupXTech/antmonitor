@@ -1,4 +1,7 @@
-﻿define(['require', 'module', 'exports', 'logger'], function (require, module, exports, Logger) {
+/* global define: true */
+
+define( function () {
+
     'use strict';
 
     function TemperatureConverter() {
@@ -9,13 +12,13 @@
 
     TemperatureConverter.prototype.fromCelciusToFahrenheit = function (celciusTemp) {
 
-        return celciusTemp * this.conversionFactorFahrenheit + 32
-    }
+        return celciusTemp * this.conversionFactorFahrenheit + 32;
+    };
 
     TemperatureConverter.prototype.fromFahrenheitToCelcius = function (fahrenheitTemp) {
 
         return (fahrenheitTemp - 32) / this.conversionFactorFahrenheit;
-    }
+    };
 
 
     return TemperatureConverter;

@@ -53,7 +53,6 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
     {
         var chart,
             dateTimeAxis,
-            id,TimerVM,
             sensorChart = this.rootVM.sensorChart;
 
         if (sensorChart && sensorChart.integrated) {

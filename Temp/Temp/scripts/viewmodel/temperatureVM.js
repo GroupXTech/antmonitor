@@ -1,6 +1,6 @@
 /* global define: true, ko:true */
 
-define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'], function(Logger,GenericPage, GenericVM, TemperatureConverter) {
+define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, TemperatureConverter) {
 
     'use strict';
     
@@ -114,8 +114,7 @@ define(['logger','profiles/Page','vm/genericVM','converter/temperatureConverter'
     
     TemperatureVM.prototype.init = function (configuration)
     {
-        var page = configuration.page,
-            sensorId = this.sensorId();
+        var page = configuration.page;
 
         // Init with global temperature setting
 
