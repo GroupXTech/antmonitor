@@ -172,9 +172,10 @@ h1.detailsHeading::before {
 }
 
 #divHRMshort {
-     /*width : 100px;*/
+     width: 100px;
     /* height : 75px; */
     /* overflow : hidden; */
+    /* border: 1px solid; */
 }
 
 #ulHRMshort {

@@ -675,7 +675,7 @@
 
                     <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
 
-                        <div>
+                        <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                             <a href="#tabHRM"  class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.heartrate().details }">
                                 <img class=" icon verticalAlignMiddle" src="icon/heart.png" />
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.heartrate().message"></span>
@@ -684,13 +684,13 @@
                                 <div id="divHRMshort" class="div-sensor-short">
                                     <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
                                 </div>
-</div>
+                        </div>
 
                     <!-- /ko -->
 
                     <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
 
-                        <div>
+                        <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                             <a href="#tabSPDCAD"  class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.speedandcadence().details }">
                                 <img class="icon verticalAlignMiddle" src="icon/spdcad.png"  />
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.speedandcadence().message"></span>
@@ -706,7 +706,7 @@
 
                     <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
 
-                        <div>
+                        <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                             <a href="#tabEnvironment" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.temperature_overview().details }">
                                 <img class="icon verticalAlignMiddle" src="icon/temperature.png"  />
                                 <span class="verticalAlignMiddle" data-bind="text: languageVM.temperature().message"></span>
@@ -721,7 +721,6 @@
 
                 </div>
 
-                
                 <!-- Integrated chart with measurements from all sensors -->
 
                 <div id="sensorChart-integrated">

@@ -2,6 +2,7 @@
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,EventEmitter) {
+
     'use strict';
 
     function GenericVM(configuration) {
@@ -203,12 +204,13 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
     {
         var sensorId = page.broadcast.channelId.sensorId;
 
-        for (var series in seriesOptions)
+        for (var series in seriesOptions) {
            // if (seriesOptions.hasOwnProperty(series)) { // Object.prototype has non-enumerable properties unless extended
                 seriesOptions[series].name += ' '+sensorId;
                 seriesOptions[series].id += sensorId;
                 this.series[series] = this.chart.addSeries(seriesOptions[series],false,false);
           // }
+        }
 
     };
 
