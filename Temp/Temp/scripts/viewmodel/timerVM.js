@@ -65,7 +65,7 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
                     // id: id,
                     color: color,
                     dashStyle: 'dash',
-                    width: 1,
+                    width: 2,
                     value: time
                 });
 
