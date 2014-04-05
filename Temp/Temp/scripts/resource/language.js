@@ -160,7 +160,7 @@ define(function _defineLanguageResource() {
             },
 
               setting_background_page_info : {
-                message : 'Bakgrunn side info.'
+                message : 'Bakgrunn side info. fra sensor (e.g driftstid)'
             },
 
             setting_temperature_fahrenheit : {
@@ -321,7 +321,7 @@ define(function _defineLanguageResource() {
             },
 
              setting_background_page_info : {
-                message : 'Background page info.'
+                message : 'Background page info. (e.g operating time)'
             },
 
              setting_temperature_fahrenheit : {

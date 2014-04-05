@@ -752,31 +752,29 @@
                  <span class="verticalAlignMiddle" data-bind="text: languageVM.anchor_settings().message"></span>
               </h2>
 
-
-
                <ul style="list-style: none">
                      <li>
-                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.mileDistanceUnit" />
-                        <label  data-bind="text:languageVM.setting_distance_mile().message"></label>
+                        <input id="settingVM-mile-distance-unit" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.mileDistanceUnit" />
+                        <label for="settingVM-mile-distance-unit"  data-bind="text:languageVM.setting_distance_mile().message"></label>
                      </li>
 
                      <li>
-                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.showAdditionalInfo" />
-                        <label data-bind="text:languageVM.setting_background_page_info().message"></label>
+                        <input id="settingVM-show-additional-info" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.showAdditionalInfo" />
+                        <label for="settingVM-show-additional-info" data-bind="text:languageVM.setting_background_page_info().message"></label>
                     </li>
 
                    <h3 data-bind="text: $root.languageVM.temperature().message"></h3>
 
                    <li>
-                        <input class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.fahrenheit" />
-                        <label data-bind="text:languageVM.setting_temperature_fahrenheit().message"></label>
+                        <input id="settingVM-fahrenheit" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.fahrenheit" />
+                        <label for="settingVM-fahrenheit" data-bind="text:languageVM.setting_temperature_fahrenheit().message"></label>
                         &degF
                     </li>
 
                     <li>
-                        <input type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
+                        <input id="settingVM-show24HMaxMin" type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
 
-                         <label ><span data-bind="text: languageVM.minimum().abbreviated"></span>&darr; / <span data-bind="text: languageVM.maximum().abbreviated"></span>&uarr;</label>
+                         <label for="settingVM-show24HMaxMin" ><span data-bind="text: languageVM.minimum().abbreviated"></span>&darr; / <span data-bind="text: languageVM.maximum().abbreviated"></span>&uarr;</label>
                     </li>
                 </ul>
 
