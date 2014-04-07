@@ -6,7 +6,7 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
 
     function TimerVM(options)
     {
-        EventEmitter.call(this);
+        EventEmitter.call(this,options);
 
         //this.currentTime = ko.observable();
 

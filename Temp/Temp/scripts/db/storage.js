@@ -33,7 +33,6 @@ define([ 'logger'], function (Logger) {
         throw new Error('Override in specialized object');
     };
 
-
    return Storage;
 
 });

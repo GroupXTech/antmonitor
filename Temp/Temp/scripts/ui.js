@@ -724,7 +724,7 @@
         };
 
         if (this.logger && this.logger.logging)
-            this.logger.log('log', this.name + ' received init/first page', page,'for sensor',sensorId);
+            this.logger.log('log', 'received init/first page', page,'for sensor',sensorId);
 
          switch (deviceType) {
 
@@ -742,7 +742,10 @@
 
                  break;
 
+                 // Bike Combined speed and cadence
             case 121:
+                 // Bike speed sensor
+            case 123:
 
                  Viewmodel = this.module.SPDCADVM;
                  deviceSeries = rootVM.sensorVM.devices.SPDCAD;

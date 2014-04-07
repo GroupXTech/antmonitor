@@ -198,7 +198,10 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
     SPDCADVM.prototype.init = function (configuration)
     {
         var page = configuration.page,
-            sensorId = this.sensorId();
+            sensorId = this.sensorId(),
+            seriesOptions = {};
+
+        this.deviceType = page.broadcast.channelId.deviceType;
 
          this.getSetting(['wheelCircumference-'+sensorId],true);
 
@@ -212,8 +215,8 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         // Update on subsequent changes
         this.rootVM.settingVM.mileDistanceUnit.subscribe(this.onDistanceModeChange.bind(this));
 
-        this.addSeries(page, {
-            cadence : {
+        if (this.deviceType === 121)
+          seriesOptions.cadence = {
                name: this.rootVM.languageVM.cadence().message,
                id: 'SPDCAD-cadence-' ,
                color: 'magenta',
@@ -242,9 +245,10 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
                visible : false // Turn of cadence, often just having speed available is the most relevant
 
-           },
+           };
 
-          speed : {
+        if (this.deviceType === 121 || this.deviceType === 123)
+           seriesOptions.speed = {
                name: this.rootVM.languageVM.speed().message,
                id: 'SPDCAD-speed-',
                color: 'blue',
@@ -271,7 +275,9 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
                enableMouseTracking: false
 
-           }});
+           };
+
+        this.addSeries(page, seriesOptions);
 
         this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
 
@@ -318,8 +324,11 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
         // Update view model
 
-        if (page.broadcast && page.broadcast.channelId)
+        if (page.broadcast && page.broadcast.channelId) {
             this.sensorId(page.broadcast.channelId.sensorId);
+            this.deviceType = page.broadcast.channelId.deviceType; // Allows data-binding logic in template for handling, the three types of bike spdcad sensors
+
+        }
 
         if (page.number !== undefined)
             this.number(page.number);

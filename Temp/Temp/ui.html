@@ -87,9 +87,14 @@
 
         
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
-                <div>
-                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
+
+                <!-- SPEED -->
+
+                <div data-bind="visible: speed() !== undefined">
+
+                        <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
                    
+
                      <div style="display:inline" data-bind="if: distanceMode() === 1">
                         <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_km_pr_h().message"></span>
                     </div>
@@ -100,8 +105,18 @@
 
                 </div>
 
-                <div style="text-align: center" >
+                <div style="text-align: center" data-bind="visible: cadence() !== undefined">
+
+                    <div style="display:inline" data-bind="if: deviceType === 121">
                         <span  class="secondary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
+                    </div>
+
+                    <!-- Cadence sensor only -->
+
+                    <div style="display:inline" data-bind="if: deviceType === 122">
+                        <span  class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
+                    </div>
+
                      <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                   </div>
 
@@ -755,6 +770,7 @@
                <ul style="list-style: none">
                      <li>
                         <input id="settingVM-mile-distance-unit" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.mileDistanceUnit" />
+                        <!-- Making labels clickable http://www.2ality.com/2014/04/html-label.html  -->
                         <label for="settingVM-mile-distance-unit"  data-bind="text:languageVM.setting_distance_mile().message"></label>
                      </li>
 

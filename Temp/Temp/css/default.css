@@ -189,7 +189,7 @@ h1.detailsHeading::before {
 /* Hide scrollbar by padding-right and and div wrapper with overflow hidden, based on http://jsfiddle.net/5GCsJ/4/ http://stackoverflow.com/questions/16670931/hide-scroll-bar-but-still-being-able-to-scroll */
 /* It seems like the padding-right moves the scrollbar beyond the max width on the container div which has overflow hidden */
 #divENVIRONMENTshort {
-     width: 150px;
+     width: 170px;
    /* height : 85px;
     overflow : hidden; */
 }
