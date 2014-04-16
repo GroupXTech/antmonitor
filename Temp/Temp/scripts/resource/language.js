@@ -144,7 +144,7 @@ define(function _defineLanguageResource() {
             },
 
             unit_mph: {
-                message: 'miles/t'
+                message: 'mi/t'
             },
 
             // SPDCAD

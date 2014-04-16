@@ -1,7 +1,7 @@
 /* global define: true, ko: true */
 
-// Main viewmodel class
 define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (GenericVM, deviceProfileSPDCAD) {
+
     'use strict';
 
     function SPDCADVM(configuration) {
@@ -131,7 +131,6 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
 
         this.init(configuration);
-
 
     }
 
@@ -285,12 +284,6 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
         // Update cumulative distance
 
-    /*   this.addEventListener('newRelativeDistance', function (observable, relativeDistance) {
-            var timer = this.rootVM.timerVM._timer;
-            if (timer.state === Object.getPrototypeOf(timer).STATE.STARTED) // Only update cumulatated distance  when timer is running
-                observable(observable()+relativeDistance);
-        }.bind(this)); */
-
     };
 
     SPDCADVM.prototype.addPoint = function (page)
@@ -348,8 +341,6 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
         // Distance
 
-
-
         if (this.previousCumulativeSpeedRevolutionCount !== undefined && timer.state === Object.getPrototypeOf(timer).STATE.STARTED)
         {
 
@@ -366,11 +357,7 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
         }
 
-
         this.previousCumulativeSpeedRevolutionCount = page.cumulativeSpeedRevolutionCount;
-
-        //if (page.profile.hasCommonPages)
-        //    this.updateCommonPage(page);
 
     };
 

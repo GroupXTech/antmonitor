@@ -209,6 +209,25 @@
         this.createChromeAppWindow();
     };
 
+    // Reload Ctrl-R does a "update" of application
+    Background.prototype.onInstalled = function (details)
+    {
+
+        var now = Date.now();
+        this.timestamp.onRestarted = now;
+
+        var msg = 'App-life cycle event : onInstalled';
+
+        if (this.logger && this.logger.logging)
+            this.logger.log('log',msg,details);
+
+        if (!this.logger)
+            console.log(now,msg,details);
+
+          this.createChromeAppWindow();
+
+    };
+
     // Chrome background page handles app life cycles events, i.e onLaunched
     Background.prototype.handleChromeLifeCycleEvents = function () {
 
@@ -217,6 +236,7 @@
         chrome.app.runtime.onLaunched.addListener(this.onLaunched.bind(this));
         chrome.app.runtime.onRestarted.addListener(this.onRestarted.bind(this));
         
+        chrome.runtime.onInstalled.addListener(this.onInstalled.bind(this));
         chrome.runtime.onSuspend.addListener(this.onSuspend.bind(this));
         chrome.runtime.onSuspendCanceled.addListener(this.onSuspend.bind(this));
 

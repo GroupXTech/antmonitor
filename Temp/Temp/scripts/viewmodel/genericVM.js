@@ -81,7 +81,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
         switch (page.number) {
 
-            case GenericPage.prototype.COMMON.PAGE80:
+            case GenericPage.prototype.COMMON.PAGE0x50:
 
                 if (page.HWRevision)
                     this.HWRevision(page.HWRevision);
@@ -94,7 +94,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 break;
 
-            case GenericPage.prototype.COMMON.PAGE81:
+            case GenericPage.prototype.COMMON.PAGE0x51:
 
                 if (page.SWRevision) {
                     this.SWRevision(page.SWRevision);
@@ -106,7 +106,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 break;
 
-            case GenericPage.prototype.COMMON.PAGE82:
+            case GenericPage.prototype.COMMON.PAGE0x52:
 
                 if (page.descriptive) {
                     this.batteryStatus(page.descriptive.batteryStatus);

@@ -154,20 +154,34 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
     TemperatureVM.prototype.addPoint = function (page)
     {
 
-        var settingVM = this.rootVM.settingVM;
+        var timezoneOffsetInMilliseconds = this.rootVM.settingVM.timezoneOffsetInMilliseconds;
 
         // Ignore pages without currentTemp, e.g supported pages from temp. sensor
 
         if (page.currentTemp === undefined)
            return;
 
+
+        if (page.timestamp === undefined) {
+            if (this._logger && this._logger.logging)
+                 this._logger.log('error','No timestamp in page, cannot add this point',page);
+            return;
+        }
+
+        if (timezoneOffsetInMilliseconds === undefined)
+          {
+                if (this._logger && this._logger.logging)
+                 this._logger.log('error','No timezone offset found in settingVM, setting offset to 0 ms',page);
+                 timezoneOffsetInMilliseconds = 0;
+          }
+
         if (this.temperatureMode && this.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT) {
-            this.series.temperature.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, this.convert.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
+            this.series.temperature.addPoint([page.timestamp + timezoneOffsetInMilliseconds, this.convert.fromCelciusToFahrenheit(page.currentTemp)], false, false, false);
 
         }
         else {
 
-            this.series.temperature.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
+            this.series.temperature.addPoint([page.timestamp + timezoneOffsetInMilliseconds, page.currentTemp], false, false, false);
 
         }
 
@@ -243,8 +257,8 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
          if (page.timestamp)
              this.timestamp(page.timestamp);
 
-        // if ((page.profile && page.profile.hasCommonPages) || !page.profile)
-             this.updateCommonPage(page);
+        if (page.broadcast.channelId.globalPages)
+          this.updateCommonPage(page);
 
      };
      
