@@ -1,6 +1,6 @@
 /* global requirejs: true, setTimeout: true, chrome: true, window: true */
 
-(function () {
+(function _backgroundPageWrapper() {
 
     var loggerFunc;
 
@@ -136,15 +136,7 @@
 
     Background.prototype.onRestarted = function ()
     {
-        var now = Date.now();
-        this.timestamp.onRestarted = now;
-        
-        var msg = 'App-life cycle event : onRestarted';
-        if (this.logger && this.logger.logging)
-            this.logger.log('log', msg);
-
-        if (!this.logger)
-            console.log(now, msg);
+        this.logEvent('onRestarted');
 
         this.createChromeAppWindow();
     };
@@ -152,41 +144,31 @@
     // On win8 is seems like the timeout for setting the "inactive" flag in the extension overview chrome://extensions is 15 seconds
     Background.prototype.onSuspend = function ()
     {
-        var now = Date.now();
-        this.timestamp.onSuspend = now;
-        
-        var msg = 'App-life cycle event : onSuspend - delay from startup '+(this.timestamp.onSuspend-this.timestamp.startup)+' ms. Background page is going down soon';
-    
-        if (this.logger && this.logger.logging)
-            this.logger.log('log',msg );
-
-        if (!this.logger)
-            console.log(now,msg);
+       this.logEvent('onSuspend');
     };
 
     Background.prototype.onSuspendCanceled = function () {
-        var now = Date.now();
-        this.timestamp.onSuspendCanceled = now;
+        this.logEvent('onSuspendCanceled');
+    };
+
+    Background.prototype.logEvent = function (event)
+    {
+    var now = Date.now();
+
+        this.timestamp[event] = now;
         
-        var msg = 'App-life cycle event : onSuspendCanceled';
+        var msg = 'App-lifecycle event : '+event;
         if (this.logger && this.logger.logging)
             this.logger.log('log', msg);
 
         if (!this.logger)
             console.log(now, msg);
-
-    };
+    }
 
     Background.prototype.onLaunched = function (launchData)
     {
-        var now = Date.now();
-        this.timestamp.onLaunched = now;
-        var msg = 'App-life cycle event : onLaunched - launch data';
-        if (this.logger && this.logger.logging)
-            this.logger.log('log', msg, launchData);
 
-        if (!this.logger)
-            console.log(now,msg, launchData);
+        this.logEvent('onLaunched',launchData)
 
         this.createChromeAppWindow();
 
@@ -195,36 +177,17 @@
     // When Chrome is restarted, can be simulated by right-click context menu "simulate browser restart" in the app window
     Background.prototype.onRestarted = function ()
     {
-         var now = Date.now();
-        this.timestamp.onRestarted = now;
-        
-        var msg = 'App-life cycle event : onRestarted';
+         this.logEvent('onRestarted');
 
-        if (this.logger && this.logger.logging)
-            this.logger.log('log',msg);
-
-        if (!this.logger)
-            console.log(now,msg);
-        
         this.createChromeAppWindow();
     };
 
-    // Reload Ctrl-R does a "update" of application
+
+    // chrome://extensions Reload Ctrl-R does a "update" of application/"Reload" right-click context menu (in app) calls onInstalled and then immediately onLaunched
     Background.prototype.onInstalled = function (details)
     {
 
-        var now = Date.now();
-        this.timestamp.onRestarted = now;
-
-        var msg = 'App-life cycle event : onInstalled';
-
-        if (this.logger && this.logger.logging)
-            this.logger.log('log',msg,details);
-
-        if (!this.logger)
-            console.log(now,msg,details);
-
-          this.createChromeAppWindow();
+       this.logEvent('onInstalled');
 
     };
 
@@ -253,9 +216,9 @@
         console.info(Date.now(), 'Background page started');
 
         setTimeout(function _checkForLaunchOrRestart () {
-            if (!this.timestamp.onLaunched || !this.timestamp.onRestarted)
+            if (!this.timestamp.onLaunched && !this.timestamp.onRestarted)
             {
-                console.warn(Date.now(),'Has not received expected onLaunched or onRestarted app life-cycle event during '+DEFAULT_STARTUP_DELAY+' ms',this.timestamp);
+                console.warn(Date.now(),'Has not received neither onLaunched nor onRestarted app life-cycle event during '+DEFAULT_STARTUP_DELAY+' ms',this.timestamp);
             }
 
         }.bind(this),DEFAULT_STARTUP_DELAY);
