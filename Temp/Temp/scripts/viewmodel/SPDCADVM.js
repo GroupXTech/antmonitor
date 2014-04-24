@@ -214,7 +214,7 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         // Update on subsequent changes
         this.rootVM.settingVM.mileDistanceUnit.subscribe(this.onDistanceModeChange.bind(this));
 
-        if (this.deviceType === 121)
+        if (this.deviceType === 121 || this.deviceType === 122)
           seriesOptions.cadence = {
                name: this.rootVM.languageVM.cadence().message,
                id: 'SPDCAD-cadence-' ,
@@ -242,12 +242,19 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
                enableMouseTracking: false,
 
-               visible : false // Turn of cadence, often just having speed available is the most relevant
-
+               visible : (function (vm)
+                     {
+                         if (vm.deviceType === 121)
+                           return false; // Turn of cadence, often just having speed available is the most relevant
+                         else
+                           return true;
+                     })(this)
            };
 
         if (this.deviceType === 121 || this.deviceType === 123)
+
            seriesOptions.speed = {
+
                name: this.rootVM.languageVM.speed().message,
                id: 'SPDCAD-speed-',
                color: 'blue',
@@ -316,12 +323,6 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         this._page = page;
 
         // Update view model
-
-        if (page.broadcast && page.broadcast.channelId) {
-            this.sensorId(page.broadcast.channelId.sensorId);
-            this.deviceType = page.broadcast.channelId.deviceType; // Allows data-binding logic in template for handling, the three types of bike spdcad sensors
-
-        }
 
         if (page.number !== undefined)
             this.number(page.number);

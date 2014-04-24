@@ -1,7 +1,7 @@
 /* global define: true, ko: true, window: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
-define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,EventEmitter) {
+define(['logger', 'profiles/backgroundPage','events'], function (Logger, BackgroundPage, EventEmitter) {
 
     'use strict';
 
@@ -15,6 +15,19 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         this.name = ko.observable();
 
         this.ownSensor = ko.observable(false); // Is this sensor users own sensor or others?
+
+        if (configuration && configuration.page) {
+          this.sensorId = ko.observable( configuration.page.broadcast.channelId.sensorId);
+             this.deviceType = configuration.page.broadcast.channelId.deviceType; // Allows data-binding logic in template for handling, the three types of bike spdcad sensors
+
+        }
+        else if (configuration && configuration.sensorId)
+          this.sensorId = ko.observable(configuration.sensorId);
+        else {
+          this.sensorId = ko.observable();
+          if (this._logger.logging)
+            this._logger.log('error','All viewmodels inheriting from genericVM should have a unique sensorId');
+        }
 
         // Common page 80 - Manufacturer info.
 
@@ -34,16 +47,6 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         this.cumulativeOperatingTime = ko.observable();
         this.cumulativeOperatingTimeString = ko.observable();
         this.lastBatteryReset = ko.observable();
-
-        if (configuration && configuration.page)
-          this.sensorId = ko.observable( configuration.page.broadcast.channelId.sensorId);
-        else if (configuration && configuration.sensorId)
-          this.sensorId = ko.observable(configuration.sensorId);
-        else {
-          this.sensorId = ko.observable();
-          if (this._logger.logging)
-            this._logger.log('error','All viewmodels inheriting from genericVM should have a unique sensorId');
-        }
 
         this.hostWin = window.parent;
         window.addEventListener('message',this.onmessage.bind(this));
@@ -81,7 +84,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
         switch (page.number) {
 
-            case GenericPage.prototype.COMMON.PAGE0x50:
+            case BackgroundPage.prototype.COMMON.PAGE0x50:
 
                 if (page.HWRevision)
                     this.HWRevision(page.HWRevision);
@@ -94,7 +97,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 break;
 
-            case GenericPage.prototype.COMMON.PAGE0x51:
+            case BackgroundPage.prototype.COMMON.PAGE0x51:
 
                 if (page.SWRevision) {
                     this.SWRevision(page.SWRevision);
@@ -106,7 +109,7 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
 
                 break;
 
-            case GenericPage.prototype.COMMON.PAGE0x52:
+            case BackgroundPage.prototype.COMMON.PAGE0x52:
 
                 if (page.descriptive) {
                     this.batteryStatus(page.descriptive.batteryStatus);
@@ -123,24 +126,22 @@ define(['logger', 'profiles/Page','events'], function (Logger, GenericPage,Event
         }
     };
 
-
-
     // items = string || array
     GenericVM.prototype.getSetting = function (items,isPendingStoreSubscription)
     {
 
-    this.hostWin.postMessage({  request: 'get', sensorId : this.sensorId(),  items: items },'*');
+        this.hostWin.postMessage({  request: 'get', sensorId : this.sensorId(),  items: items },'*');
 
-    if (typeof items === 'string')
-    {
-        if (isPendingStoreSubscription)
-            this.pendingStoreSubscription[items] = true;
-    } else if (Array.isArray(items))
-    {
-        for (var item in items)
+        if (typeof items === 'string')
+        {
             if (isPendingStoreSubscription)
-                this.pendingStoreSubscription[items[item]] = true;
-    }
+                this.pendingStoreSubscription[items] = true;
+        } else if (Array.isArray(items))
+        {
+            for (var item in items)
+                if (isPendingStoreSubscription)
+                    this.pendingStoreSubscription[items[item]] = true;
+        }
 
 
     };

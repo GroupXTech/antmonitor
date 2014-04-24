@@ -163,12 +163,12 @@
 
         if (!this.logger)
             console.log(now, msg);
-    }
+    };
 
     Background.prototype.onLaunched = function (launchData)
     {
 
-        this.logEvent('onLaunched',launchData)
+        this.logEvent('onLaunched',launchData);
 
         this.createChromeAppWindow();
 

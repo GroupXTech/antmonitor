@@ -306,7 +306,7 @@ GenericHostEnvironment.prototype.configureUSB = function(deviceId) {
             this.logger.log('log','received page', page);
 
         if (typeof page.clone === 'function')
-            this.pageFromDeviceProfile = page.clone();
+            this.pageFromDeviceProfile = page.clone(); // Allows tailoring of object to avoid DataCloneError
         else
             this.pageFromDeviceProfile = page;
         // Possible exception here DataCloneError -> try catch block ? IE 11

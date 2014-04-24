@@ -19,7 +19,9 @@
        "storage",
         
        "usb",
-        { "usbDevices" : [ { "vendorId" : 4047, "productId" : 4104, "name" : "ANT USB2 Stick" },
+        { "usbDevices" : [
+                            { "vendorId" : 4047, "productId" : 4104, "name" : "ANT USB2 Stick" },
+
                            { "vendorId" : 4047, "productId" : 4105, "name" : "ANT USB-m Stick" }
                          ] }
        

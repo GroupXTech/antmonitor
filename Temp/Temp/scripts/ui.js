@@ -516,7 +516,7 @@
                  },
 
                   {
-                      id: 'hrm-rr-axis',
+                      id: 'hrm-rr-yaxis',
                       title: {
                           //text: 'RR',
                           text : null,
@@ -527,7 +527,7 @@
                           }
                       },
 
-                      min: 0,
+                      //min: 0,
                       //max: 255,
 
                       gridLineWidth: 0,
@@ -575,6 +575,8 @@
 
                 //tickPositions: [],
 
+                offset : 10,
+
                 labels:
                     {
                         enabled: true,
@@ -590,13 +592,26 @@
 
             },
 
-            //{
+            {
 
-            //    id: 'category-axis',
+               id: 'hrm-rr-xaxis',
 
+               labels:
+                    {
+                        enabled: true,
+                        style: {
+                            //color: '#6D869F',
+                            fontWeight: 'bold',
+                            fontSize: '16px',
 
+                        },
 
-            //    type: 'category',
+                        y: 18
+                    },
+
+               offset : 32+28,
+
+               showEmpty : false // Don't show when (visible === false)
 
             //    categories : [],
 
@@ -622,7 +637,7 @@
 
             //    visible : false
 
-            //}
+            }
             ],
 
             series: []
@@ -718,7 +733,7 @@
 
             logger: this.logger,
 
-            page: page,
+            page: page, // First received page
 
             rootVM : rootVM,
         };
@@ -742,10 +757,10 @@
 
                  break;
 
-                 // Bike Combined speed and cadence
-            case 121:
-                 // Bike speed sensor
-            case 123:
+
+            case 121: // Bike Combined speed and cadence
+            case 122: // Bike cadence
+            case 123: // Bike speed
 
                  Viewmodel = this.module.SPDCADVM;
                  deviceSeries = rootVM.sensorVM.devices.SPDCAD;
@@ -777,7 +792,7 @@
     };
 
     ANTMonitorUI.prototype.startRedrawInterval = function (delay) {
-        var redrawHandler = function () {
+        var redrawHandler = function _redrawIntegratedChart() {
 
             var serieNr;
 

@@ -238,10 +238,6 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
          this._page = page;
 
          // Update view model
-
-         if (page.broadcast && page.broadcast.channelId)
-             this.sensorId(page.broadcast.channelId.sensorId);
-
          if (page.number !== undefined)
              this.number(page.number);
 

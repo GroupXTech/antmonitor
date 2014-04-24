@@ -98,7 +98,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
 
             this.backgroundPageWindow = bgWindow;
 
-            loadStr = this.name + ' loaded by ' + window.location.pathname;
+            loadStr = 'Loaded by ' + window.location.pathname;
 
             this.logBackgroundPage('info', loadStr);
 

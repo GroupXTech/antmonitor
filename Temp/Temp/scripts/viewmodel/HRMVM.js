@@ -20,8 +20,6 @@ define(['vm/genericVM'], function (GenericVM) {
 
         this._page = undefined;
 
-        this.sensorId = ko.observable();
-
         this.number = ko.observable();
         
         // HRM page 4 
@@ -56,6 +54,8 @@ define(['vm/genericVM'], function (GenericVM) {
         this.hardwareVersion = ko.observable();
         this.modelNumber = ko.observable();
 
+        this.aggregatedRR = [];
+
         this.init(configuration);
 
     }
@@ -68,6 +68,8 @@ define(['vm/genericVM'], function (GenericVM) {
     HRMVM.prototype.init = function (configuration)
     {
         var page = configuration.page;
+
+        // TO DO add axis configuration for HRM and RR -> move from ui.js
 
         this.addSeries(page, {
             hrm :  {
@@ -101,17 +103,17 @@ define(['vm/genericVM'], function (GenericVM) {
           rr : {
               name: 'RR',
               id: 'RR-' ,
-              color: 'gray',
-              data: [], // tuples [timestamp,value]
-              type: 'spline',
+              color: 'red',
+              data: [],
+              type: 'scatter',
 
               marker: {
-                  enabled: false
-                  // radius : 2
+                  enabled: true,
+                  radius : 2
               },
 
               yAxis: 5,
-              xAxis: 0,
+              xAxis: 1,
 
               tooltip: {
                   enabled: false
@@ -135,26 +137,39 @@ define(['vm/genericVM'], function (GenericVM) {
         this.addPoint(page);
     };
 
+    // Plot poincare-chart of RR
     HRMVM.prototype.processRR = function (page) {
 
-        var  currentTimestamp,
-            len,
-            RRmeasurementNr;
+        var len,
+            RRmeasurementNr,
+            xRR,
+            yRR,
+            n;
 
-        // If aggregated RR data is available process it (buffered data in deviceProfile)
+        if (!page.aggregatedRR)
+           return;
 
-        if (page.aggregatedRR) {
+       // Copy buffered RR data to maintain the whole RR series
 
-            currentTimestamp = page.timestamp + this.rootVM.settingVM.timezoneOffsetInMilliseconds;
-            // Start with the latest measurement and go back in time
-            for (len = page.aggregatedRR.length, RRmeasurementNr = len - 1; RRmeasurementNr >= 0; RRmeasurementNr--) {
-                this.series.rr.addPoint([currentTimestamp, page.aggregatedRR[RRmeasurementNr]], false,false,false);
+       for (len = page.aggregatedRR.length, RRmeasurementNr = 0; RRmeasurementNr < len; RRmeasurementNr++) {
 
-                //if (this.log && this.log.logging)
-                //    this.log.log('info', currentTimestamp, RRmeasurementNr, page.aggregatedRR[RRmeasurementNr]);
-                currentTimestamp -= page.aggregatedRR[RRmeasurementNr];
-            }
-        }
+             n = this.aggregatedRR.length-1;
+
+             // Maybe: It's also possible to get the data directly from the series maintained inside highcharts (to minimize memory)
+             this.aggregatedRR.push(page.aggregatedRR[RRmeasurementNr]);
+
+             xRR = this.aggregatedRR[n];
+             yRR = this.aggregatedRR[n+1];
+
+             if (xRR !== undefined && yRR !== undefined)
+             {
+
+                this.series.rr.addPoint([xRR,yRR], false, false, false);
+
+             }
+
+       }
+
     };
 
     HRMVM.prototype.addPoint = function (page)
@@ -176,13 +191,10 @@ define(['vm/genericVM'], function (GenericVM) {
         
         this._page = page;
 
-        if (page.broadcast && page.broadcast.channelId)
-            this.sensorId(page.broadcast.channelId.sensorId);
-
         if (page.number !== undefined)
             this.number(page.number);
 
-        // HRM Page 4 - main
+        // HRM Page 4/0 - main
         
          // Time of the last valid heart beat event 1 /1024 s, rollover 64 second
         if (page.heartBeatEventTime)
