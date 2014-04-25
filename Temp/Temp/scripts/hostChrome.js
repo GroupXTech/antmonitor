@@ -1,4 +1,4 @@
-/* global define: true, chrome: true, window: true */
+/* global define: true, chrome: true, window: true    */
 
 define(['root/generichostenvironment','messages/ResetSystemMessage'], function _requireDefineHostChrome(GenericHostEnvironment, ResetSystemMessage) {
 
