@@ -55,6 +55,8 @@ define(['vm/genericVM'], function (GenericVM) {
         this.modelNumber = ko.observable();
 
         this.aggregatedRR = [];
+        this.maxRR = Number.MIN_VALUE;
+        this.minRR = Number.MAX_VALUE;
 
         this.init(configuration);
 
@@ -68,8 +70,6 @@ define(['vm/genericVM'], function (GenericVM) {
     HRMVM.prototype.init = function (configuration)
     {
         var page = configuration.page;
-
-        // TO DO add axis configuration for HRM and RR -> move from ui.js
 
         this.addSeries(page, {
             hrm :  {
@@ -100,6 +100,7 @@ define(['vm/genericVM'], function (GenericVM) {
               enableMouseTracking: false
 
           },
+
           rr : {
               name: 'RR',
               id: 'RR-' ,
@@ -130,7 +131,32 @@ define(['vm/genericVM'], function (GenericVM) {
 
               visible: false,
 
-          }});
+          },
+
+          identity : {
+              name : 'identity',
+              id : 'identity-',
+              color : 'gray',
+              data : [],
+              type : 'line',
+              yAxis : 5,
+              xAxis : 1,
+
+              dashStyle: 'shortdot',
+
+               tooltip: {
+                  enabled: false
+              },
+               marker: {
+                  enabled: false
+                  // radius : 2
+              },
+              enableMouseTracking: false,
+
+              visible: false
+          }
+
+          });
 
         this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
 
@@ -164,11 +190,30 @@ define(['vm/genericVM'], function (GenericVM) {
              if (xRR !== undefined && yRR !== undefined)
              {
 
+                if (xRR > this.maxRR)
+                   this.maxRR = xRR;
+
+                if (yRR > this.maxRR)
+                   this.maxRR = yRR;
+
+                if (xRR < this.minRR)
+                   this.minRR = xRR;
+
+                if (yRR < this.minRR)
+                   this.minRR = yRR;
+
                 this.series.rr.addPoint([xRR,yRR], false, false, false);
 
              }
 
        }
+
+       // Synchronize axis extremes (set axis.userMin/Max/isDirtyExtremes in highcharts)
+
+       this.series.rr.xAxis.setExtremes(this.minRR, this.maxRR, false, false);
+       this.series.rr.yAxis.setExtremes(this.minRR, this.maxRR, false, false);
+
+       this.series.identity.setData([[this.minRR,this.minRR],[this.maxRR,this.maxRR]],false,false,false);
 
     };
 
