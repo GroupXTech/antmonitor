@@ -37,23 +37,6 @@ define(['vm/genericVM'], function (GenericVM) {
         
         this.RRInterval = ko.observable();
 
-        // HRM page 1
-
-        this.cumulativeOperatingTimeString = ko.observable();
-        this.lastBatteryReset = ko.observable();
-
-        // HRM page 2
-
-        this.manufacturerID = ko.observable();
-        this.serialNumber = ko.observable();
-        this.manufacturerString = ko.observable();
-
-        // HRM page 3
-
-        this.softwareVersion = ko.observable();
-        this.hardwareVersion = ko.observable();
-        this.modelNumber = ko.observable();
-
         this.aggregatedRR = [];
         this.maxRR = Number.MIN_VALUE;
         this.minRR = Number.MAX_VALUE;
@@ -134,7 +117,7 @@ define(['vm/genericVM'], function (GenericVM) {
           },
 
           identity : {
-              name : 'identity',
+              name : 'LOI', // Line Of Identity
               id : 'identity-',
               color : 'gray',
               data : [],
@@ -250,46 +233,7 @@ define(['vm/genericVM'], function (GenericVM) {
         if (page.RRInterval)
             this.RRInterval(Math.round(page.RRInterval));
 
-        // HRM page 1 - background
-
-        if (page.cumulativeOperatingTime)
-            this.cumulativeOperatingTime(page.cumulativeOperatingTime);
-
-        if (page.cumulativeOperatingTimeString)
-            this.cumulativeOperatingTimeString(page.cumulativeOperatingTimeString);
-
-        if (page.lastBatteryReset)
-            this.lastBatteryReset(page.lastBatteryReset);
-
-        // HRM page 2 - background
-
-        if (page.manufacturerID)
-            this.manufacturerID(page.manufacturerID);
-
-        if (page.serialNumber)
-            this.serialNumber(page.serialNumber);
-
-        if (page.manufacturerID && page.serialNumber) {
-            if ((page.serialNumber >> 16) === 0)
-                this.manufacturerString('Manufacturer ' + page.manufacturerID + ' SN ' + page.serialNumber);
-            else
-                this.manufacturerString('Manufacturer '+page.manufacturerID +' SN '+ page.serialNumber+' ('+page.broadcast.channelId.deviceNumber+')');
-        }
-
-        //if (page.broadcast.channelId && page.broadcast.channelId.deviceNumber)
-        //    this.deviceNumber(page.broadcast.channelId.deviceNumber);
-
-        // HRM page 3
-
-        if (page.hardwareVersion)
-            this.hardwareVersion(page.hardwareVersion);
-
-        if (page.softwareVersion)
-            this.softwareVersion(page.softwareVersion);
-
-        if (page.modelNumber)
-            this.modelNumber(page.modelNumber);
-
+        this.updateBackgroundPage(page);
 
     };
     
@@ -301,15 +245,9 @@ define(['vm/genericVM'], function (GenericVM) {
         this.computedHeartRate(undefined);
         this.previousHeartBeatEventTime(undefined);
         this.RRInterval(undefined);
-        this.cumulativeOperatingTime(undefined);
-        this.cumulativeOperatingTimeString(undefined);
-        this.lastBatteryReset(undefined);
-        this.manufacturerID(undefined);
-        this.serialNumber(undefined);
-        this.manufacturerString(undefined);
-        this.hardwareVersion(undefined);
-        this.softwareVersion(undefined);
-        this.modelNumber(undefined);
+
+        GenericVM.prototype.reset.call(this);
+
     };
 
     HRMVM.prototype.getTemplateName = function (item) {

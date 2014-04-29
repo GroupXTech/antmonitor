@@ -84,8 +84,6 @@
 
         <script type="text/html" id="SPDCAD-short-template">
 
-
-        
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
                 <!-- SPEED -->
@@ -402,11 +400,19 @@
                     <!--<div id="flexBattery">-->
                     <span data-bind="text: sensorId"></span>
 
+                    <div style="display:inline" data-bind="if: manufacturerString() !== undefined ">
+                        <span data-bind="text: manufacturerString"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="if: softwareVersion() !== undefined ">
+                        <span data-bind="text: 'HW '+hardwareVersion() +' SW '+softwareVersion()+' Model '+modelNumber()"></span>
+                    </div>
+
                     <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
                         <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
                     </div>
 
-                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                   <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
                         <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
                     </div>
 
@@ -466,7 +472,6 @@
                           <span style="vertical-align: middle">ms (RR)</span>
                        </div>
 
-
                     </div>
 
                     <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
@@ -485,17 +490,14 @@
                             <span data-bind="text: 'HW '+hardwareVersion() +' SW '+softwareVersion()+' Model '+modelNumber()"></span>
                         </div>
 
-
                         <!-- HRM page 1 - background -->
 
-                        <div>
-                            <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
-                                <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                            <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
 
-                            </div>
                         </div>
-                    </div>
 
+                    </div>
 
                     <!--<div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
             </li>

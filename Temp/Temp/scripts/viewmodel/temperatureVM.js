@@ -104,11 +104,10 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
 
         this.init(configuration);
 
-
     }
     
-     TemperatureVM.prototype = Object.create(GenericVM.prototype);
-     TemperatureVM.prototype.constructor = TemperatureVM;
+    TemperatureVM.prototype = Object.create(GenericVM.prototype);
+    TemperatureVM.prototype.constructor = TemperatureVM;
 
     TemperatureVM.prototype.convert = new TemperatureConverter();
     
@@ -271,6 +270,8 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
         this.low24H(undefined);
         this.high24H(undefined);
         this.timestamp(undefined);
+
+        GenericVM.prototype.reset.call(this);
     };
 
     return TemperatureVM;

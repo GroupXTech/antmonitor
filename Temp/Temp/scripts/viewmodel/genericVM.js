@@ -32,12 +32,16 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         // Common page 80 - Manufacturer info.
 
         this.HWRevision = ko.observable();
+        this.hardwareVersion = ko.observable(); // Page 3
+
         this.manufacturerID = ko.observable();
+        this.manufacturerString = ko.observable(); // Page 2
         this.modelNumber = ko.observable();
 
         // Common page 81 - Product info.
 
         this.SWRevision = ko.observable();
+        this.softwareVersion = ko.observable();  // Page 3
         this.serialNumber = ko.observable();
 
         // Common page 82 - Battery status
@@ -73,6 +77,56 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
     GenericVM.prototype = Object.create(EventEmitter.prototype);
     GenericVM.prototype.constructor = EventEmitter;
 
+    GenericVM.prototype.updateBackgroundPage = function (page)
+    {
+         switch (page.number) {
+
+            case 1 :
+
+                    if (page.cumulativeOperatingTime)
+                        this.cumulativeOperatingTime(page.cumulativeOperatingTime);
+
+                    if (page.cumulativeOperatingTimeString)
+                        this.cumulativeOperatingTimeString(page.cumulativeOperatingTimeString);
+
+                    if (page.lastBatteryReset)
+                        this.lastBatteryReset(page.lastBatteryReset);
+
+                    break;
+
+            case 2:
+
+                    if (page.manufacturerID)
+                    this.manufacturerID(page.manufacturerID);
+
+                    if (page.serialNumber)
+                        this.serialNumber(page.serialNumber);
+
+                    if ((page.manufacturerID !== undefined) && (page.serialNumber !== undefined)) {
+                        if ((page.serialNumber >> 16) === 0)
+                            this.manufacturerString('Manufacturer ' + page.manufacturerID + ' SN ' + page.serialNumber);
+                        else
+                            this.manufacturerString('Manufacturer '+page.manufacturerID +' SN '+ page.serialNumber+' (MSB '+page.serialNumber16MSB+' LSB '+page.broadcast.channelId.deviceNumber+')');
+                    }
+
+                    break;
+
+            case 3:
+
+                    if (page.hardwareVersion)
+                        this.hardwareVersion(page.hardwareVersion);
+
+                    if (page.softwareVersion)
+                        this.softwareVersion(page.softwareVersion);
+
+                    if (page.modelNumber)
+                        this.modelNumber(page.modelNumber);
+
+                  break;
+        }
+
+    };
+
     // Merge common page into viewmodel
     GenericVM.prototype.updateCommonPage = function (page)
     {
@@ -81,6 +135,9 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         //TEST this.batteryStatus(2);
         //this.batteryStatusString("Good");
         //this.cumulativeOperatingTime(2);
+
+        if (!page.broadcast.channelId.globalPages)
+          return;
 
         switch (page.number) {
 
@@ -113,7 +170,8 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
                 if (page.descriptive) {
                     this.batteryStatus(page.descriptive.batteryStatus);
-                    this.batteryStatusString(page.batteryStatusString);
+                    if (page.batteryStatus)
+                      this.batteryStatusString(page.batteryStatus.toString());
                 }
 
                 if (page.cumulativeOperatingTime) {
@@ -124,6 +182,31 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
                 break;
         }
+    };
+
+    GenericVM.prototype.reset = function ()
+    {
+
+        this.HWRevision(undefined);
+        this.hardwareVersion(undefined); // Page 3
+
+        this.manufacturerID(undefined);
+        this.modelNumber(undefined);
+
+        // Common page 81 - Product info.
+
+        this.SWRevision(undefined);
+        this.softwareVersion(undefined);  // Page 3
+        this.serialNumber(undefined);
+
+        // Common page 82 - Battery status
+
+        this.batteryStatus(undefined);
+        this.batteryStatusString(undefined);
+        this.cumulativeOperatingTime(undefined);
+        this.cumulativeOperatingTimeString(undefined);
+        this.lastBatteryReset(undefined);
+
     };
 
     // items = string || array
@@ -142,7 +225,6 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
                 if (isPendingStoreSubscription)
                     this.pendingStoreSubscription[items[item]] = true;
         }
-
 
     };
 
@@ -221,7 +303,6 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         property,
         sensorId,
         value;
-
 
         if (index !== -1) {
 

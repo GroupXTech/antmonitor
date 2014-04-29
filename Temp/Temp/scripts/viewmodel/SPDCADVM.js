@@ -56,7 +56,6 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
             }.bind(this)
         });
 
-      
         // Additional properties based on pages
 
         this.cumulativeDistance = ko.observable(0);
@@ -355,10 +354,11 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
               previousCumulativeDistance = this.cumulativeDistance();
               this.cumulativeDistance(previousCumulativeDistance + revolutionDistance);
 
-
         }
 
         this.previousCumulativeSpeedRevolutionCount = page.cumulativeSpeedRevolutionCount;
+
+        this.updateBackgroundPage(page); // Background pages 1-3
 
     };
 
@@ -373,6 +373,8 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         this.speed(undefined);
         this.cadence(undefined);
         this.cumulativeDistance(0);
+
+        GenericVM.prototype.reset.call(this);
 
     };
 
