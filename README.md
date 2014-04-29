@@ -5,7 +5,7 @@ A web app (aka Chrome packaged app/Windows Store app) that listen to ANT+ broadc
 
 Open for **non-commercial/personal** use : https://creativecommons.org/licenses/by-nc-nd/3.0/
 
-Ubuntu 13.10 or later:
+*nix:
 
     * Listing of attached usb devices from Dynastream
         'lsusb | grep Dynastream'
@@ -18,11 +18,8 @@ Ubuntu 13.10 or later:
 
 Tested platforms:
 
-    Ubuntu 13.10 - Linux kernel 3.11.0-19-generic 
-    Ubuntu 14.04 (dev. branch) - Linux kernel 3.13.0-23-generic
-    
-        Chrome (unstable) v 35.0.1916.6 dev aura
-        Chrome v. 34.0.1847.116
+   *nix (Fedora/Ubuntu)
+        Chrome 36.0.1951.5 dev
 
     Windows 8.1
     
@@ -40,16 +37,10 @@ USB ANT hardware requirements:
 
 Currently supported ANT+ device profiles:
 
-        Heart Rate Monitor HRM
-        Bike Speed And Cadence SPDCAD
-        Temperature ENVIRONMENT
+        Heart Rate Monitor (also legacy)
+        Bike Speed And Cadence/Speed/Cadence (also legacy) 
+        Temperature 
 
-        In progress:
-        
-            Bike Speed
-            Bike Cadence
-            HRM legacy
-            
 Development platform:
 
     Two USB ANT sticks
@@ -57,4 +48,3 @@ Development platform:
         Win XP virtual machine with  [SimulANT+](http://www.thisisant.com/developer/resources/downloads/ "SimulANT+") v ADY1.5.0.0
     Chrome 
     Brackets
-    
