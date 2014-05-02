@@ -7,7 +7,7 @@ Open for **non-commercial/personal** use : https://creativecommons.org/licenses/
 
 Screenshot:
 
-https://drive.google.com/file/d/0B45ATdu5qGEbUm1XZlhXZk82LUk/edit?usp=sharing
+![Screenshot](/Temp/Temp/screenshot/chrome/screenshot1.png?raw=true)
 
 *nix:
 
@@ -23,12 +23,11 @@ https://drive.google.com/file/d/0B45ATdu5qGEbUm1XZlhXZk82LUk/edit?usp=sharing
 Tested platforms:
 
    *nix (Fedora/Ubuntu)
-        Chrome 36.0.1951.5 dev
+        Chrome 36.0.1951.5 dev/Chrome stable
 
     Windows 8.1
     
-        Chrome Canary
-        Chrome
+        Chrome Canary/Chrome stable
 
 USB ANT hardware requirements:
 
@@ -41,14 +40,14 @@ USB ANT hardware requirements:
 
 Currently supported ANT+ device profiles:
 
-        Heart Rate Monitor (also legacy)
-        Bike Speed And Cadence/Speed/Cadence (also legacy) 
+        Heart Rate Monitor (including legacy)
+        Bike Speed And Cadence/Speed/Cadence (including legacy) 
         Temperature 
 
 Development platform:
 
     Two USB ANT sticks
     Linux KVM (VMWARE also works, Virtualbox has timer issues)
-        Win XP virtual machine with  [SimulANT+](http://www.thisisant.com/developer/resources/downloads/ "SimulANT+") v ADY1.5.0.0
+        Windows virtual machine with  [SimulANT+](http://www.thisisant.com/developer/resources/downloads/ "SimulANT+") v ADY1.5.0.0
     Chrome 
     Brackets
