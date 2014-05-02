@@ -7,7 +7,7 @@ Open for **non-commercial/personal** use : https://creativecommons.org/licenses/
 
 Screenshot:
 
-![screenshot](https://drive.google.com/file/d/0B45ATdu5qGEbUm1XZlhXZk82LUk/edit?usp=sharing)
+https://drive.google.com/file/d/0B45ATdu5qGEbUm1XZlhXZk82LUk/edit?usp=sharing
 
 *nix:
 
