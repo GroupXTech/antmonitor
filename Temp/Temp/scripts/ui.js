@@ -644,7 +644,7 @@
 
         });
 
-        this.startRedrawInterval(1000);
+        this.timerID.interval.redrawIntegratedChart = setInterval(this.redrawIntegratedChart.bind(this), 1000);
 
     };
 
@@ -788,34 +788,6 @@
 
             this.redrawIntegratedChart();
         }
-
-    };
-
-    ANTMonitorUI.prototype.startRedrawInterval = function (delay) {
-        var redrawHandler = function _redrawIntegratedChart() {
-
-            var serieNr;
-
-            if (!this.sensorChart)
-                return;
-
-            if (window.getComputedStyle(this.tabMain).getPropertyValue('display') === 'none')
-            {
-               
-                return;
-            }
-
-            for (serieNr = 0; serieNr < this.sensorChart.integrated.chart.series.length; serieNr++) {
-
-                if (this.sensorChart.integrated.chart.series[serieNr].isDirty && this.sensorChart.integrated.chart.series[serieNr].isDirtyData) {
-                    this.redrawIntegratedChart();
-                    break;
-                }
-            }
-        }.bind(this);
-
-        // to do: maybe use array instead? clearInterval on suspend/shutdown?
-        this.timerID.interval.redrawIntegratedChart = setInterval(redrawHandler, delay);
 
     };
 

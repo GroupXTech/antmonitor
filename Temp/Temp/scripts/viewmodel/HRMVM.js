@@ -183,8 +183,8 @@ define(['vm/genericVM'], function (GenericVM) {
 
        // Synchronize axis extremes (set axis.userMin/Max/isDirtyExtremes in highcharts)
 
-       this.series.rr.xAxis.setExtremes(this.minRR, this.maxRR, false, false);
-       this.series.rr.yAxis.setExtremes(this.minRR, this.maxRR, false, false);
+       this.series.rr.xAxis.setExtremes(this.minRR, undefined, false, false);
+       this.series.rr.yAxis.setExtremes(this.minRR, undefined, false, false);
 
        // Update line of identity
        this.series.identity.setData([[this.minRR,this.minRR],[this.maxRR,this.maxRR]],false,false,false);
