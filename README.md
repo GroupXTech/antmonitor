@@ -5,6 +5,10 @@ A web app (aka Chrome packaged app/Windows Store app) that listen to ANT+ broadc
 
 Open for **non-commercial/personal** use : https://creativecommons.org/licenses/by-nc-nd/3.0/
 
+Screenshot:
+
+![screenshot](https://drive.google.com/file/d/0B45ATdu5qGEbUm1XZlhXZk82LUk/edit?usp=sharing)
+
 *nix:
 
     * Listing of attached usb devices from Dynastream

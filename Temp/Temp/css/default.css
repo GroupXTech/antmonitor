@@ -172,7 +172,7 @@ h1.detailsHeading::before {
 }
 
 #divHRMshort {
-     width: 100px;
+     width: 140px;
     /* height : 75px; */
     /* overflow : hidden; */
     /* border: 1px solid; */
@@ -230,8 +230,6 @@ h1.detailsHeading::before {
     /*height : 15%;*/
    
 }
-
-
 
 /* Horizontal list */
 
