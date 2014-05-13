@@ -6,10 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "ANT+ Monitor", "Temp\ANT+ Monitor.jsproj", "{66F21C7E-2E65-4231-B4BB-CCFD429A1BBB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagnostic Sessions", "Diagnostic Sessions", "{E3A85C72-7135-46CF-9702-4F9ACD2A7316}"
-	ProjectSection(SolutionItems) = preProject
-		20140219 (2).diagsession = 20140219 (2).diagsession
-		20140219.diagsession = 20140219.diagsession
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

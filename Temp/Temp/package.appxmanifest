@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" StartPage="default.html">
-      <m2:VisualElements DisplayName="ANT+ Monitor" Description="ANT+ Monitor sets the ANT USB stick in scanning mode on 2457 MHz searching for available sensors. Data are visualized automatically in a chart." ForegroundText="light" BackgroundColor="#464646" Square150x150Logo="images\Logo-2.png" Square30x30Logo="images\SmallLogo-2.png">
+      <m2:VisualElements DisplayName="ANT+ Monitor" Description="ANT+ Monitor sets the ANT USB stick in scanning mode on 2457 MHz searching for available sensors. Data are visualized in a chart." ForegroundText="light" BackgroundColor="#464646" Square150x150Logo="images\Logo-2.png" Square30x30Logo="images\SmallLogo-2.png">
         <m2:SplashScreen Image="images\SplashScreen.png" BackgroundColor="white" />
       </m2:VisualElements>
     </Application>
