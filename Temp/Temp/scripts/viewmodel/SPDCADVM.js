@@ -1,4 +1,4 @@
-/* global define: true, ko: true */
+﻿/* global define: true, ko: true */
 
 define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (GenericVM, deviceProfileSPDCAD) {
 

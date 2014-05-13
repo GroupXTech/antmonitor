@@ -1,4 +1,4 @@
-/* global define: true, ko: true, window: true */
+﻿/* global define: true, ko: true, window: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/backgroundPage','events'], function (Logger, BackgroundPage, EventEmitter) {

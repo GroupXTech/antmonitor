@@ -1,0 +1,1 @@
+MainPackage=C:\Users\HenningKnut\Documents\Visual Studio 2013\Projects\temp\temp\temp\Temp\Temp\bin\x86\Release\ANT+ Monitor_1.1.0.18_Bundle\ANT+ Monitor_1.1.0.18_x86.appx

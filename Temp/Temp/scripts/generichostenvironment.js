@@ -1,4 +1,4 @@
-/* global define: true, window: true, require: true */
+﻿/* global define: true, window: true, require: true */
 
 define(['logger'], function _requireDefine(Logger) {
 

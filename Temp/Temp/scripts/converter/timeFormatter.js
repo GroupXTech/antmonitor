@@ -1,4 +1,4 @@
-/* global define: true */
+﻿/* global define: true */
 
 define(function _requireDefineTimeFormatter() {
 

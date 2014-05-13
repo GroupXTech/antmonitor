@@ -1,4 +1,4 @@
-/* global define: true */
+﻿/* global define: true */
 
 // Using blocking window.localStorage, simulating async behaviour with callback
 // Maybe todo: Use async. storage instead

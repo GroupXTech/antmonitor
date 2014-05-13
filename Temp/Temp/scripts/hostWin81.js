@@ -1,4 +1,4 @@
-/* global define: true, WinJS: true, Windows: true */
+﻿/* global define: true, WinJS: true, Windows: true */
 
 // Depends upon requirejs
 

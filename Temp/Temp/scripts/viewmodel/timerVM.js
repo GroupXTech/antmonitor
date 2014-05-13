@@ -1,4 +1,4 @@
-/* global define: true, ko: true, clearInterval: true, setInterval: true */
+﻿/* global define: true, ko: true, clearInterval: true, setInterval: true */
 
 define(['converter/timeFormatter','scripts/timer','logger','events'],function _requireDefineTimerVM(TimeFormatter, Timer, Logger, EventEmitter) {
 

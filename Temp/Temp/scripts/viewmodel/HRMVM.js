@@ -1,4 +1,4 @@
-/* global define: true, ko: true */
+﻿/* global define: true, ko: true */
 
 // Main viewmodel class
 define(['vm/genericVM'], function (GenericVM) {

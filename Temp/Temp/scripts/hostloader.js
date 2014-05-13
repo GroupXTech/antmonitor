@@ -1,4 +1,4 @@
-/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true, WinJS: true, Windows: true */
+﻿/* global: window: true, ko: true, require: true, requirejs: true, document: true, window: true, WinJS: true, Windows: true */
 
 // Requirejs
 
