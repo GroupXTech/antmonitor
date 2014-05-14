@@ -51,3 +51,10 @@ Development platform:
         Windows virtual machine with  [SimulANT+](http://www.thisisant.com/developer/resources/downloads/ "SimulANT+") v ADY1.5.0.0
     Chrome 
     Brackets
+    
+Known issues:
+
+  Windows Store App : Require WINUSB drivers for ANT stick -> can be installed with the tool ZADIG http://zadig.akeo.ie/ 
+  Resource relase : 
+    Garmin Express: Garmin Core Update Service must be disabled
+    ANT Agent : must be exited
