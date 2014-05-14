@@ -42,7 +42,9 @@ define(['logger'], function _requireDefine(Logger) {
     GenericHostEnvironment.prototype.postMessage = function (obj)
     {
         if (this.uiFrame)
-          this.uiFrame.postMessage(obj, '*');
+            this.uiFrame.postMessage(obj, '*');
+        else
+            if (this.logger && this.logger.logging) this.logger.log('error', 'No UI frame available, cannot post',obj);
     };
 
     // Get messages from embedded UI frame, in Chrome it runs in a sandbox mode to avoid content security policy restrictions
@@ -50,7 +52,7 @@ define(['logger'], function _requireDefine(Logger) {
 
         var data = event.data;
 
-        if (this.logger && this.logger.logging) this.logger.log('info',  'received message', event);
+        //if (this.logger && this.logger.logging) this.logger.log('info',  'received message', event);
 
         if (!data) {
             if (this.logger && this.logger.logging) this.logger.log('warn','no/undefined data received');

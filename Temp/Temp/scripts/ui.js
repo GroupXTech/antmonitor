@@ -83,8 +83,8 @@
         var sourceWindow = event.source,
             data = event.data;
 
-        if (this.logger && this.logger.logging)
-            this.logger.log('info', 'Received message', event);
+       // if (this.logger && this.logger.logging)
+       //     this.logger.log('info', 'Received message', event);
 
         if (!data)
         {
@@ -106,11 +106,11 @@
                 this.hostFrame = sourceWindow;
 
                 if (this.logger && this.logger.logging)
-                    this.logger.log('log','Got READY signal from host environment');
+                    this.logger.log('log', 'Got READY signal from host environment');
+
+                window.parent.postMessage({ request: 'ready' }, '*');
 
                 this.initRootVM();
-
-                window.parent.postMessage({ request: 'ready' },'*');
 
                 break;
 

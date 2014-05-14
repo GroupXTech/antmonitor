@@ -1,4 +1,4 @@
-﻿/* global define: true, ko: true, window: true */
+/* global define: true, ko: true, window: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/backgroundPage','events'], function (Logger, BackgroundPage, EventEmitter) {
@@ -252,7 +252,7 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
             };
 
             if (this._logger && this._logger.logging)
-                this._logger.log('log','Storage subscription to property '+singleProperty+' on viewmodel',this);
+                this._logger.log('info','Viewmodel storage subscription - '+singleProperty+' -',this.sensorId());
 
             this[singleProperty].subscribe(store.bind(this));
 
@@ -337,11 +337,8 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
      GenericVM.prototype.onmessage = function (event)
     {
-     var data = event.data,
-         page = event.data.page,
-         itemNr,
-         len;
-
+         var data = event.data;
+       
         // Ignore data without a sensorId or message destination is for another id
 
         if (!data.sensorId || data.sensorId !== this.sensorId())
@@ -349,16 +346,25 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
         switch (data.response)
         {
-                case 'page' :
+            case 'page':
 
-                    this.updateFromPage(page);
-                    this.addPoint(page);
+                var page;
 
+                if (data)
+                   page = data.page;
+                else
                     break;
+
+                  this.updateFromPage(page);
+                  this.addPoint(page);
+                 
+                break;
 
                 case 'get' :
 
                     if (Array.isArray(data.requestitems)) {
+
+                        var itemNr, len;
 
                         for (itemNr=0, len=data.requestitems.length; itemNr < len; itemNr++)
                            this.updateFromStorage(data,data.requestitems[itemNr]);

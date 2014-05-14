@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="64959HenningKnutSkoglund.TemperatureMonitor" Version="1.1.0.18" Publisher="CN=533062DE-851A-4243-ABB9-6A5107CFD238" />
+  <Identity Name="64959HenningKnutSkoglund.TemperatureMonitor" Version="1.1.0.19" Publisher="CN=533062DE-851A-4243-ABB9-6A5107CFD238" />
   <Properties>
     <DisplayName>ANT+ Monitor</DisplayName>
     <PublisherDisplayName>Henning Knut Skoglund</PublisherDisplayName>
