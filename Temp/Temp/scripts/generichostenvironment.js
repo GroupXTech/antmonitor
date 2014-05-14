@@ -37,6 +37,12 @@ define(['logger'], function _requireDefine(Logger) {
 
         window.addEventListener('message', this.onmessage.bind(this)); // Force this on the message callback
 
+        setTimeout(function () {
+            if (!this.uiFrame) {
+                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready signal from UI frame');
+            }
+        }.bind(this), 3000);
+
     }
 
     GenericHostEnvironment.prototype.postMessage = function (obj)
@@ -64,8 +70,6 @@ define(['logger'], function _requireDefine(Logger) {
             // UI frame ready to receive messages
 
             case 'ready':
-
-                this.uiFrameReady = true;
 
                 this.uiFrame = window.frames[0];
 

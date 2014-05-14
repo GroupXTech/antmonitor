@@ -14,7 +14,7 @@
 
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
-                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready from host environment - messages will probably not reach host');
+                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready signal from host environment');
             }
         }.bind(this), 3000);
 

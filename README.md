@@ -54,7 +54,7 @@ Development platform:
     
 Known issues:
 
-  Windows Store App : Require WINUSB drivers for ANT stick -> can be installed with the tool ZADIG http://zadig.akeo.ie/ 
-  Resource relase : 
-    Garmin Express: Garmin Core Update Service must be disabled
-    ANT Agent : must be exited
+  * Windows Store App : Require WINUSB drivers for ANT stick -> can be installed with the tool ZADIG http://zadig.akeo.ie/ 
+  * Resource relase : 
+        * Garmin Express: Garmin Core Update Service must be disabled
+        * ANT Agent : must be exited
