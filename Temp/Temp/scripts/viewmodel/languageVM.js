@@ -5,8 +5,10 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
     'use strict';
 
     function LanguageVM(configuration) {
+
         this.logger = configuration.logger || new Logger(configuration);
         this.language = ko.observable(this.getLanguage());
+
         this.defaultLanguage = 'en';
 
         if (this.logger && this.logger.logging)
@@ -205,7 +207,7 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
 
         resourceAvailable = resource[currentLang]; // i.e nb-NO
 
-        if (!resourceAvailable)
+        if (!resourceAvailable && currentLang)
             resourceAvailable = resource[currentLang.substr(0, 2)]; // i.e nb
 
         // Fallback to default language 

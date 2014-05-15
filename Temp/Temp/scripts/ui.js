@@ -236,7 +236,8 @@
 
         // Activate main tab by simulating a click on the link
 
-        var mouseClick = document.createEvent('MouseEvents');
+         var mouseClick = document.createEvent('MouseEvents');
+
         mouseClick.initEvent('click', false, false); // Only on target
 
         var aMain = document.getElementById('aMain');

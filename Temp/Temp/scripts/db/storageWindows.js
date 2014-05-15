@@ -18,22 +18,27 @@ define(['db/storage'], function (Storage) {
     StorageWindows.prototype.get = function (items, callback) {
         var db,
             key,
-            index;
+            index,
 
-        function readKey()
-        {
-            db[key] = window.localStorage[key];
-            if (db[key] === "undefined")
-                db[key] = undefined;
-        }
+         readKey = function _readKey()
+                    {
+                        var value = window.localStorage[key]
+                        db[key] = value;
+
+                        if (db[key] === "undefined")
+                            db[key] = undefined;
+
+                        if (this.logger && this.logger.logging)
+                            this.logger.log('log', 'Read key ' + key + ', value ', value);
+
+                    }.bind(this);
 
         if (typeof items === 'string') 
         { 
             db = {};
-                key = items;
-             readKey();
+            key = items;
+            readKey();
 
-          
         } else if (Array.isArray(items))
         {
             db = {};
@@ -52,8 +57,13 @@ define(['db/storage'], function (Storage) {
 
        for (key in items) {
             value = items[key];
-            if (value !== undefined)
+            if (value !== undefined) {
+
                 window.localStorage[key] = value;
+
+                if (this.logger && this.logger.logging)
+                    this.logger.log('log', 'Wrote key ' + key + ', value ', value);
+            }
         }
 
         if (typeof callback === 'function')

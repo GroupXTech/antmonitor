@@ -1,4 +1,4 @@
-/* global define: true, ko: true, window: true */
+﻿/* global define: true, ko: true, window: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/backgroundPage','events'], function (Logger, BackgroundPage, EventEmitter) {
@@ -53,6 +53,7 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         this.lastBatteryReset = ko.observable();
 
         this.hostWin = window.parent;
+
         window.addEventListener('message',this.onmessage.bind(this));
 
          if (configuration.rootVM) {
@@ -317,8 +318,24 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         value = data.items[key]; // Contains result
 
         if (value !== undefined) {
+           
+
+            // Boolean type conversion, e.g win81 localstorage will report back settings with "false" or "true" strings
+            // KO will enable checkbox for a string; http://knockoutjs.com/documentation/checked-binding.html
+
+            if (value === "false" || value === "true") {
+
+                if (this._logger && this._logger.logging)
+                    this._logger.log('log', 'Boolean type conversion enabled for "'+value+'"');
+
+                if (value === "false")
+                    value = false;
+                else if (value === "true")
+                    value = true;
+            }
+
             if (this._logger && this._logger.logging)
-              this._logger.log('log','Updating property '+property+' with value',value,'on viewmodel',this);
+                this._logger.log('log', 'Updating property ' + property + ' with value', value, 'on viewmodel', this);
 
             this[property](value);
 

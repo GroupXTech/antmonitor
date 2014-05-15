@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <StoreAssociation xmlns="http://schemas.microsoft.com/appx/2010/storeassociation">
   <Publisher>CN=533062DE-851A-4243-ABB9-6A5107CFD238</Publisher>
-  <NamespacePrefix>64959HenningKnutSkoglund</NamespacePrefix>
   <PublisherDisplayName>Henning Knut Skoglund</PublisherDisplayName>
   <GeneratePackageHash>http://www.w3.org/2001/04/xmlenc#sha256</GeneratePackageHash>
   <SupportedLocales>
