@@ -20,8 +20,8 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
     HostWin81.prototype.constructor = HostWin81;
 
     HostWin81.prototype.handleLifeCycleEvents = function () {
-        var app = WinJS.Application;
 
+        var app = WinJS.Application;
 
         app.oncheckpoint = function (args) {
 
@@ -32,15 +32,9 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
             // asynchronous operation before your application is suspended, call
             // args.setPromise().
 
-            // exitAndResetDevice();
-
-            // Remove previously registered devices from UI -> enumeration will be restarted when resuming
-            //var rootVM = this.viewModel.rootVM;
-
-            //rootVM.deviceVM.enumeratedDevice.removeAll();
-
-
-
+            
+            if (this.logger && this.logger.logging)
+                this.logger.log('info', 'Lifecycle event SUSPEND');
 
             this.host.closeChannel(0, function _closedSent(err, msg) {
                 // host.usb.ANTdevice.close();
@@ -55,7 +49,10 @@ define(['root/generichostenvironment'], function _requireDefineHostWin81 (Generi
 
         app.onresume = function () {
 
-            //  this.host.init(this.host.options, this.host.options.initCB);
+            if (this.logger && this.logger.logging)
+                this.logger.log('info', 'Lifecycle event RESUME');
+
+            this.host.init(this.host.options, this.onHostInit.bind(this));
 
         }.bind(this);
 

@@ -16,7 +16,7 @@
             if (!this.hostEnvironmentReady) {
                 if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready signal from host environment');
             }
-        }.bind(this), 3000);
+        }.bind(this), 10000);
 
         
         requirejsConfiguration = {
@@ -101,12 +101,21 @@
                 // UI relies on that the host environment first provides a READY signal (ANT+ channel established, access to storage API),
                 // before initializing the UI and setup databinding
 
+                // Don't apply data-bindings if we already got the first 'ready' signal from host environment (lifecycle win81: during resume from suspend)
+                if (this.hostEnvironmentReady)
+                {
+                    if (this.logger && this.logger.logging)
+                        this.logger.log('log', 'Host environment is already ready - skipped init of root viewmodel');
+
+                    return;
+                }
+
                 this.hostEnvironmentReady = true;
 
                 this.hostFrame = sourceWindow;
 
                 if (this.logger && this.logger.logging)
-                    this.logger.log('log', 'Got READY signal from host environment');
+                    this.logger.log('log', 'Got READY signal from host environment - initializing root viewmodel');
 
                 window.parent.postMessage({ request: 'ready' }, '*');
 
