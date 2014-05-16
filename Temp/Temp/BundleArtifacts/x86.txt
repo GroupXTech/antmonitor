@@ -1,1 +1,1 @@
-MainPackage=C:\Users\HenningKnut\Documents\Visual Studio 2013\Projects\temp\temp\temp\Temp\Temp\bin\x86\Release\ANT+ Monitor_1.1.0.23_Bundle\ANT+ Monitor_1.1.0.23_x86.appx
+MainPackage=C:\Users\HenningKnut\Documents\Visual Studio 2013\Projects\temp\temp\temp\Temp\Temp\bin\x86\Release\ANT+ Monitor_1.1.0.25_Bundle\ANT+ Monitor_1.1.0.25_x86.appx
