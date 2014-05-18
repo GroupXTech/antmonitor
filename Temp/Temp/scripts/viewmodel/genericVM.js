@@ -1,4 +1,4 @@
-﻿/* global define: true, ko: true, window: true */
+/* global define: true, ko: true, window: true */
 
 // Generic viewmodel, for ANT+ common pages 80 81 82
 define(['logger', 'profiles/backgroundPage','events'], function (Logger, BackgroundPage, EventEmitter) {
@@ -318,21 +318,6 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         value = data.items[key]; // Contains result
 
         if (value !== undefined) {
-           
-
-            // Boolean type conversion, e.g win81 localstorage will report back settings with "false" or "true" strings
-            // KO will enable checkbox for a string; http://knockoutjs.com/documentation/checked-binding.html
-
-            if (value === "false" || value === "true") {
-
-                if (this._logger && this._logger.logging)
-                    this._logger.log('log', 'Boolean type conversion enabled for "'+value+'"');
-
-                if (value === "false")
-                    value = false;
-                else if (value === "true")
-                    value = true;
-            }
 
             if (this._logger && this._logger.logging)
                 this._logger.log('log', 'Updating property ' + property + ' with value', value, 'on viewmodel', this);
@@ -355,7 +340,7 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
      GenericVM.prototype.onmessage = function (event)
     {
          var data = event.data;
-       
+
         // Ignore data without a sensorId or message destination is for another id
 
         if (!data.sensorId || data.sensorId !== this.sensorId())
@@ -374,7 +359,7 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
                   this.updateFromPage(page);
                   this.addPoint(page);
-                 
+
                 break;
 
                 case 'get' :
@@ -404,4 +389,4 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
     return GenericVM;
 
-});
+});  r
