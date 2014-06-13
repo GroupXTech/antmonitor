@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
   <Identity Name="64959HenningKnutSkoglund.TemperatureMonitor" Version="1.1.0.26" Publisher="CN=533062DE-851A-4243-ABB9-6A5107CFD238" />
   <Properties>
-    <DisplayName>ANT+ Monitor</DisplayName>
+    <DisplayName>Sensor Monitor</DisplayName>
     <PublisherDisplayName>Henning Knut Skoglund</PublisherDisplayName>
     <Logo>images\storelogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" StartPage="default.html">
-      <m2:VisualElements DisplayName="ANT+ Monitor" Description="ANT+ Monitor sets the ANT USB stick in scanning mode on 2457 MHz searching for available sensors. Data are visualized in a chart." ForegroundText="light" BackgroundColor="#464646" Square150x150Logo="images\Logo-2.png" Square30x30Logo="images\SmallLogo-2.png">
+      <m2:VisualElements DisplayName="Sensor Monitor" Description="Sensor Monitor sets the ANT USB stick in scanning mode on 2457 MHz searching for available sensors. Data are visualized in a chart." ForegroundText="light" BackgroundColor="#464646" Square150x150Logo="images\Logo-2.png" Square30x30Logo="images\SmallLogo-2.png">
         <m2:SplashScreen Image="images\SplashScreen.png" BackgroundColor="white" />
       </m2:VisualElements>
     </Application>
