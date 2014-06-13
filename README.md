@@ -1,7 +1,7 @@
-antmonitor
+sensormonitor
 ==========
 
-A web app (aka Chrome packaged app/Windows Store app) that listen to ANT+ broadcasts from sensors (e.g heart rate) with visualization in a chart. It supports receiving broadcast from multiple sensors of the same device profile. A timer is available for basic timing.
+A web app that listen to broadcasts from sensors (e.g heart rate) with visualization in a chart. It supports receiving broadcast from multiple sensors of the same device profile. A timer is available for basic timing.
 
 Open for **non-commercial/personal** use : https://creativecommons.org/licenses/by-nc-nd/3.0/
 
@@ -38,7 +38,7 @@ USB ANT hardware requirements:
 
     The app. wil only search for these vendor id/product id. on *nix based systems.
 
-Currently supported ANT+ device profiles:
+Currently supported device profiles:
 
         Heart Rate Monitor (including legacy)
         Bike Speed And Cadence/Speed/Cadence (including legacy) 
@@ -54,7 +54,7 @@ Development platform:
     
 Known issues:
 
-  * Windows Store App : Require WINUSB drivers for ANT stick -> can be installed with the tool ZADIG http://zadig.akeo.ie/ 
+  * Windows: Require WINUSB drivers for ANT stick -> can be installed with the tool ZADIG http://zadig.akeo.ie/ 
   * Resource relase : 
         * Garmin Express: Garmin Core Update Service must be disabled
         * ANT Agent : must be exited

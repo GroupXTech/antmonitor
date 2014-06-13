@@ -1,4 +1,4 @@
-﻿/* global define: true */
+/* global define: true */
 
 define(function _defineLanguageResource() {
     var resource;
@@ -49,7 +49,7 @@ define(function _defineLanguageResource() {
 
             about_part1: {
 
-                message: 'Applikasjonen setter ANT USB enheten i skanne modus, og vil søke på ANT+ frekvensen 2457Mhz etter kringkastinger som sendes av diverse sensor typer, e.g en hjertefrekvens måler'
+                message: 'Applikasjonen setter ANT USB enheten i skanne modus, og vil søke på frekvensen 2457Mhz etter kringkastinger som sendes av diverse sensor typer, e.g en hjertefrekvens måler'
             },
 
             about_part2: {
@@ -90,8 +90,8 @@ define(function _defineLanguageResource() {
 
 
             ant_monitor: {
-                message: 'ANT+ Monitor',
-                details: 'Om ANT+ Monitor'
+                message: 'Sensor Monitor',
+                details: 'Om Sensor Monitor'
             },
 
             minimum: {
@@ -211,7 +211,7 @@ define(function _defineLanguageResource() {
             },
 
             about_part1: {
-                message: 'The application sets the ANT USB stick into a scanning mode searching on the ANT+ frequency 2457Mhz for broadcasts sent by various sensor types, e.g a heart rate monitor.'
+                message: 'The application sets the ANT USB stick into a scanning mode searching on the frequency 2457Mhz for broadcasts sent by various sensor types, e.g a heart rate monitor.'
             },
 
             about_part2: {
@@ -249,8 +249,8 @@ define(function _defineLanguageResource() {
 
 
             ant_monitor: {
-                message: 'ANT+ Monitor',
-                details: 'About ANT+ Monitor'
+                message: 'Sensor Monitor',
+                details: 'About Sensor Monitor'
             },
 
             minimum: {

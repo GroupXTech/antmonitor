@@ -389,4 +389,4 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
     return GenericVM;
 
-});  r
+});
