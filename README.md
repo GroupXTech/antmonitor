@@ -19,6 +19,10 @@ Screenshot:
 
     * suunto/usb-serial-simple kernel driver attaches automatically to ANT USB in latest linux kernels
         fixed by blacklisting it in /etc/modprobe.d/blacklist.conf, or dynamically by 'sudo rmmod suunto'/'sudo rmmod usb-serial-simple'
+        
+    * Tracing usb traffic/packets on bus 4
+    
+       'cat /sys/kernel/debug/usb/usbmon/4u'
 
 Tested platforms:
 
