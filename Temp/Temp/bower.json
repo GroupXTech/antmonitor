@@ -23,6 +23,7 @@
   "dependencies": {
     "highcharts": "~4.0.4",
     "knockout": "~3.2.0",
-    "requirejs": "~2.1.15"
+    "requirejs": "~2.1.15",
+    "libant": "~0.1.2"
   }
 }
