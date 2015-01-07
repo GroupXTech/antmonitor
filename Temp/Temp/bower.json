@@ -1,18 +1,18 @@
 {
   "name": "SensorMonitor",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "homepage": "https://github.com/hkskoglund/antmonitor",
   "authors": [
     "Henning Knut Skoglund <hkskoglund@gmail.com>"
   ],
-  "description": "Monitor and visualize ANT wireless sensors",
+  "description": "Monitor and visualize ANT wireless sensors, its a chrome packaged app",
   "keywords": [
     "ant",
     "wireless",
-    "sensor"
+    "sensor",
+    "USB"
   ],
   "license": "MIT",
-  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
