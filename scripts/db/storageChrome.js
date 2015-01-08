@@ -42,7 +42,7 @@ define(['db/storage'], function (Storage) {
             callback(items);
 
         }.bind(this));
-        
+
     };
 
     // Override/shadow parent function
@@ -63,5 +63,5 @@ define(['db/storage'], function (Storage) {
     };
 
     return StorageChrome;
-  
+
 });

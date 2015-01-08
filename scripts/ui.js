@@ -1,4 +1,4 @@
-﻿/* global define: true, ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
+/* global define: true, ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
 
 (function _ANTMonitorUI() {
 
@@ -18,7 +18,7 @@
             }
         }.bind(this), 10000);
 
-        
+
         requirejsConfiguration = {
 
             baseUrl: '../bower_components/libant',
@@ -34,7 +34,7 @@
                 scripts : '../../scripts',
 
                 converter : '../../scripts/converter'
-                
+
             },
 
         };
@@ -270,7 +270,7 @@
         this.sensorChart.integrated = {
             options: {}
         };
-       
+
         integratedChart = this.sensorChart.integrated;
 
         this.sensorChart.integrated.chart = new Highcharts.Chart({
@@ -596,7 +596,7 @@
                             fontSize: '16px',
 
                         },
-                        
+
                         y: 18
                     },
 
@@ -816,7 +816,7 @@
             clearTimeout(this.timerID.timeout[timerName]);
             if (this.logger && this.logger.logging)
                 this.logger.log('log', 'Cleared timeout ' + timerName + ' id/handle ' + this.timerID.timeout[timerName]);
-            
+
         }
 
         // Intervals
@@ -832,3 +832,4 @@
     void new ANTMonitorUI();
 
 })();
+   

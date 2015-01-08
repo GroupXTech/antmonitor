@@ -1,4 +1,4 @@
-﻿/* global define: true, window: true, require: true */
+/* global define: true, window: true, require: true */
 
 define(['logger'], function _requireDefine(Logger) {
 
@@ -17,7 +17,7 @@ define(['logger'], function _requireDefine(Logger) {
 
 
 
-        // Used for sending a page received form the device profile as  a message to UI frame 
+        // Used for sending a page received form the device profile as  a message to UI frame
 
         this.pageFromDeviceProfile = { page: undefined };
 
@@ -267,7 +267,7 @@ define(['logger'], function _requireDefine(Logger) {
         //                          {
         //                              if (error)
         //                                  this.log.log('log','Failed to close channel',channel.establish.channelNumber,error.message);
-        //                              
+        //
         //                          }.bind(this));
 
     };
@@ -330,4 +330,4 @@ define(['logger'], function _requireDefine(Logger) {
 
     return GenericHostEnvironment;
 
-});
+});   

@@ -1,9 +1,9 @@
-﻿/* global define: true, ko:true */
+/* global define: true, ko:true */
 
 define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, TemperatureConverter) {
 
     'use strict';
-    
+
     function TemperatureVM(configuration) {
 
         GenericVM.call(this, configuration);
@@ -105,12 +105,12 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
         this.init(configuration);
 
     }
-    
+
     TemperatureVM.prototype = Object.create(GenericVM.prototype);
     TemperatureVM.prototype.constructor = TemperatureVM;
 
     TemperatureVM.prototype.convert = new TemperatureConverter();
-    
+
     TemperatureVM.prototype.init = function (configuration)
     {
         var page = configuration.page;
@@ -220,7 +220,7 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
         CELCIUS : 'celcius',
         FAHRENHEIT : 'fahrenheit'
     };
-    
+
      TemperatureVM.prototype.MODES = [TemperatureVM.prototype.MODE.CELCIUS,TemperatureVM.prototype.MODE.FAHRENHEIT];
 
     // Takes page with current, low/high 24 h and puts it into the viewModel
@@ -256,7 +256,7 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
           this.updateCommonPage(page);
 
      };
-     
+
     TemperatureVM.prototype.getTemplateName = function (item)
     {
        // return undefined;
@@ -277,3 +277,4 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
     return TemperatureVM;
 
 });
+ od

@@ -28,7 +28,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
             this.logBackgroundPage('log', 'Stopping channel', this.channel);
             this.channel.stop();
         }
-         
+
         var resetSystemMsg = new ResetSystemMessage();
         resetSystemMsg.getRawMessage(); // implicitly set .standardMessage property with bytes to send to ANT USB endpoint
 
@@ -42,7 +42,7 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
         } catch (e) // In case of e.g DOMException - An object could not be cloned
         {
             this.logBackgroundPage('error','Data clone error', e);
-         
+
         }
 
         //window.removeEventListener('message', messageHandler);

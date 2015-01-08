@@ -109,7 +109,7 @@ define(function _defineLanguageResource() {
             },
 
 
-            
+
             timer_start: {
                 message : 'START'
             },
@@ -122,11 +122,11 @@ define(function _defineLanguageResource() {
             timer_reset:{
                 message : 'NULLSTILL'
             },
-            
+
             timer_total_elapsed_time : {
                 message : 'TID'
             },
-            
+
             timer_lap_time : {
                 message : 'RUNDETID'
             },
@@ -138,7 +138,7 @@ define(function _defineLanguageResource() {
             unit_bpm: {
                 message: 'spm'
             },
-            
+
             unit_km_pr_h: {
                 message: 'km/t'
             },
@@ -270,23 +270,23 @@ define(function _defineLanguageResource() {
             timer_start: {
                 message : 'START'
             },
-            
+
             timer_stop: {
                 message : 'STOP'
             },
-            
+
             timer_lap : {
                 message : 'LAP'
             },
-            
+
             timer_reset:{
                 message : 'RESET'
             },
-            
+
             timer_total_elapsed_time : {
                 message : 'TIME'
             },
-            
+
             timer_lap_time : {
                 message : 'LAPTIME'
             },
@@ -299,7 +299,7 @@ define(function _defineLanguageResource() {
             unit_bpm: {
                 message :'bpm'
             },
-            
+
              unit_km_pr_h: {
                 message: 'km/h'
              },
