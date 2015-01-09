@@ -381,4 +381,4 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
    return SPDCADVM;
 
 });
-   
+

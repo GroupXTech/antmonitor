@@ -330,4 +330,4 @@ define(['logger'], function _requireDefine(Logger) {
 
     return GenericHostEnvironment;
 
-});   
+});

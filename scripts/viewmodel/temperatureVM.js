@@ -277,4 +277,4 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
     return TemperatureVM;
 
 });
- od
+
