@@ -12,7 +12,10 @@
     "sensor",
     "USB"
   ],
-  "main": ["bower_components/requirejs/require.js","scripts/background.js"],
+  "main": [
+    "bower_components/requirejs/require.js",
+    "scripts/background.js"
+  ],
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -22,9 +25,9 @@
     "tests"
   ],
   "dependencies": {
-    "highcharts": "~4.0.4",
-    "knockout": "~3.2.0",
     "requirejs": "~2.1.15",
-    "libant": "~0.1.2"
+    "knockoutjs": "~3.2.0",
+    "libant": "~0.1.2",
+    "highcharts": "~4.0.4"
   }
 }
