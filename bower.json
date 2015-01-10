@@ -12,7 +12,7 @@
     "sensor",
     "USB"
   ],
-  "main": "scripts/background.js",
+  "main": ["bower_components/requirejs/require.js","scripts/background.js"],
   "license": "MIT",
   "ignore": [
     "**/.*",
