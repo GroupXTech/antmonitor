@@ -12,6 +12,7 @@
     "sensor",
     "USB"
   ],
+  "main": "scripts/background.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
