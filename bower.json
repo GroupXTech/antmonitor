@@ -17,13 +17,7 @@
     "scripts/background.js"
   ],
   "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+
   "dependencies": {
     "requirejs": "~2.1.15",
     "knockoutjs": "~3.2.0",
