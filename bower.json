@@ -20,7 +20,7 @@
 
   "dependencies": {
     "requirejs": "~2.1.15",
-    "knockoutjs": "~3.2.0",
+    "knockout": "~3.2.0",
     "libant": "~0.1.2",
     "highcharts": "~4.0.4"
   }
