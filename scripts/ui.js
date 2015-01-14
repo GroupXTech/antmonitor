@@ -1,10 +1,10 @@
 /* global define: true, ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
 
-(function _ANTMonitorUI() {
+(function _ANTmonitorUI() {
 
     'use strict';
 
-    function ANTMonitorUI()
+    function ANTmonitorUI()
     {
         var requirejsConfiguration;
 
@@ -77,7 +77,7 @@
 
     }
 
-    ANTMonitorUI.prototype.onmessage = function (event)
+    ANTmonitorUI.prototype.onmessage = function (event)
     {
 
         var sourceWindow = event.source,
@@ -159,7 +159,7 @@
 
     };
 
-    ANTMonitorUI.prototype.initRootVM = function () {
+    ANTmonitorUI.prototype.initRootVM = function () {
 
         var rootVM, // Root viewmodel, contains all the other sub-view models
             sensorChart; // Contains sensor charts - mainly the integrated chart
@@ -261,7 +261,7 @@
 
     };
 
-    ANTMonitorUI.prototype.createIntegratedChart = function () {
+    ANTmonitorUI.prototype.createIntegratedChart = function () {
 
         var rootVM = this.viewModel.rootVM,
             antUI = this,
@@ -658,7 +658,7 @@
 
     };
 
-    ANTMonitorUI.prototype.addFootpodSeries = function (page) {
+    ANTmonitorUI.prototype.addFootpodSeries = function (page) {
 
         var addedSeries,
           FootpodVM = this.viewModel.FootpodVM,
@@ -715,7 +715,7 @@
 
     };
 
-    ANTMonitorUI.prototype.redrawIntegratedChart = function () {
+    ANTmonitorUI.prototype.redrawIntegratedChart = function () {
         // Don't attempt redraw when tab is not scheduled for any layout
         // Otherwise layout will be cluttered (particularly the legend items in Highcharts) changing display to block again
         if (window.getComputedStyle(this.tabMain).getPropertyValue('display') !== 'none') {
@@ -724,7 +724,7 @@
         }
     };
 
-    ANTMonitorUI.prototype.initViewModelForPage = function (page) {
+    ANTmonitorUI.prototype.initViewModelForPage = function (page) {
 
         var rootVM = this.viewModel.rootVM,
             sensorId = page.broadcast.channelId.sensorId,
@@ -802,7 +802,7 @@
     };
 
     // Clear all timeout and intervals
-    ANTMonitorUI.prototype.clearTimers = function ()
+    ANTmonitorUI.prototype.clearTimers = function ()
     {
         var timerName;
 
@@ -829,7 +829,7 @@
 
     };
 
-    void new ANTMonitorUI();
+    void new ANTmonitorUI();
 
 })();
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <!-- Add meta tag/chartset for proper intepretation of special characters, e.g  º -->
-    <title>Sensor Monitor</title>
+    <title>ANTmonitor</title>
     <link href="/css/default.css" rel="stylesheet" />
     <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
     <script src="bower_components/knockout/dist/knockout.debug.js"></script>
@@ -369,8 +369,8 @@
         <nav id="appToolbar" class="flex rowwrap spacearound centeritems toolbarBackground">
             <div>
                 <a data-bind="click: settingVM.toggleShowCredits">
-                    <img class="icon" alt="About Sensor Monitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" data-bind="attr: { title: languageVM.ant_monitor().details }" />
-                    <label style="vertical-align: middle; margin-left : 3px">Sensor Monitor</label>
+                    <img class="icon" alt="About ANTmonitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" data-bind="attr: { title: languageVM.ant_monitor().details }" />
+                    <label style="vertical-align: middle; margin-left : 3px">ANTmonitor</label>
                 </a>
             </div>
             <div class="flex rownowrap flexstart centeritems">
@@ -471,7 +471,7 @@
         <div data-bind="visible: settingVM.showCredits" id="divCredits">
             <div id="innerDivCredits">
                 <!-- http://stackoverflow.com/questions/3106290/align-icons-with-text -->
-                <h2><img class="icon verticalAlignMiddle" src='images/icon-128.png' /><span class="verticalAlignMiddle" style="margin-left : 3px">Sensor Monitor</span></h2>
+                <h2><img class="icon verticalAlignMiddle" src='images/icon-128.png' /><span class="verticalAlignMiddle" style="margin-left : 3px">ANTmonitor</span></h2>
                 <p data-bind="text: languageVM.about_part1().message"><p>
                     <!--<p data-bind="text: languageVM.about_part2"></p>-->
                     <h3 data-bind="text: languageVM.libraries().message"></h3>

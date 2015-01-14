@@ -90,8 +90,8 @@ define(function _defineLanguageResource() {
 
 
             ant_monitor: {
-                message: 'Sensor Monitor',
-                details: 'Om Sensor Monitor'
+                message: 'ANTmonitor',
+                details: 'Om ANTmonitor'
             },
 
             minimum: {
@@ -249,8 +249,8 @@ define(function _defineLanguageResource() {
 
 
             ant_monitor: {
-                message: 'Sensor Monitor',
-                details: 'About Sensor Monitor'
+                message: 'ANTmonitor',
+                details: 'About ANTmonitor'
             },
 
             minimum: {

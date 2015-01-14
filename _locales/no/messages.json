@@ -1,6 +1,6 @@
 {
     "appName": {
-        "message": "Sensor Monitor",
+        "message": "ANTmonitor",
         "description": "Overvåkning og visualisering av data fra sensorer (ant)"
     },
     "appDescription": {
