@@ -1,10 +1,10 @@
 {
     "appName": {
         "message": "ANTmonitor",
-        "description": "Monitors and visualize data from sensors (ant)"
+        "description": "Monitors and visualize data from ANT+ sensors"
     },
     "appDescription": {
-        "message": "Monitors and visualize data from sensors (ant)",
-        "description": "Uses the device profiles (i.e temperature) and continous scanning for gathering data."
+        "message": "Monitors and visualize data from ANT+ sensors",
+        "description": "Uses the device profiles and high duty scanning mode for gathering data from sensors."
     }
 }

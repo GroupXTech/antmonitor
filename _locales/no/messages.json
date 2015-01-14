@@ -1,9 +1,9 @@
 {
     "appName": {
         "message": "ANTmonitor",
-        "description": "Overvåkning og visualisering av data fra sensorer (ant)"
+        "description": "Overvåkning og visualisering av data fra ANT+ sensorer"
     },
     "appDescription": {
         "message": "Overvåkning og visualisering av data fra sensorer",
-        "description": "Bruker enhets profiler og kontinuerling skanning modus for å samle data fra sensorer (ant)" }
+        "description": "Bruker enhets profiler og høy kapasitets skanne modus for å samle data fra ANT+ sensorer" }
 }
