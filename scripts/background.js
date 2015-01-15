@@ -252,7 +252,7 @@
         minHeight = Math.round(0.3 * window.screen.height);
 
 
-        chrome.app.window.create('../default.html', { 'minWidth': minWidth, 'minHeight': minHeight, 'bounds': { 'width': width, 'height': height } }, appWinCreated);
+        chrome.app.window.create('../ui.html', { 'minWidth': minWidth, 'minHeight': minHeight, 'bounds': { 'width': width, 'height': height } }, appWinCreated);
 
     };
 
