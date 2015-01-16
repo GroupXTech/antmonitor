@@ -27,7 +27,7 @@
 
     ],
     "sandbox": {
-        "pages": ["ui.html"]
+        "pages": ["ui-frame-sandbox.html"]
   }
 
 }

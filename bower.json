@@ -15,7 +15,7 @@
     "heartrate",
     "temperature",
     "speed",
-    "cadence",
+    "cadence"
     ],
   "main": [
     "bower_components/requirejs/require.js",
