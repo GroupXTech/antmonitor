@@ -7,7 +7,9 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
     function SettingVM(configuration)
     {
         if (!configuration)
-         configuration = {};
+        {
+            configuration = {};
+        }
 
         configuration.sensorId = 'settingVM';
 
@@ -86,8 +88,9 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
         // Toggle series visibility for device type, i.e hrm
 
         if (!(viewModel.sensorChart && viewModel.sensorChart.integrated && viewModel.sensorChart.integrated.chart))
+        {
             return;
-
+        }
             chart = viewModel.sensorChart.integrated.chart;
 
             for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {

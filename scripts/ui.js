@@ -1,4 +1,4 @@
-/* global define: true, ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
+/* global ko:true, window: true, document: true, setTimeout: true, setInterval: true, clearInterval: true, clearTimeout: true, requirejs: true, Highcharts: true */
 
 (function _ANTmonitorUI() {
 
@@ -14,7 +14,10 @@
 
         setTimeout(function () {
             if (!this.hostEnvironmentReady) {
-                if (this.logger && this.logger.logging) this.logger.log('warn', 'Has not received ready signal from host environment');
+                if (this.logger && this.logger.logging) {
+                    this.logger.log('warn', 'Has not received ready signal from host environment');
+
+                }
             }
         }.bind(this), 10000);
 
@@ -49,7 +52,9 @@
 
                 this.logger = new Logger({ log: true, logSource : this });
 
-                if (this.logger && this.logger.logging) this.logger.log('info','Location: ' + window.location.href);
+                if (this.logger && this.logger.logging) {
+                    this.logger.log('info','Location: ' + window.location.href);
+                }
 
                 // Keeps track of timeouts and intervals
 
@@ -88,8 +93,9 @@
 
         if (!data)
         {
-            if (this.logger && this.logger.logging)
+            if (this.logger && this.logger.logging) {
                 this.logger.log('warn', 'No/undefined data received');
+            }
 
             return;
         }
@@ -104,8 +110,9 @@
                 // Don't apply data-bindings if we already got the first 'ready' signal from host environment (lifecycle win81: during resume from suspend)
                 if (this.hostEnvironmentReady)
                 {
-                    if (this.logger && this.logger.logging)
+                    if (this.logger && this.logger.logging) {
                         this.logger.log('log', 'Host environment is already ready - skipped init of root viewmodel');
+                    }
 
                     return;
                 }
@@ -114,8 +121,9 @@
 
                 this.hostFrame = sourceWindow;
 
-                if (this.logger && this.logger.logging)
+                if (this.logger && this.logger.logging) {
                     this.logger.log('log', 'Got READY signal from host environment - initializing root viewmodel');
+                }
 
                 window.parent.postMessage({ request: 'ready' }, '*');
 
@@ -150,8 +158,9 @@
 
             default:
 
-                if (this.logger && this.logger.logging)
+                if (this.logger && this.logger.logging) {
                     this.logger.log('error','Unable to do anything with data, unknown response from host ', data);
+                }
 
                 break;
 
@@ -242,8 +251,9 @@
 
         var aMain = document.getElementById('aMain');
 
-        if (this.logger && this.logger.logging)
+        if (this.logger && this.logger.logging) {
             this.logger.log('info', 'Sent click event to main tab to toggle visibility of short sensor info and sensor chart', aMain,mouseClick);
+        }
 
         void aMain.dispatchEvent(mouseClick);
 
@@ -311,12 +321,15 @@
                         var TemperatureVM = antUI.module.TemperatureVM;
 
                         if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.CELCIUS)
+                        {
                             return -20;
+                        }
                         else if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT)
+                        {
                             return -4;
-                        else
+                        } else {
                             return -20;
-
+                        }
                     })(antUI),
 
                     //max: (function () {
@@ -524,6 +537,50 @@
 
 
                  },
+
+                {
+                    id: 'bike-power-axis',
+                    title: {
+                        //text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
+                        text : null,
+                        style: {
+                            color: 'yellow',
+                            fontSize: '16px',
+                            fontWeight: 'bold'
+                        }
+                    },
+
+                    min: 0,
+                    //max: 255,
+
+                    gridLineWidth: 0,
+
+                    //tickPositions: [],
+
+                    //startOnTick: false,
+
+                    // endOnTick: false,
+
+                    showEmpty: false,
+
+                    // Does not disable tooltip generation (series.tooltips) -> set  enableMouseTracking = false in invd. series options
+                    tooltip: {
+                        enabled: false
+                    },
+
+                    labels:
+                    {
+                        enabled: true,
+                        style: {
+                            color: 'yellow',
+                            fontWeight: 'bold',
+                            fontSize: '16px'
+                        }
+                    },
+
+                    opposite : true
+
+                },
 
                   {
                       id: 'hrm-rr-yaxis',
@@ -736,8 +793,9 @@
 
         deviceTypeVM = rootVM.dictionary[sensorId];
 
-        if (deviceTypeVM) // Ignore initialization of viewmodel if its already created
+        if (deviceTypeVM) {// Ignore initialization of viewmodel if its already created
          return;
+        }
 
         defaultOptions = {
 
@@ -748,8 +806,9 @@
             rootVM : rootVM,
         };
 
-        if (this.logger && this.logger.logging)
+        if (this.logger && this.logger.logging) {
             this.logger.log('log', 'received init/first page', page,'for sensor',sensorId);
+        }
 
          switch (deviceType) {
 
@@ -806,25 +865,27 @@
     {
         var timerName;
 
-        if (!this.timerID)
+        if (!this.timerID) {
             return;
+        }
 
         // Timeouts
 
         for (timerName in this.timerID.timeout)
         {
             clearTimeout(this.timerID.timeout[timerName]);
-            if (this.logger && this.logger.logging)
+            if (this.logger && this.logger.logging) {
                 this.logger.log('log', 'Cleared timeout ' + timerName + ' id/handle ' + this.timerID.timeout[timerName]);
-
+            }
         }
 
         // Intervals
 
         for (timerName in this.timerID.interval) {
             clearInterval(this.timerID.interval[timerName]);
-            if (this.logger && this.logger.logging)
+            if (this.logger && this.logger.logging) {
                 this.logger.log('log', 'Cleared interval' + timerName + ' id/handle ' + this.timerID.interval[timerName]);
+            }
         }
 
     };

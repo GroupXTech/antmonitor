@@ -12,8 +12,11 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
         this.defaultLanguage = 'en';
 
         if (this.logger && this.logger.logging)
+        {
             this.logger.log('info', 'Navigator language', this.language());
-        // Chrome : 'nb', IE 11/Win app : 'nb-NO'
+        }
+
+            // Chrome : 'nb', IE 11/Win app : 'nb-NO'
 
         this.temperature = ko.computed(function () { // Dependent observable
             return this.getMessage('temperature');
@@ -201,25 +204,32 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
 
         if (msg === undefined) {
             if (this.logger && this.logger.logging)
+            {
                 this.logger.error('Attempt to get a undefined message identifier');
-            return;
+            }
+                return;
         }
 
         resourceAvailable = resource[currentLang]; // i.e nb-NO
 
         if (!resourceAvailable && currentLang)
+        {
             resourceAvailable = resource[currentLang.substr(0, 2)]; // i.e nb
-
+        }
         // Fallback to default language
 
         if (!resourceAvailable)
+        {
             resourceAvailable = resource[this.defaultLanguage];
+        }
 
         if (resourceAvailable ) {
 
             if (resourceAvailable[msg])
+            {
                 return resourceAvailable[msg];
-            else { // Fallback to default language
+            }
+                else { // Fallback to default language
                 resourceAvailable = resource[this.defaultLanguage];
                 return resourceAvailable[msg];
             }
@@ -229,4 +239,3 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
 
     return LanguageVM;
 });
-

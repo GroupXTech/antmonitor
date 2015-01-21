@@ -13,8 +13,9 @@ define(['vm/genericVM'], function (GenericVM) {
 
         this.formattedTimestamp = ko.computed({
             read: function () {
-                if (this.timestamp)
+                if (this.timestamp) {
                     return (new Date(this.timestamp())).toLocaleTimeString();
+                }
             }.bind(this)
         });
 
@@ -155,8 +156,9 @@ define(['vm/genericVM'], function (GenericVM) {
             yRR,
             n;
 
-        if (!page.aggregatedRR)
+        if (!page.aggregatedRR) {
            return;
+        }
 
        // Copy buffered RR data to maintain the whole RR series
 
@@ -210,28 +212,38 @@ define(['vm/genericVM'], function (GenericVM) {
 
         this._page = page;
 
-        if (page.number !== undefined)
+        if (page.number !== undefined) {
             this.number(page.number);
+        }
 
         // HRM Page 4/0 - main
 
          // Time of the last valid heart beat event 1 /1024 s, rollover 64 second
-        if (page.heartBeatEventTime)
+        if (page.heartBeatEventTime) {
             this.heartBeatEventTime(page.heartBeatEventTime);
+        }
 
         // Counter for each heart beat event, rollover 255 counts
         if (page.heartBeatCount)
+        {
             this.heartBeatCount(page.heartBeatCount);
+        }
 
         // Intantaneous heart rate, invalid = 0x00, valid = 1-255, can be displayed without further intepretation
         if (page.computedHeartRate)
+        {
             this.computedHeartRate(page.computedHeartRate);
+        }
 
         if (page.previousHeartBeatEventTime)
+        {
             this.previousHeartBeatEventTime(page.previousHeartBeatEventTime);
+        }
 
         if (page.RRInterval)
+        {
             this.RRInterval(Math.round(page.RRInterval));
+        }
 
         this.updateBackgroundPage(page);
 
@@ -250,10 +262,12 @@ define(['vm/genericVM'], function (GenericVM) {
 
     };
 
+    /* jshint ignore: start */
     HRMVM.prototype.getTemplateName = function (item) {
         // return undefined;
         return "HRM-template";
     };
+    /* jshint ignore: end */
 
     return HRMVM;
 

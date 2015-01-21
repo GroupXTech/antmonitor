@@ -22,12 +22,15 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
         }
         else if (configuration && configuration.sensorId)
-          this.sensorId = ko.observable(configuration.sensorId);
-        else {
+        {
+            this.sensorId = ko.observable(configuration.sensorId);
+        } else {
           this.sensorId = ko.observable();
           if (this._logger.logging)
-            this._logger.log('error','All viewmodels inheriting from genericVM should have a unique sensorId');
-        }
+          {
+              this._logger.log('error','All viewmodels inheriting from genericVM should have a unique sensorId');
+          }
+      }
 
         // Common page 80 - Manufacturer info.
 
@@ -85,44 +88,57 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
             case 1 :
 
                     if (page.cumulativeOperatingTime)
+                    {
                         this.cumulativeOperatingTime(page.cumulativeOperatingTime);
+                    }
 
                     if (page.cumulativeOperatingTimeString)
+                    {
                         this.cumulativeOperatingTimeString(page.cumulativeOperatingTimeString);
+                    }
 
                     if (page.lastBatteryReset)
+                    {
                         this.lastBatteryReset(page.lastBatteryReset);
+                    }
 
                     break;
 
             case 2:
 
                     if (page.manufacturerID)
-                    this.manufacturerID(page.manufacturerID);
+                    {
+                        this.manufacturerID(page.manufacturerID);
+                    }
 
                     if (page.serialNumber)
+                    {
                         this.serialNumber(page.serialNumber);
+                    }
 
                     if ((page.manufacturerID !== undefined) && (page.serialNumber !== undefined)) {
-                        if ((page.serialNumber >> 16) === 0)
+                        if ((page.serialNumber >> 16) === 0) {
                             this.manufacturerString('Manufacturer ' + page.manufacturerID + ' SN ' + page.serialNumber);
-                        else
+                        } else {
                             this.manufacturerString('Manufacturer '+page.manufacturerID +' SN '+ page.serialNumber+' (MSB '+page.serialNumber16MSB+' LSB '+page.broadcast.channelId.deviceNumber+')');
+                        }
                     }
 
                     break;
 
             case 3:
 
-                    if (page.hardwareVersion)
+                    if (page.hardwareVersion) {
                         this.hardwareVersion(page.hardwareVersion);
+                    }
 
-                    if (page.softwareVersion)
+                    if (page.softwareVersion) {
                         this.softwareVersion(page.softwareVersion);
+                    }
 
-                    if (page.modelNumber)
+                    if (page.modelNumber) {
                         this.modelNumber(page.modelNumber);
-
+                    }
                   break;
         }
 
@@ -137,31 +153,40 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         //this.batteryStatusString("Good");
         //this.cumulativeOperatingTime(2);
 
-        if (!page.broadcast.channelId.globalPages)
+        if (!page.broadcast.channelId.globalPages) {
           return;
+        }
 
         switch (page.number) {
 
             case BackgroundPage.prototype.COMMON.PAGE0x50:
 
                 if (page.HWRevision)
+                {
                     this.HWRevision(page.HWRevision);
+                }
 
                 if (page.manufacturerID)
+                {
                     this.manufacturerID(page.manufacturerID);
+                }
 
                 if (page.modelNumber)
+                {
                     this.modelNumber(page.modelNumber);
+                }
 
                 break;
 
             case BackgroundPage.prototype.COMMON.PAGE0x51:
 
-                if (page.SWRevision) {
+                if (page.SWRevision)
+                {
                     this.SWRevision(page.SWRevision);
                 }
 
-                if (page.serialNumber) {
+                if (page.serialNumber)
+                {
                     this.serialNumber(page.serialNumber);
                 }
 
@@ -172,7 +197,9 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
                 if (page.descriptive) {
                     this.batteryStatus(page.descriptive.batteryStatus);
                     if (page.batteryStatus)
+                    {
                       this.batteryStatusString(page.batteryStatus.toString());
+                    }
                 }
 
                 if (page.cumulativeOperatingTime) {
@@ -219,12 +246,18 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         if (typeof items === 'string')
         {
             if (isPendingStoreSubscription)
+            {
                 this.pendingStoreSubscription[items] = true;
+            }
         } else if (Array.isArray(items))
         {
             for (var item in items)
+            {
                 if (isPendingStoreSubscription)
+                {
                     this.pendingStoreSubscription[items[item]] = true;
+                }
+            }
         }
 
     };
@@ -253,7 +286,9 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
             };
 
             if (this._logger && this._logger.logging)
+            {
                 this._logger.log('info','Viewmodel storage subscription - '+singleProperty+' -',this.sensorId());
+            }
 
             this[singleProperty].subscribe(store.bind(this));
 
@@ -274,15 +309,20 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         else
         {
             if (this._logger && this._logger.logging)
+            {
                 this._logger.log('warn', 'Unable to subscribe to property of type', typeof singleProperty);
-        }
+            }
+
+            }
 
     };
 
+    /* jshint ignore:start */
     GenericVM.prototype.updateFromPage = function (page)
     {
         throw new Error('Cannot update page, do not know the viewmodel properties, updateFromPage should be overridden in descandant objcets');
     };
+    /* jshint ignore: end */
 
     GenericVM.prototype.addSeries = function (page,seriesOptions)
     {
@@ -312,21 +352,27 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         }
         else {
            if (this._logger && this._logger.logging)
-           this._logger.log('error','Did not find - delemiter in key, wrong key (format property-sensorid)',key);
-        }
+           {
+               this._logger.log('error','Did not find - delemiter in key, wrong key (format property-sensorid)',key);
+           }
+           }
 
         value = data.items[key]; // Contains result
 
         if (value !== undefined) {
-
             if (this._logger && this._logger.logging)
+            {
                 this._logger.log('log', 'Updating property ' + property + ' with value', value, 'on viewmodel', this);
-
+            }
             this[property](value);
 
-        } else {
+        }
+        else
+        {
             if (this._logger && this._logger.logging)
-              this._logger.log('log','Refused updating property '+property+' with value',value,'on viewmodel',this);
+            {
+                this._logger.log('log','Refused updating property '+property+' with value',value,'on viewmodel',this);
+            }
         }
 
 
@@ -339,26 +385,23 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
      GenericVM.prototype.onmessage = function (event)
     {
-         var data = event.data;
+         var data = event.data,
+             page;
 
         // Ignore data without a sensorId or message destination is for another id
 
         if (!data.sensorId || data.sensorId !== this.sensorId())
+        {
             return;
-
+        }
         switch (data.response)
         {
             case 'page':
-
-                var page;
-
-                if (data)
+                if (data) {
                    page = data.page;
-                else
-                    break;
-
-                  this.updateFromPage(page);
+                    this.updateFromPage(page);
                   this.addPoint(page);
+                }
 
                 break;
 
@@ -369,19 +412,29 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
                         var itemNr, len;
 
                         for (itemNr=0, len=data.requestitems.length; itemNr < len; itemNr++)
-                           this.updateFromStorage(data,data.requestitems[itemNr]);
+                        {
+                            this.updateFromStorage(data,data.requestitems[itemNr]);
+                        }
 }
                     else if (typeof data.requestitems === 'string')
-                          this.updateFromStorage(data,data.requestitems);
+                    {
+                        this.updateFromStorage(data,data.requestitems);
+                    }
                     else
                     {
-                        if (this._logger && this._logger.logging) this._logger.log('warn', data.response+' Unable to process items, expected an object or string',data.requestitems);
+                        if (this._logger && this._logger.logging)
+                        {
+                            this._logger.log('warn', data.response+' Unable to process items, expected an object or string',data.requestitems);
+                        }
                     }
 
                    break;
 
                 default :
-                    if (this._logger && this._logger.logging) this._logger.log('error', "Don't known what to do with response",data.response);
+                    if (this._logger && this._logger.logging)
+                    {
+                        this._logger.log('error', "Don't known what to do with response",data.response);
+                    }
 
                 break;
      }

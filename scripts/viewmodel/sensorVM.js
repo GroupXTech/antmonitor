@@ -8,7 +8,9 @@ define(['vm/genericVM'], function(GenericVM) {
 
     {
         if (!configuration)
-          configuration = {};
+        {
+            configuration = {};
+        }
 
        configuration.sensorId = 'sensorVM';
 
@@ -31,12 +33,12 @@ define(['vm/genericVM'], function(GenericVM) {
         var templateName = viewModelItem.getTemplateName();
 
         if (templateName === undefined)
+        {
             this._logger.log('error','Could not find template name for viewModel item',viewModelItem);
-
+        }
         return templateName;
     };
 
    return SensorVM;
 
 });
-

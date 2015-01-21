@@ -396,4 +396,3 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
    return SPDCADVM;
 
 });
-

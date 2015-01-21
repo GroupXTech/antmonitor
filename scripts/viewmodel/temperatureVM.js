@@ -18,8 +18,9 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
 
             var formattedTemp;
 
-            if (tempObs() === undefined)
+            if (tempObs() === undefined) {
                 return '--.--'; // Sensor discovered, but temperature observation not available yet
+            }
 
             switch (this.temperatureMode()) {
                 case TemperatureVM.prototype.MODE.FAHRENHEIT:
@@ -94,8 +95,9 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
         this.timestamp = ko.observable();
         this.formattedTimestamp = ko.computed({
             read: function () {
-                if (this.timestamp())
+                if (this.timestamp()) {
                     return (new Date(this.timestamp())).toLocaleTimeString();
+                }
             }.bind(this)
         });
 
@@ -117,10 +119,11 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
 
         // Init with global temperature setting
 
-        if (this.rootVM.settingVM.fahrenheit())
+        if (this.rootVM.settingVM.fahrenheit()) {
            this.temperatureMode(TemperatureVM.prototype.MODE.FAHRENHEIT);
-        else
+        } else {
            this.temperatureMode(TemperatureVM.prototype.MODE.CELCIUS);
+        }
 
         // Update on subsequent changes
         this.rootVM.settingVM.fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
@@ -157,20 +160,23 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
 
         // Ignore pages without currentTemp, e.g supported pages from temp. sensor
 
-        if (page.currentTemp === undefined)
+        if (page.currentTemp === undefined) {
            return;
+        }
 
 
         if (page.timestamp === undefined) {
-            if (this._logger && this._logger.logging)
+            if (this._logger && this._logger.logging) {
                  this._logger.log('error','No timestamp in page, cannot add this point',page);
+            }
             return;
         }
 
         if (timezoneOffsetInMilliseconds === undefined)
           {
-                if (this._logger && this._logger.logging)
+                if (this._logger && this._logger.logging) {
                  this._logger.log('error','No timezone offset found in settingVM, setting offset to 0 ms',page);
+                }
                  timezoneOffsetInMilliseconds = 0;
           }
 
@@ -228,8 +234,9 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
 
          if (!page)
          {
-             if (this._logger && this._logger.logging)
+             if (this._logger && this._logger.logging) {
                  this._logger.log('warn','Cannot update viewmodel with an undefined page');
+             }
              return;
          }
 
@@ -237,31 +244,40 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
          this._page = page;
 
          // Update view model
-         if (page.number !== undefined)
+         if (page.number !== undefined) {
              this.number(page.number);
+         }
 
-         if (page.currentTemp !== undefined)
+         if (page.currentTemp !== undefined) {
              this.currentTemp(page.currentTemp);
+         }
 
-         if (page.hour24Low !== undefined)
+         if (page.hour24Low !== undefined) {
              this.low24H(page.hour24Low);
+         }
 
-         if (page.hour24High !== undefined)
+         if (page.hour24High !== undefined) {
              this.high24H(page.hour24High);
+         }
 
-         if (page.timestamp)
+         if (page.timestamp) {
              this.timestamp(page.timestamp);
+         }
 
-        if (page.broadcast.channelId.globalPages)
+        if (page.broadcast.channelId.globalPages) {
           this.updateCommonPage(page);
+        }
 
      };
 
+    /* jshint ignore: start */
     TemperatureVM.prototype.getTemplateName = function (item)
     {
        // return undefined;
          return "environment-template";
     };
+
+    /* jshint ignore: end */
 
     TemperatureVM.prototype.reset = function ()
     {
@@ -277,4 +293,3 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
     return TemperatureVM;
 
 });
-
