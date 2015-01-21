@@ -1,6 +1,6 @@
 /* global define: true, ko: true */
 
-define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (GenericVM, deviceProfileSPDCAD) {
+define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (GenericVM, deviceProfileSPDCAD) {
 
     'use strict';
 
@@ -17,8 +17,9 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         this.formattedTimestamp = ko.computed({
 
             read: function () {
-                if (this.timestamp && this.timestamp())
+                if (this.timestamp && this.timestamp()) {
                     return (new Date(this.timestamp())).toLocaleTimeString();
+                }
             }.bind(this)
         });
 
@@ -48,10 +49,11 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         this.formattedCadence = ko.computed({
 
             read: function () {
-                if (this.cadence() !== undefined)
+                if (this.cadence() !== undefined) {
                     return Math.round(this.cadence());
-                else
+                } else {
                     return '--.-';
+                }
 
             }.bind(this)
         });
@@ -76,19 +78,22 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
                         case SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL:
 
                             if (this.cumulativeDistance() > SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_METERS)
+                            {
                                 distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_METERS).toFixed(2);
-                            else
+                            } else {
                                 distStr = (this.cumulativeDistance() / SPDCADVM.prototype.CONVERSION_FACTOR.INTERNATIONAL_METERS).toFixed(3);
-
+                            }
                             break;
 
                         default:
 
-                            if (this.cumulativeDistance() < 1000)
+                            if (this.cumulativeDistance() < 1000) {
                                 distStr = (this.cumulativeDistance() / 1000).toFixed(3);
-                            else
+                            }
+                            else {
                                 distStr = (this.cumulativeDistance() / 1000).toFixed(2);
-                            break;
+                            }
+                                break;
                     }
                 }
 
@@ -164,15 +169,16 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
         {
             this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL);
 
-            for (pointNr=0, len = this.series.speed.xData.length; pointNr < len; pointNr++)
+            for (pointNr=0, len = this.series.speed.xData.length; pointNr < len; pointNr++) {
                   newSeriesData.push([this.series.speed.xData[pointNr],this.convert.fromKmToMile(this.series.speed.yData[pointNr])]);
-
+            }
         } else {
 
             this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.METRIC);
 
-            for (pointNr=0, len = this.series.speed.xData.length; pointNr < len; pointNr++)
+            for (pointNr=0, len = this.series.speed.xData.length; pointNr < len; pointNr++) {
                     newSeriesData.push([this.series.speed.xData[pointNr],this.convert.fromMileToKm(this.series.speed.yData[pointNr])]);
+            }
 
         }
 
@@ -205,15 +211,16 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
         // Init with global distance unit setting
 
-        if (this.rootVM.settingVM.mileDistanceUnit())
+        if (this.rootVM.settingVM.mileDistanceUnit()) {
            this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL);
-        else
+        }
+        else {
            this.distanceMode(SPDCADVM.prototype.DISTANCE_MODE.METRIC);
-
+        }
         // Update on subsequent changes
         this.rootVM.settingVM.mileDistanceUnit.subscribe(this.onDistanceModeChange.bind(this));
 
-        if (this.deviceType === 121 || this.deviceType === 122)
+        if (this.deviceType === 121 || this.deviceType === 122) {
           seriesOptions.cadence = {
                name: this.rootVM.languageVM.cadence().message,
                id: 'SPDCAD-cadence-' ,
@@ -243,14 +250,16 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
                visible : (function (vm)
                      {
-                         if (vm.deviceType === 121)
+                         if (vm.deviceType === 121) {
                            return false; // Turn of cadence, often just having speed available is the most relevant
-                         else
+                         } else {
                            return true;
+                         }
                      })(this)
            };
+        }
 
-        if (this.deviceType === 121 || this.deviceType === 123)
+        if (this.deviceType === 121 || this.deviceType === 123) {
 
            seriesOptions.speed = {
 
@@ -281,6 +290,7 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
                enableMouseTracking: false
 
            };
+        }
 
         this.addSeries(page, seriesOptions);
 
@@ -323,21 +333,26 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
 
         // Update view model
 
-        if (page.number !== undefined)
+        if (page.number !== undefined) {
             this.number(page.number);
-
-        if (page.timestamp)
-            this.timestamp(page.timestamp);
-
-        if (page.unCalibratedSpeed !== undefined) {
-            if (this.distanceMode() === SPDCADVM.prototype.DISTANCE_MODE.METRIC) // km/h
-                this.speed(3.6 * this.wheelCircumference() * page.unCalibratedSpeed);
-            else if (this.distanceMode() === SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL) // mph
-                this.speed(2.2369362920544 * this.wheelCircumference() * page.unCalibratedSpeed);
         }
 
-        if (page.cadence !== undefined)
+        if (page.timestamp) {
+            this.timestamp(page.timestamp);
+        }
+
+        if (page.unCalibratedSpeed !== undefined) {
+            if (this.distanceMode() === SPDCADVM.prototype.DISTANCE_MODE.METRIC) { // km/h
+                this.speed(3.6 * this.wheelCircumference() * page.unCalibratedSpeed);
+            }
+            else if (this.distanceMode() === SPDCADVM.prototype.DISTANCE_MODE.MILE_INTERNATIONAL) { // mph
+                this.speed(2.2369362920544 * this.wheelCircumference() * page.unCalibratedSpeed);
+            }
+        }
+
+        if (page.cadence !== undefined) {
             this.cadence(page.cadence);
+        }
 
         // Distance
 
@@ -347,9 +362,9 @@ define(['vm/genericVM', 'profiles/spdcad/deviceProfile_SPDCAD'], function (Gener
              // Only update cumulatated distance  when timer is running
 
               relativeCumulativeSpeedRevolutionCount = page.cumulativeSpeedRevolutionCount - this.previousCumulativeSpeedRevolutionCount;
-              if (relativeCumulativeSpeedRevolutionCount < 0) // In case of rollover
+              if (relativeCumulativeSpeedRevolutionCount < 0) { // In case of rollover
                 relativeCumulativeSpeedRevolutionCount += 0xFFFF; // Field is 2 bytes
-
+              }
               revolutionDistance = this.wheelCircumference()*relativeCumulativeSpeedRevolutionCount;
               previousCumulativeDistance = this.cumulativeDistance();
               this.cumulativeDistance(previousCumulativeDistance + revolutionDistance);

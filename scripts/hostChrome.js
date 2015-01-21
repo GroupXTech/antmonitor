@@ -21,8 +21,9 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
 
         this.logBackgroundPage('info', "User closed app window", this);
 
-        if (this.uiFrame)
+        if (this.uiFrame) {
             this.uiFrame.postMessage('clearTimers', '*');
+        }
 
         if (this.channel) {
             this.logBackgroundPage('log', 'Stopping channel', this.channel);
@@ -59,16 +60,18 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
         }
 
         if (!this.backgroundPageWindow) {
-            if (this.logger.logging)
+            if (this.logger.logging) {
                 this.logger.log('warn', 'Has no reference to the background window object - cannot log to background page');
-            return;
+            }
+                return;
         }
 
         var previousConsole = this.logger.console;
 
         if (!previousConsole) {
-            if (this.logger.logging)
+            if (this.logger.logging) {
                 this.logger.log('warn', 'Current console is undefined - cannot log to background page');
+            }
         }
 
         this.logger.changeConsole(this.backgroundPageWindow.console);
@@ -92,6 +95,8 @@ define(['root/generichostenvironment','messages/ResetSystemMessage'], function _
     };
 
     HostChrome.prototype.init = function () {
+
+      chrome.system.display.getInfo(function (arr) { console.log("Displays",arr);});
 
         chrome.runtime.getBackgroundPage(function _getBackgroundPage(bgWindow) {
             var loadStr;

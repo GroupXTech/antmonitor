@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <!-- Add meta tag/chartset for proper intepretation of special characters, e.g  º -->
+    <title>ANTmonitor</title>
+    <link href="/css/ui.css" rel="stylesheet" />
+    <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
+    <script src="bower_components/knockout/dist/knockout.debug.js"></script>
+
+    <!-- Some icons by Yusuke Kamiyamane http://creativecommons.org/licenses/by/3.0/  https://github.com/yusukekamiyamane/fugue-icons -->
+    <!--  Highcharts adapter -->
+    <script src="bower_components/highcharts/adapters/standalone-framework.src.js"></script>
+    <!--  Highcharts -->
+
+    <script src="bower_components/highcharts/highcharts.src.js"></script>
+    <!-- Requirejs https://github.com/jrburke/requirejs/blob/master/LICENSE -->
+    <script src="bower_components/requirejs/require.js"></script>
+    <!--<script src="/Scripts/require.min.js"></script>-->
+    <script src="/scripts/ui.js"></script>
+</head>
+<body>
+    <noscript>Javascript is not enabled in the ui frame - application will only work with javascript turned on. iframe sandbox-attribute flag 'allow-scripts' should be provided in parent frame.</noscript>
+    <div id="appRootVM">
+        <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
+        <script type="text/html" id="HRM-short-template">
+
+            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+                <div style="text-align: center" data-bind="if: computedHeartRate() > 0x00">
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
+                </div>
+                <div style="text-align: center" data-bind="if: computedHeartRate() === 0x00">
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
+                </div>
+                <div style="text-align: center" data-bind="if: RRInterval() >= 0x00">
+
+                    <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: RRInterval"></span>
+                    <span class="verticalAlignMiddle">ms (RR)</span>
+                </div>
+            </div>
+            <!--<span data-bind="text: ko.toJSON($data)"></span>-->
+        </script>
+        <script type="text/html" id="ENVIRONMENT-short-template">
+            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+
+                <div class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
+                </div>
+                <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.show24HMaxMin()">
+                    <span data-bind="html: formattedLow24H , style: { color : low24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
+                    <span>&darr;</span>
+                    <span style="margin-left: 10px" data-bind="html: formattedHigh24H , style: { color : high24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
+                    <span>&uarr;</span>
+                </div>
+                <div class="secondary-short-heading" data-bind="visible: name() !== undefined, text: name">
+                </div>
+            </div>
+            <!--   <span data-bind="text: ko.toJSON($data)"></span> -->
+        </script>
+        <script type="text/html" id="SPDCAD-short-template">
+            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+                <!-- SPEED -->
+                <div data-bind="visible: speed() !== undefined">
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
+
+                    <div style="display:inline" data-bind="if: distanceMode() === 1">
+                        <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_km_pr_h().message"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: distanceMode() === 2">
+                        <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_mph().message"></span>
+                    </div>
+                </div>
+                <!-- CADENCE -->
+                <div style="text-align: center" data-bind="visible: cadence() !== undefined">
+                    <div style="display:inline" data-bind="if: deviceType === 121">
+                        <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
+                    </div>
+                    <!-- Cadence sensor only -->
+                    <div style="display:inline" data-bind="if: deviceType === 122">
+                        <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
+                    </div>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+                </div>
+                <div data-bind="visible: cumulativeDistance() && (cumulativeDistance() !== 0)">
+                    <span class="tertiary-short-heading verticalAlignMiddle" data-bind="text: formattedCumulativeDistance"></span>
+                    <!-- unit km or mi -->
+                    <div style="display:inline" class="verticalAlignMiddle" data-bind="if: distanceMode() === 1">
+                        <span>km</span>
+                    </div>
+                    <div style="display:inline" class="verticalAlignMiddle" data-bind="if: distanceMode() === 2">
+                        <span>mi</span>
+                    </div>
+                </div>
+            </div>
+            <!--<span data-bind="text: ko.toJSON($data)"></span>-->
+        </script>
+        <script type="text/html" id="environment-template">
+            <li style="margin-bottom: 5px">
+
+                <!--<div id="flexIcon">
+                    <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: name, attr: {title: ('Sensor id. : '+sensorId+' '+name()) }" />
+                    <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !name, attr: {title: ('Sensor id. : '+sensorId) }" />
+
+                </div>-->
+                <div class="flex rowwrap spacearound centeritems">
+                    <!-- u = user own sensor, inspired by unix file permissions >
+                    <div>
+                        <span style="vertical-align: middle">u</span>
+                        <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                    </div> -->
+                    <div class="temperatureParagraph">
+                        <span data-bind="text: formattedCurrentTemp, style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"></span>
+                    </div>
+
+                    <div data-bind="visible: $root.settingVM.show24HMaxMin()">
+                        <div class="temperatureParagraph">
+                            <span data-bind="html: formattedLow24H , style: { color : low24H() < 0 ? '#3D76F5' : 'red'}"></span>
+                            <span>&darr;</span>
+                        </div>
+
+                    </div>
+
+                    <div data-bind="visible: $root.settingVM.show24HMaxMin()">
+                        <div class="temperatureParagraph">
+                            <span data-bind="html: formattedHigh24H, style: { color : high24H() < 0 ? '#3D76F5' : 'red'}"></span>
+                            <span>&uarr;</span>
+                        </div>
+                    </div>
+                    <input class="location" data-bind="value: name, valueUpdate: 'afterkeydown', attr: { placeholder : $root.languageVM.location().message }" />
+                    <span class="timestamp" data-bind="text: formattedTimestamp"></span>
+                </div>
+
+                <!-- Background pages -->
+                <div class="flex rowwrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+                    <!--<div style="display:inline" data-bind="if: _page.broadcast.RSSI !== undefined && _page.broadcast.RSSI.measurementType === 0x20">
+                        <span data-bind="text: 'RSSI '+_page.broadcast.RSSI.RSSIValue+' dBm'"></span>
+                        <meter min="-127" max="128" data-bind="attr: {value: _page.broadcast.RSSI.RSSIValue }"></meter>
+                        <div style="display: inline" data-bind="if: _page.broadcast.RSSI.thresholdConfigurationValue === -128">
+                            <span>Threshold OFF </span>
+                        </div>
+                        <div style="display: inline" data-bind="if: _page.broadcast.RSSI.thresholdConfigurationValue !== -128">
+
+                            <span data-bind="text: 'Threshold '+_page.broadcast.RSSI.thresholdConfigurationValue+' dBm'"></span>
+                        </div>
+                    </div>-->
+                    <span data-bind="text: sensorId"></span>
+                    <div style="display:inline" data-bind="visible: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="visible: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="visible: (cumulativeOperatingTime() !== undefined) ">
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
+                        </div>
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
+                    </div>
+                </div>
+                <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+
+            </li>
+        </script>
+        <script type="text/html" id="footpod-template">
+            <li>
+                <div>
+                    <img class="icon" src="icon/footpod.png" alt="Footpod" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />
+                    <span data-bind="text: formattedSpeed"></span>
+                    <span data-bind="text: formattedCumulativeDistance"></span>
+                    <span data-bind="text: formattedCadence()+' spm'"></span>
+                    <!--<span data-bind="text: distance"></span>-->
+                    <span data-bind="text: cumulativeStrides"></span>
+
+                    <span data-bind="text: status.UseStateFriendly(), visible: status.UseState() === 0"></span>
+                    <span data-bind="text: formattedTimestamp"></span>
+                </div>
+                <!-- Background pages -->
+                <div class="flex rowwrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+                    <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
+                        </div>
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
+                    </div>
+                    <div style="display: inline">
+                        <span data-bind="text: 'Time '+time()+' s'"></span>
+                        <span data-bind="text: 'Stride '+strideCount()"></span>
+                        <span data-bind="text: 'Use '+status.UseStateFriendly()"></span>
+                        <span data-bind="text: 'Health '+status.SDMHealthFriendly()"></span>
+                        <span data-bind="text: 'Location '+status.SDMLocationFriendly()"></span>
+                        <span data-bind="text: 'Latency '+ updateLatency()+ 's'"></span>
+                    </div>
+                </div>
+                <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+            </li>
+        </script>
+        <script type="text/html" id="spdcad-template">
+            <li style="margin-bottom: 5px">
+
+                <!--<div id="flexIcon">
+                    <img class="icon" src="icon/spdcad.png" alt="SPDCAD" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />
+
+                </div>-->
+                <!-- Main page-->
+                <div class="flex rowwrap spacearound centeritems">
+
+                    <!--<div>
+                            <span>Speed</span>-->
+                    <!-- Using name= property to group radio buttons generates exception inside template-->
+                    <!--<input type="radio" value="2" data-bind="checked: speedMode() === 2" />
+
+                        <span>Tempo</span>
+                        <input type="radio" value="1" data-bind="checked: speedMode() !== 2" />
+
+                    </div>-->
+                    <div>
+                        <span style="vertical-align: middle">u</span>
+                        <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                    </div>
+
+                    <div>
+                        <!-- Right adjust number, remember inline doesnt have height or width -> use inline-block -->
+                        <div style="text-align: right; width: 65px; display: inline-block">
+                            <span data-bind="text: formattedSpeed"></span>
+                        </div>
+                        <div style="display:inline" data-bind="if: distanceMode() === 1">
+                            <span data-bind="text:' '+$root.languageVM.unit_km_pr_h().message"></span>
+                        </div>
+
+                        <div style="display:inline" data-bind="if: distanceMode() === 2">
+                            <span data-bind="text:' '+$root.languageVM.unit_mph().message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Cadence -->
+                    <div>
+                        <!-- Right adjust number, remember inline doesnt have height or width -> use inline-block -->
+                        <div style="text-align: right; width: 65px; display: inline-block">
+                            <span class="verticalAlignMiddle" data-bind="text: formattedCadence"></span>
+                        </div>
+                        <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+                    </div>
+                    <div data-bind="visible: cumulativeDistance() && (cumulativeDistance() !== 0)">
+                        <span data-bind="text: formattedCumulativeDistance"></span>
+
+                        <!-- unit km or mi -->
+                        <div style="display:inline" data-bind="if: distanceMode() === 1">
+                            <span>km</span>
+                        </div>
+                        <div style="display:inline" data-bind="if: distanceMode() === 2">
+                            <span>mi</span>
+                        </div>
+
+                    </div>
+                    <div>
+                        <!-- Min/max Based on info from https://support.garmin.com/support/searchSupport/case.faces?caseId=%7B8c7b7b10-0424-11de-76c5-000000000000%7D -->
+                        <label class="verticalAlignMiddle" data-bind="text: $root.languageVM.spdcad_wheel_circumference().message"></label>
+                        <input style="padding-bottom: 0px; padding-top: 0px" class="verticalAlignMiddle" id="wheelCircumference" type="range" step="0.001" min="2.0" max="2.2" data-bind="value: formattedWheelCircumference, valueUpdate: 'input'" />
+                        <span style="margin-left: 3px" data-bind="text: formattedWheelCircumference()+' m'" />
+                    </div>
+                    <span data-bind="text: formattedTimestamp"></span>
+                </div>
+                <!-- Background pages -->
+
+                <div class="flex rowwrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+                    <span data-bind="text: sensorId"></span>
+                    <div style="display:inline" data-bind="if: manufacturerString() !== undefined ">
+                        <span data-bind="text: manufacturerString"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: softwareVersion() !== undefined ">
+                        <span data-bind="text: 'HW '+hardwareVersion() +' SW '+softwareVersion()+' Model '+modelNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
+                        </div>
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
+
+                    </div>
+                </div>
+            </li>
+        </script>
+        <script type="text/html" id="HRM-template">
+            <li style="margin-bottom: 5px">
+                <div class="flex rownowrap spacearound centeritems">
+                    <!--<img class="icon" src="icon/heart.png" alt="Heart Rate Monitor" data-bind="attr: {title: ('Sensor id. : '+sensorId) }" />-->
+                    <div>
+                        <span style="vertical-align: middle">u</span>
+                        <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                    </div>
+                    <div style="text-align: center" data-bind="if: computedHeartRate !== 0x00">
+                        <span style="vertical-align: middle" data-bind="text: computedHeartRate"></span>
+                        <span style="vertical-align: middle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
+                    </div>
+                    <div data-bind="if: computedHeartRate === 0x00">
+                        <span style="vertical-align: middle">---</span>
+                        <span style="vertical-align: middle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
+                    </div>
+                    <div style="text-align: center">
+                        <span style="vertical-align: middle" data-bind="text: RRInterval"></span>
+                        <span style="vertical-align: middle">ms (RR)</span>
+                    </div>
+                </div>
+                <div class="flex rownowrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                    <span data-bind="text: sensorId"></span>
+                    <!-- HRM page 2 - background -->
+                    <div style="display:inline" data-bind="if: manufacturerString() !== undefined ">
+                        <span data-bind="text: manufacturerString"></span>
+                    </div>
+                    <!-- HRM page 3 - background -->
+                    <div style="display:inline" data-bind="if: softwareVersion() !== undefined ">
+                        <span data-bind="text: 'HW '+hardwareVersion() +' SW '+softwareVersion()+' Model '+modelNumber()"></span>
+                    </div>
+                    <!-- HRM page 1 - background -->
+                    <div style="display:inline" data-bind="if: (cumulativeOperatingTime() !== undefined) ">
+                        <span data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                    </div>
+                </div>
+                <!--<div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+            </li>
+        </script>
+        <!-- Top level menu -->
+        <nav id="appToolbar" class="flex rowwrap spacearound centeritems toolbarBackground">
+            <div>
+                <a data-bind="click: settingVM.toggleShowCredits">
+                    <img class="icon" alt="About ANTmonitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" data-bind="attr: { title: languageVM.ant_monitor().details }" />
+                    <label style="vertical-align: middle; margin-left : 3px">ANTmonitor</label>
+                </a>
+            </div>
+            <div class="flex rownowrap flexstart centeritems">
+                <a class="tabItem" id="aMain" href="#tabMain" data-bind="attr: {title: languageVM.anchor_sensors().details}">
+                    <img src="icon/sensorgraph.png" class="icon" style="vertical-align: middle; padding-left: 3px" />
+                    <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400" data-bind="text: languageVM.anchor_sensors().message"></span>
+                </a>
+                <div data-bind="if: (sensorVM.devices.HRM().length || sensorVM.devices.SPDCAD().length || sensorVM.devices.ENVIRONMENT().length)">
+                    <div class="flex rownowrap centeritems flexstart">
+                        <!-- ko if: (sensorVM.devices.HRM().length)  -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.HRM() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'HRM')">
+                            <img class="icon" src="icon/heart.png" alt="Turn on/off visibility of Heart Rate Monitors" /><sub data-bind="text: sensorVM.devices.HRM().length"></sub>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
+                            <img class="icon" src="icon/spdcad.png" alt="Turn on/off visibility of Speed and cadence sensors" /><sub data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
+                            <img class="icon" src="icon/temperature.png" alt="Turn on/off visibility of Environment sensors" /><sub data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex rownowrap flexstart centeritems">
+                <a class="tabItem" id="aSettings" href="#tabSettings" data-bind="attr: {title: languageVM.anchor_settings().details}">
+                    <img src="icon/fugue/settings.png" class="icon" style="vertical-align: middle; padding-left: 3px" />
+                    <span style="margin-right: 3px; margin-left: 3px; vertical-align: middle;font-size:12px; font-weight: 400" data-bind="text: languageVM.anchor_settings().message"></span>
+                </a>
+            </div>
+
+            <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
+            <div id="divENUMERATEDDEVICE">
+                <div data-bind="if: deviceVM.enumeratedDevice().length > 1">
+                    <img src="icon/ant_usb.png" alt="Device" />
+                    <select data-bind="options: deviceVM.enumeratedDevice, optionsText: 'name', value: deviceVM.selectedDevice, optionsCaption: 'Device...', enable:  deviceVM.enumeratedDevice().length > 1"></select>
+                </div>
+                <div data-bind="if: deviceVM.enumeratedDevice().length ===  1">
+                    <img src="icon/ant_usb.png" alt="ANT USB Device" />
+                    <span data-bind="text: deviceVM.enumeratedDevice()[0].name"></span>
+                </div>
+                <div data-bind="if: deviceVM.enumeratedDevice().length ===  0 && deviceVM.enumerationCompleted()">
+                    <img src="icon/no_ant_usb.png" alt="No ANT device" />
+                    <span>No ANT device found</span>
+                </div>
+            </div>
+            <!-- ko if: settingVM.showTimer() -->
+
+            <div id="divTimer" class="flex spacearound centeritems rowwrap">
+                <ul id="ulTimer">
+                    <!-- http://css-tricks.com/almanac/properties/v/vertical-align/ -->
+                    <li>
+                        <button class="btnTimer" data-bind="click: timerVM.reset">
+                            <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_reset().message"></span>
+                            <img class="verticalAlignMiddle" src="icon/refresh.png" />
+                        </button>
+                    </li>
+
+                    <li>
+                        <button class="btnTimer" data-bind="click: timerVM.start">
+                            <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_start().message"></span>
+                            <img class="verticalAlignMiddle" src="icon/start.png" />
+                        </button>
+                    </li>
+
+                    <li>
+                        <button class="btnTimer" data-bind="click: timerVM.lap">
+                            <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_lap().message"></span>
+                            <img class="verticalAlignMiddle" src="icon/lap.png" />
+                        </button>
+                    </li>
+
+                    <li>
+                        <button class="btnTimer" data-bind="click: timerVM.stop">
+                            <span class="spanTimer verticalAlignMiddle" data-bind="text: languageVM.timer_stop().message"></span>
+                            <img class="verticalAlignMiddle" src="icon/stop.png" />
+                        </button>
+                    </li>
+                </ul>
+                <div id="divTimeInfo" class="flex flexstart">
+                    <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap">
+                        <span style="margin-left : 3px;margin-right: 5px" class="spanElapsedTimer" data-bind="text: languageVM.timer_total_elapsed_time().message"></span>
+                        <span id="timerTotalElapsedTime" data-bind="text: timerVM.getFormattedTotalElapsedTime()"></span>
+                    </div>
+                    <div id="divLapElapsedTime" class="flex spacearound centeritems rowwrap" style="margin-left : 5px">
+                        <span style="margin-right: 5px" class="spanElapsedTimer" data-bind="text: languageVM.timer_lap_time().message"></span>
+                        <span id="timerLapElapsedTime" data-bind="text: timerVM.getFormattedLapElapsedTime()">
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!-- /ko -->
+        </nav>
+        <div data-bind="visible: settingVM.showCredits" id="divCredits">
+            <div id="innerDivCredits">
+                <!-- http://stackoverflow.com/questions/3106290/align-icons-with-text -->
+                <h2><img class="icon verticalAlignMiddle" src='images/icon-128.png' /><span class="verticalAlignMiddle" style="margin-left : 3px">ANTmonitor</span></h2>
+                <p data-bind="text: languageVM.about_part1().message"><p>
+                    <!--<p data-bind="text: languageVM.about_part2"></p>-->
+                    <h3 data-bind="text: languageVM.libraries().message"></h3>
+                    <ul>
+                        <li>
+                            <a href="http://wwww.highcharts.com" target="_blank">Highcharts</a>
+                        </li>
+                        <li>
+                            <a href="http://knockoutjs.com/index.html" target="_blank">Knockoutjs</a>
+                        </li>
+                        <li>
+                            <a href="http://requirejs.org/" target="_blank">Requirejs</a>
+                        </li>
+                    </ul>
+                    <h3 data-bind="text: languageVM.icons().message"></h3>
+                    <ul>
+                        <li>
+                            <a href="https://github.com/yusukekamiyamane/fugue-icons" target="_blank">Fugue Icons</a>
+                        </li>
+                        <li>
+                            <a href="http://www.visualpharm.com" target="_blank">Visual Pharm</a>
+                        </li>
+                    </ul>
+
+                    <!-- http://stackoverflow.com/questions/4932686/how-do-you-markup-a-date-range-with-the-html5-time-tag -->
+                <p><span data-bind="text: languageVM.about_part3().message"></span> <a href="https://github.com/hkskoglund/libant" target="_blank">Libant</a> <span data-bind="text: languageVM.about_part4().message"></span>, <time datetime="2013/2014">2013&ndash;2014</time></p>
+                <p><span data-bind="text: languageVM.about_licence_label().message"></span><a style="margin-left: 5px" href="https://creativecommons.org/licenses/by-nc-nd/3.0/" target="_blank" data-bind="text: languageVM.about_licence_noncommercial().message"></a></p>
+            </div>
+        </div>
+
+        <div id="tabMain" class="hidden">
+            <div id="flexShortSensorInfo" class="flex rowwrap spacearound flexstartitems">
+                <!-- Don't render DOM if sensors for a device type is not available by using ko directive inside comment -->
+                <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
+                <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
+                    <a href="#tabHRM" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.heartrate().details }">
+                        <img class=" icon verticalAlignMiddle" src="icon/heart.png" />
+                        <span class="verticalAlignMiddle" data-bind="text: languageVM.heartrate().message"></span>
+                    </a>
+
+                    <div id="divHRMshort" class="div-sensor-short">
+                        <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
+                <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
+                    <a href="#tabSPDCAD" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.speedandcadence().details }">
+                        <img class="icon verticalAlignMiddle" src="icon/spdcad.png" />
+                        <span class="verticalAlignMiddle" data-bind="text: languageVM.speedandcadence().message"></span>
+                    </a>
+                    <div id="divSPDCADshort" class="div-sensor-short">
+                        <ul id="ulSPDCADshort" class="liststylenone" data-bind="template: { name : 'SPDCAD-short-template', foreach: sensorVM.devices.SPDCAD }"></ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
+                <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
+                    <a href="#tabEnvironment" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.temperature_overview().details }">
+                        <img class="icon verticalAlignMiddle" src="icon/temperature.png" />
+                        <span class="verticalAlignMiddle" data-bind="text: languageVM.temperature().message"></span>
+                    </a>
+                    <div id="divENVIRONMENTshort" class="div-sensor-short">
+                        <ul id="ulENVIRONMENTshort" class="liststylenone" data-bind="template: { name : 'ENVIRONMENT-short-template', foreach: sensorVM.devices.ENVIRONMENT}"></ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+            <!-- Integrated chart with measurements from all sensors -->
+            <div id="sensorChart-integrated">
+            </div>
+        </div>
+        <div id="tabEnvironment" class="hidden">
+            <h1 class="tabHeading"><img src="icon/temperature-icon-128.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.temperature_overview().message"></span></h1>
+
+            <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.ENVIRONMENT}"></ul>
+        </div>
+        <div id="tabSPDCAD" class="hidden">
+            <h1 class="tabHeading"><img src="icon/spdcad.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.spdcad_overview().message"></span></h1>
+            <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.SPDCAD}"></ul>
+        </div>
+        <div id="tabHRM" class="hidden">
+            <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.hrm_overview().message"></span></h1>
+            <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.HRM}"></ul>
+        </div>
+        <div id="tabSettings" class="hidden">
+            <h2>
+                <img src="icon/fugue/settings.png" class="icon verticalAlignMiddle" />
+                <span class="verticalAlignMiddle" data-bind="text: languageVM.anchor_settings().message"></span>
+            </h2>
+            <ul style="list-style: none">
+                <li>
+                    <input id="settingVM-mile-distance-unit" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.mileDistanceUnit" />
+                    <!-- Making labels clickable http://www.2ality.com/2014/04/html-label.html  -->
+                    <label for="settingVM-mile-distance-unit" data-bind="text:languageVM.setting_distance_mile().message"></label>
+                </li>
+                <li>
+                    <input id="settingVM-show-additional-info" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.showAdditionalInfo" />
+                    <label for="settingVM-show-additional-info" data-bind="text:languageVM.setting_background_page_info().message"></label>
+                </li>
+                <li>
+                    <h3 data-bind="text: $root.languageVM.temperature().message"></h3>
+                </li>
+                <li>
+                    <input id="settingVM-fahrenheit" class="verticalAlignMiddle" type="checkbox" data-bind="checked: $root.settingVM.fahrenheit" />
+                    <label for="settingVM-fahrenheit" data-bind="text:languageVM.setting_temperature_fahrenheit().message"></label>
+                    &degF
+                </li>
+                <li>
+                    <input id="settingVM-show24HMaxMin" type="checkbox" data-bind="checked: settingVM.show24HMaxMin">
+                    <label for="settingVM-show24HMaxMin"><span data-bind="text: languageVM.minimum().abbreviated"></span>&darr; / <span data-bind="text: languageVM.maximum().abbreviated"></span>&uarr;</label>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>   

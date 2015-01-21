@@ -110,7 +110,10 @@ define(['logger'], function _requireDefine(Logger) {
 
             default:
 
-                if (this.logger && this.logger.logging) this.logger.log('error', 'Unable to do anything with data response', data);
+                if (this.logger && this.logger.logging) {
+                    this.logger.log('error', 'Unable to do anything with data response', data);
+                }
+
                 break;
         }
 
