@@ -34,6 +34,10 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
             return this.getMessage('cadence');
         }.bind(this));
 
+        this.power = ko.computed(function () {
+            return this.getMessage('power');
+        }.bind(this));
+
 
         this.anchor_sensors = ko.computed(function () {
             return this.getMessage('anchor_sensors');
@@ -145,6 +149,10 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
 
            return this.getMessage('timer_lap_time');
 
+        }.bind(this));
+
+        this.unit_power = ko.computed(function () {
+            return this.getMessage('unit_power');
         }.bind(this));
 
         this.unit_cadence = ko.computed(function () {

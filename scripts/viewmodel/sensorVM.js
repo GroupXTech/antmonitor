@@ -19,7 +19,8 @@ define(['vm/genericVM'], function(GenericVM) {
         this.devices = {
             HRM: ko.observableArray(),
             ENVIRONMENT: ko.observableArray(),
-            SPDCAD: ko.observableArray()
+            SPDCAD: ko.observableArray(),
+            BIKE_POWER : ko.observableArray()
         };
 
     }

@@ -23,6 +23,25 @@
     <noscript>Javascript is not enabled in the ui frame - application will only work with javascript turned on. iframe sandbox-attribute flag 'allow-scripts' should be provided in parent frame.</noscript>
     <div id="appRootVM">
         <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
+         <script type="text/html" id="bike-power-short-template">
+
+            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+                <div style="text-align: center" data-bind="if: instantaneousPower() > 0x00">
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: instantaneousPower "></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
+                </div>
+                <div style="text-align: center" data-bind="if: instantaneousPower() === 0x00">
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
+                </div>
+              <!--  <div style="text-align: center" data-bind="if: RRInterval() >= 0x00">
+
+                    <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: RRInterval"></span>
+                    <span class="verticalAlignMiddle">ms (RR)</span>
+                </div>-->
+            </div>
+            <!--<span data-bind="text: ko.toJSON($data)"></span>-->
+        </script>
         <script type="text/html" id="HRM-short-template">
 
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
@@ -514,6 +533,18 @@
 
                     <div id="divHRMshort" class="div-sensor-short">
                         <ul id="ulHRMshort" class="liststylenone" data-bind="template: { name : 'HRM-short-template', foreach: sensorVM.devices.HRM}"></ul>
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: (settingVM.showSensors.BIKE_POWER() && sensorVM.devices.BIKE_POWER().length > 0) -->
+                <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
+                    <a href="#tabBIKE_POWER" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.power().details }">
+                        <img class=" icon verticalAlignMiddle" src="icon/power24x24.png" />
+                        <span class="verticalAlignMiddle" data-bind="text: languageVM.power().message"></span>
+                    </a>
+
+                    <div id="divBIKE_POWERshort" class="div-sensor-short">
+                        <ul id="ulBIKE_POWERshort" class="liststylenone" data-bind="template: { name : 'bike-power-short-template', foreach: sensorVM.devices.BIKE_POWER}"></ul>
                     </div>
                 </div>
                 <!-- /ko -->

@@ -34,6 +34,8 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
 
             ENVIRONMENT : ko.observable(true),
 
+            BIKE_POWER : ko.observable(true)
+
         };
 
         this.showTimer = ko.observable(true);

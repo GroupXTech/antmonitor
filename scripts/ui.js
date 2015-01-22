@@ -46,8 +46,8 @@
 
         // Linux filenames are case sensitive -> can get resource loading problems if module id does not match filename exactly
 
-        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/HRMVM', 'vm/SPDCADVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger'],
-            function (SensorVM,TemperatureVM,FootpodVM,HRMVM,SPDCADVM,TimerVM,SettingVM,LanguageVM,Timer,Logger) {
+        requirejs(['vm/sensorVM', 'vm/temperatureVM', 'vm/footpodVM', 'vm/heartRateVM', 'vm/bikeSpeedCadenceVM', 'vm/bikePowerVM', 'vm/timerVM', 'vm/settingVM', 'vm/languageVM','scripts/timer','logger'],
+            function (SensorVM,TemperatureVM,FootpodVM,heartRateVM,bikeSpeedCadenceVM,BikePowerVM,TimerVM,SettingVM,LanguageVM,Timer,Logger) {
 
 
                 this.logger = new Logger({ log: true, logSource : this });
@@ -68,8 +68,9 @@
                 this.module = {
                     FootpodVM : FootpodVM,
                     TemperatureVM : TemperatureVM,
-                    HRMVM : HRMVM,
-                    SPDCADVM : SPDCADVM,
+                    heartRateVM : heartRateVM,
+                    bikeSpeedCadenceVM : bikeSpeedCadenceVM,
+                    bikePowerVM : BikePowerVM,
                     TimerVM : TimerVM,
                     SettingVM : SettingVM,
                     LanguageVM : LanguageVM,
@@ -812,6 +813,13 @@
 
          switch (deviceType) {
 
+            case 0x0B:
+
+                 Viewmodel = this.module.bikePowerVM;
+                 deviceSeries = rootVM.sensorVM.devices.BIKE_POWER;
+
+                 break;
+
             case 25:
 
                  Viewmodel = this.module.TemperatureVM;
@@ -821,7 +829,7 @@
 
             case 120:
 
-                  Viewmodel = this.module.HRMVM;
+                  Viewmodel = this.module.heartRateVM;
                   deviceSeries = rootVM.sensorVM.devices.HRM;
 
                  break;
@@ -831,7 +839,7 @@
             case 122: // Bike cadence
             case 123: // Bike speed
 
-                 Viewmodel = this.module.SPDCADVM;
+                 Viewmodel = this.module.bikeSpeedCadenceVM;
                  deviceSeries = rootVM.sensorVM.devices.SPDCAD;
 
                 break;
@@ -893,4 +901,3 @@
     void new ANTmonitorUI();
 
 })();
-

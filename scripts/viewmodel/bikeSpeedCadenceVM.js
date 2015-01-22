@@ -377,10 +377,12 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
 
     };
 
+    /* jshint ignore: start */
     SPDCADVM.prototype.getTemplateName = function (item) {
         // return undefined;
         return "spdcad-template";
     };
+    /* jshint ignore: end */
 
     SPDCADVM.prototype.reset = function () {
         this.number(undefined);

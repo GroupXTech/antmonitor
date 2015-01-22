@@ -20,6 +20,11 @@ define(function _defineLanguageResource() {
                 message: 'Hastighet'
             },
 
+            power: {
+              message: 'Kraft',
+              details: 'Vis kraft oversikt'
+            },
+
             cadence: {
                 message: 'Kadens'
             },
@@ -135,6 +140,10 @@ define(function _defineLanguageResource() {
                message : 'opm'
             },
 
+            unit_power : {
+               message : 'W'
+            },
+
             unit_bpm: {
                 message: 'spm'
             },
@@ -181,6 +190,11 @@ define(function _defineLanguageResource() {
 
             speed: {
                 message: 'Speed'
+            },
+
+            power: {
+              message: 'Power',
+              details: 'Show power details'
             },
 
             cadence: {
@@ -293,6 +307,10 @@ define(function _defineLanguageResource() {
 
              unit_cadence : {
                message : 'rpm'
+            },
+
+             unit_power : {
+               message : 'W'
             },
 
 
