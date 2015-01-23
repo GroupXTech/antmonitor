@@ -153,10 +153,6 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         //this.batteryStatusString("Good");
         //this.cumulativeOperatingTime(2);
 
-        if (!page.broadcast.channelId.globalPages) {
-          return;
-        }
-
         switch (page.number) {
 
             case BackgroundPage.prototype.COMMON.PAGE0x50:

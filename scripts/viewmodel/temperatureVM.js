@@ -264,9 +264,7 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
              this.timestamp(page.timestamp);
          }
 
-        if (page.broadcast.channelId.globalPages) {
           this.updateCommonPage(page);
-        }
 
      };
 
