@@ -545,7 +545,7 @@
                         //text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
                         text : null,
                         style: {
-                            color: 'yellow',
+                            color: 'orange',
                             fontSize: '16px',
                             fontWeight: 'bold'
                         }
@@ -573,7 +573,7 @@
                     {
                         enabled: true,
                         style: {
-                            color: 'yellow',
+                            color: 'orange',
                             fontWeight: 'bold',
                             fontSize: '16px'
                         }

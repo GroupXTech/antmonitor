@@ -21,29 +21,38 @@
 </head>
 <body>
     <noscript>Javascript is not enabled in the ui frame - application will only work with javascript turned on. iframe sandbox-attribute flag 'allow-scripts' should be provided in parent frame.</noscript>
-    <div id="appRootVM">
-        <!-- Knockout templates - used in sensor measurement details section #ulMeasurements -->
-         <script type="text/html" id="bike-power-short-template">
 
+    <div id="appRootVM">
+
+        <!-- Knockout TEMPLATES for databinding -->
+
+        <script type="text/html" id="bike-power-short-template">
+           <li>
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+
                 <div style="text-align: center" data-bind="if: instantaneousPower() > 0x00">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: instantaneousPower "></span>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
                 </div>
+
                 <div style="text-align: center" data-bind="if: instantaneousPower() === 0x00">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
                 </div>
-              <!--  <div style="text-align: center" data-bind="if: RRInterval() >= 0x00">
 
-                    <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: RRInterval"></span>
-                    <span class="verticalAlignMiddle">ms (RR)</span>
-                </div>-->
-            </div>
+                <div style="text-align: center" data-bind="if: instantaneousCadence() >= 0x00">
+
+                    <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: instantaneousCadence" ></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+                </div>
+
+             </div>
+          </li>
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
-        <script type="text/html" id="HRM-short-template">
 
+        <script type="text/html" id="HRM-short-template">
+            <li>
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
                 <div style="text-align: center" data-bind="if: computedHeartRate() > 0x00">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
@@ -59,26 +68,32 @@
                     <span class="verticalAlignMiddle">ms (RR)</span>
                 </div>
             </div>
+            </li>
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
-        <script type="text/html" id="ENVIRONMENT-short-template">
-            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
-                <div class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
+        <script type="text/html" id="ENVIRONMENT-short-template">
+            <li>
+                <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+
+                    <div class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
+                    </div>
+                    <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.show24HMaxMin()">
+                        <span data-bind="html: formattedLow24H , style: { color : low24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
+                        <span>&darr;</span>
+                        <span style="margin-left: 10px" data-bind="html: formattedHigh24H , style: { color : high24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
+                        <span>&uarr;</span>
+                    </div>
+                    <div class="secondary-short-heading" data-bind="visible: name() !== undefined, text: name">
+                    </div>
                 </div>
-                <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.show24HMaxMin()">
-                    <span data-bind="html: formattedLow24H , style: { color : low24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
-                    <span>&darr;</span>
-                    <span style="margin-left: 10px" data-bind="html: formattedHigh24H , style: { color : high24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
-                    <span>&uarr;</span>
-                </div>
-                <div class="secondary-short-heading" data-bind="visible: name() !== undefined, text: name">
-                </div>
-            </div>
+            </li>
             <!--   <span data-bind="text: ko.toJSON($data)"></span> -->
         </script>
+
         <script type="text/html" id="SPDCAD-short-template">
-            <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
+           <li>
+                <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
                 <!-- SPEED -->
                 <div data-bind="visible: speed() !== undefined">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
@@ -112,8 +127,10 @@
                     </div>
                 </div>
             </div>
+            </li>
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
         </script>
+
         <script type="text/html" id="environment-template">
             <li style="margin-bottom: 5px">
 
@@ -192,6 +209,7 @@
 
             </li>
         </script>
+
         <script type="text/html" id="footpod-template">
             <li>
                 <div>
@@ -242,6 +260,7 @@
                 <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
             </li>
         </script>
+
         <script type="text/html" id="spdcad-template">
             <li style="margin-bottom: 5px">
 
@@ -345,6 +364,7 @@
                 </div>
             </li>
         </script>
+
         <script type="text/html" id="HRM-template">
             <li style="margin-bottom: 5px">
                 <div class="flex rownowrap spacearound centeritems">
@@ -384,7 +404,9 @@
                 <!--<div class="HRMChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
             </li>
         </script>
+
         <!-- Top level menu -->
+
         <nav id="appToolbar" class="flex rowwrap spacearound centeritems toolbarBackground">
             <div>
                 <a data-bind="click: settingVM.toggleShowCredits">
@@ -404,11 +426,19 @@
                             <img class="icon" src="icon/heart.png" alt="Turn on/off visibility of Heart Rate Monitors" /><sub data-bind="text: sensorVM.devices.HRM().length"></sub>
                         </div>
                         <!-- /ko -->
+
                         <!-- ko if: (sensorVM.devices.SPDCAD().length) -->
                         <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.SPDCAD() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'SPDCAD')">
                             <img class="icon" src="icon/spdcad.png" alt="Turn on/off visibility of Speed and cadence sensors" /><sub data-bind="text: sensorVM.devices.SPDCAD().length"></sub>
                         </div>
                         <!-- /ko -->
+
+                         <!-- ko if: (sensorVM.devices.BIKE_POWER().length) -->
+                        <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.BIKE_POWER() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'BIKE_POWER')">
+                            <img class="icon" src="icon/iconfinder/power24x24.png" alt="Turn on/off visibility of power sensors" /><sub data-bind="text: sensorVM.devices.BIKE_POWER().length"></sub>
+                        </div>
+                        <!-- /ko -->
+
                         <!-- ko if: (sensorVM.devices.ENVIRONMENT().length) -->
                         <div class="inlineml" data-bind="style: { opacity: settingVM.showSensors.ENVIRONMENT() ? 1 : 0.3 }, click : settingVM.toggleShowSensor.bind($data,'ENVIRONMENT')">
                             <img class="icon" src="icon/temperature.png" alt="Turn on/off visibility of Environment sensors" /><sub data-bind="text: sensorVM.devices.ENVIRONMENT().length"></sub>

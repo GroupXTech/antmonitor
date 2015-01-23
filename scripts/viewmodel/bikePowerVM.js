@@ -58,7 +58,7 @@ define(['vm/genericVM'], function (GenericVM) {
 
                name: this.rootVM.languageVM.power().message,
                id: 'bike-instantaneousPower-',
-               color: 'yellow',
+               color: 'orange',
                data: [], // tuples [timestamp,value]
                type: 'spline',
 
@@ -124,6 +124,11 @@ define(['vm/genericVM'], function (GenericVM) {
             this.instantaneousPower(page.instantaneousPower);
         }
 
+
+        if (page.instantaneousCadence !== undefined) {
+            this.instantaneousCadence(page.instantaneousCadence);
+        }
+
         this.updateBackgroundPage(page); // Background pages 1-3
 
     };
@@ -139,6 +144,7 @@ define(['vm/genericVM'], function (GenericVM) {
         this.number(undefined);
         this.timestamp(undefined);
         this.instantaneousPower(undefined);
+        this.instantaneousCadence(undefined);
 
         GenericVM.prototype.reset.call(this);
 
