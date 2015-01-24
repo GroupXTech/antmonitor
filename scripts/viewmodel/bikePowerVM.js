@@ -57,7 +57,7 @@ define(['vm/genericVM'], function (GenericVM) {
            seriesOptions.instantaneousPower = {
 
                name: this.rootVM.languageVM.power().message,
-               id: 'bike-instantaneousPower-',
+               id: 'BIKE_POWER-instantaneousPower-',
                color: 'orange',
                data: [], // tuples [timestamp,value]
                type: 'spline',
@@ -84,6 +84,38 @@ define(['vm/genericVM'], function (GenericVM) {
 
            };
 
+         seriesOptions.instantaneousCadence = {
+               name: this.rootVM.languageVM.cadence().message,
+               id: 'BIKE_POWER-instantaneousCadence' ,
+               color: 'magenta',
+               data: [], // tuples [timestamp,value]
+               type: 'spline',
+
+               marker: {
+                   enabled: false
+                   // radius : 2
+               },
+
+               yAxis: 4,
+
+               tooltip: {
+                   enabled: false
+               },
+
+               //tooltip: {
+               //    valueDecimals: 0,
+               //    valueSuffix: ' bpm'
+               //},
+
+             visible : false,
+
+               // Disable generation of tooltip data for mouse tracking - improve performance
+
+               enableMouseTracking: false,
+
+
+           };
+
         this.addSeries(page, seriesOptions);
 
         this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
@@ -100,6 +132,11 @@ define(['vm/genericVM'], function (GenericVM) {
         if (page.instantaneousPower !== undefined) {
 
             this.series.instantaneousPower.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.instantaneousPower], false, false, false);
+        }
+
+        if (page.instantaneousCadence !== undefined) {
+
+            this.series.instantaneousCadence.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.instantaneousCadence], false, false, false);
         }
 
     };
@@ -129,7 +166,7 @@ define(['vm/genericVM'], function (GenericVM) {
             this.instantaneousCadence(page.instantaneousCadence);
         }
 
-        this.updateBackgroundPage(page); // Background pages 1-3
+        this.updateBackgroundPage(page); // Background pages
 
     };
 

@@ -93,27 +93,28 @@ define(['vm/genericVM'], function _requireDefineSettingVM(GenericVM) {
         {
             return;
         }
-            chart = viewModel.sensorChart.integrated.chart;
 
-            for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
+        chart = viewModel.sensorChart.integrated.chart;
 
-                currentSeries = chart.series[seriesNr];
+        for (seriesNr = 0, len = chart.series.length; seriesNr < len; seriesNr++) {
 
-                if (currentSeries.options.id.indexOf(sensorType) !== -1) {
+            currentSeries = chart.series[seriesNr];
 
-                    if (visible && !currentSeries.visible) {
+            if (currentSeries.options.id.indexOf(sensorType) !== -1) {
 
-                        currentSeries.show();
+                if (visible && !currentSeries.visible) {
 
-                    }
+                    currentSeries.show();
 
-                    else if (currentSeries.visible) {
-
-                        currentSeries.hide();
-                    }
                 }
 
+                else if (currentSeries.visible) {
+
+                    currentSeries.hide();
+                }
             }
+
+        }
 
     };
 
