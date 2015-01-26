@@ -81,11 +81,18 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
     GenericVM.prototype = Object.create(EventEmitter.prototype);
     GenericVM.prototype.constructor = EventEmitter;
 
+    // Merge common page into viewmodel
     GenericVM.prototype.updateBackgroundPage = function (page)
     {
-         switch (page.number) {
+        // Common page 82
 
-            case 1 :
+        //TEST this.batteryStatus(2);
+        //this.batteryStatusString("Good");
+        //this.cumulativeOperatingTime(2);
+
+        switch (page.number) {
+
+                  case 1 :
 
                     if (page.cumulativeOperatingTime)
                     {
@@ -140,20 +147,6 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
                         this.modelNumber(page.modelNumber);
                     }
                   break;
-        }
-
-    };
-
-    // Merge common page into viewmodel
-    GenericVM.prototype.updateCommonPage = function (page)
-    {
-        // Common page 82
-
-        //TEST this.batteryStatus(2);
-        //this.batteryStatusString("Good");
-        //this.cumulativeOperatingTime(2);
-
-        switch (page.number) {
 
             case BackgroundPage.prototype.COMMON.PAGE0x50:
 
@@ -178,7 +171,7 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
                 if (page.SWRevision)
                 {
-                    this.SWRevision(page.SWRevision);
+                    this.SWRevision(page.SWRevisionString);
                 }
 
                 if (page.serialNumber)

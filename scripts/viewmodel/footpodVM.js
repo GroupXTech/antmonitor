@@ -236,7 +236,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
         if (page.status && page.status.SDMLocationFriendly !== undefined)
             this.status.SDMLocationFriendly(page.status.SDMLocationFriendly);
 
-        this.updateCommonPage(page);
+        this.updateBackgroundPage(page);
     };
 
     FootpodVM.prototype.getTemplateName = function (item) {
