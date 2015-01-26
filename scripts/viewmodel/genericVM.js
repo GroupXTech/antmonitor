@@ -38,7 +38,7 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
         this.hardwareVersion = ko.observable(); // Page 3
 
         this.manufacturerID = ko.observable();
-        this.manufacturerString = ko.observable(); // Page 2
+        this.manufacturerString = ko.observable(); // Page 2/0x50
         this.modelNumber = ko.observable();
 
         // Common page 81 - Product info.
@@ -125,9 +125,9 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
 
                     if ((page.manufacturerID !== undefined) && (page.serialNumber !== undefined)) {
                         if ((page.serialNumber >> 16) === 0) {
-                            this.manufacturerString('Manufacturer ' + page.manufacturerID + ' SN ' + page.serialNumber);
+                            this.manufacturerString('Manufacturer ' + page.manufacturerString + ' SN ' + page.serialNumber);
                         } else {
-                            this.manufacturerString('Manufacturer '+page.manufacturerID +' SN '+ page.serialNumber+' (MSB '+page.serialNumber16MSB+' LSB '+page.broadcast.channelId.deviceNumber+')');
+                            this.manufacturerString('Manufacturer '+page.manufacturerString +' SN '+ page.serialNumber+' (MSB '+page.serialNumber16MSB+' LSB '+page.broadcast.channelId.deviceNumber+')');
                         }
                     }
 
@@ -158,6 +158,11 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
                 if (page.manufacturerID)
                 {
                     this.manufacturerID(page.manufacturerID);
+                }
+
+                if (page.manufacturerString)
+                {
+                    this.manufacturerString(page.manufacturerString);
                 }
 
                 if (page.modelNumber)
