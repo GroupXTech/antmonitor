@@ -37,6 +37,7 @@ define(['vm/genericVM'], function(GenericVM) {
         {
             this._logger.log('error','Could not find template name for viewModel item',viewModelItem);
         }
+
         return templateName;
     };
 

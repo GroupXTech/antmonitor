@@ -76,13 +76,15 @@
             <li>
                 <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
-                    <div class="primary-short-heading" data-bind="text: formattedCurrentTemp()+' '+formattedUnit(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}">
+                    <div >
+                        <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedCurrentTemp(), style: {color : currentTemp() < 0 ? '#3D76F5' : 'red'}"></span>
+                        <span class="verticalAlignMiddle" data-bind="text: formattedUnit()"></span>
                     </div>
                     <div class="tertiary-short-heading" data-bind="visible: $root.settingVM.show24HMaxMin()">
                         <span data-bind="html: formattedLow24H , style: { color : low24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
-                        <span>&darr;</span>
+                        <sub>&darr;</sub>
                         <span style="margin-left: 10px" data-bind="html: formattedHigh24H , style: { color : high24H() &lt; 0 ? '#3D76F5' : 'red'}" style="color: rgb(61, 118, 245);">28.2</span>
-                        <span>&uarr;</span>
+                        <sub>&uarr;</sub>
                     </div>
                     <div class="secondary-short-heading" data-bind="visible: name() !== undefined, text: name">
                     </div>
@@ -129,6 +131,73 @@
             </div>
             </li>
             <!--<span data-bind="text: ko.toJSON($data)"></span>-->
+        </script>
+
+         <script type="text/html" id="bike-power-template">
+            <li style="margin-bottom: 5px">
+
+                <!--<div id="flexIcon">
+                    <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: name, attr: {title: ('Sensor id. : '+sensorId+' '+name()) }" />
+                    <img class="icon" src="icon/temperature.png" alt="Temperature" data-bind="visible: !name, attr: {title: ('Sensor id. : '+sensorId) }" />
+
+                </div>-->
+                <div class="flex rowwrap spacearound centeritems">
+                    <!-- u = user own sensor, inspired by unix file permissions >
+                    <div>
+                        <span style="vertical-align: middle">u</span>
+                        <input style="vertical-align: middle" type="checkbox" data-bind="checked: ownSensor" />
+                    </div> -->
+                    <div class="temperatureParagraph">
+                        <span data-bind="text: instantaneousPower"></span>
+                    </div>
+
+                     <div class="temperatureParagraph">
+                        <span data-bind="text: instantaneousCadence"></span>
+                    </div>
+
+                </div>
+
+                <!-- Background pages -->
+                <div class="flex rowwrap spacearound centeritems backgroundPage" data-bind="visible: $root.settingVM.showAdditionalInfo()">
+                    <!--<div id="flexBattery">-->
+                    <!--<div style="display:inline" data-bind="if: _page.broadcast.RSSI !== undefined && _page.broadcast.RSSI.measurementType === 0x20">
+                        <span data-bind="text: 'RSSI '+_page.broadcast.RSSI.RSSIValue+' dBm'"></span>
+                        <meter min="-127" max="128" data-bind="attr: {value: _page.broadcast.RSSI.RSSIValue }"></meter>
+                        <div style="display: inline" data-bind="if: _page.broadcast.RSSI.thresholdConfigurationValue === -128">
+                            <span>Threshold OFF </span>
+                        </div>
+                        <div style="display: inline" data-bind="if: _page.broadcast.RSSI.thresholdConfigurationValue !== -128">
+
+                            <span data-bind="text: 'Threshold '+_page.broadcast.RSSI.thresholdConfigurationValue+' dBm'"></span>
+                        </div>
+                    </div>-->
+                    <span data-bind="text: sensorId"></span>
+                    <div style="display:inline" data-bind="visible: HWRevision() !== undefined ">
+                        <span data-bind="text: 'Manufacturer '+manufacturerID() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="visible: SWRevision() !== undefined ">
+                        <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
+                    </div>
+                    <div style="display:inline" data-bind="visible: (cumulativeOperatingTime() !== undefined) ">
+                        <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 1">
+                            <img class="verticalAlignMiddle" src="icon/battery-full.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if:batteryStatus() === 2 || batteryStatus() === 3">
+                            <img class="verticalAlignMiddle" src="icon/battery.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 4">
+                            <img class="verticalAlignMiddle" src="icon/battery-low.png" />
+                        </div>
+                        <div style="display:inline" data-bind="if: batteryStatus() === 5">
+                            <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
+                        </div>
+                        <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
+                    </div>
+                </div>
+                <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
+
+            </li>
         </script>
 
         <script type="text/html" id="environment-template">
@@ -408,6 +477,7 @@
         <!-- Top level menu -->
 
         <nav id="appToolbar" class="flex rowwrap spacearound centeritems toolbarBackground">
+
             <div>
                 <a data-bind="click: settingVM.toggleShowCredits">
                     <img class="icon" alt="About ANTmonitor" id="lblTemperatureMonitor" src="images/icon-128.png" style="vertical-align: middle" data-bind="attr: { title: languageVM.ant_monitor().details }" />
@@ -456,6 +526,7 @@
             </div>
 
             <!--<select data-bind="options: settingVM.temperatureModes, value: settingVM.temperatureMode.value" ></select>-->
+
             <div id="divENUMERATEDDEVICE">
                 <div data-bind="if: deviceVM.enumeratedDevice().length > 1">
                     <img src="icon/ant_usb.png" alt="Device" />
@@ -470,9 +541,10 @@
                     <span>No ANT device found</span>
                 </div>
             </div>
+
             <!-- ko if: settingVM.showTimer() -->
 
-            <div id="divTimer" class="flex spacearound centeritems rowwrap">
+                <div id="divTimer" class="flex spacearound centeritems rowwrap">
                 <ul id="ulTimer">
                     <!-- http://css-tricks.com/almanac/properties/v/vertical-align/ -->
                     <li>
@@ -503,6 +575,7 @@
                         </button>
                     </li>
                 </ul>
+
                 <div id="divTimeInfo" class="flex flexstart">
                     <div id="divTotalElapsedTime" class="flex spacearound centeritems rowwrap">
                         <span style="margin-left : 3px;margin-right: 5px" class="spanElapsedTimer" data-bind="text: languageVM.timer_total_elapsed_time().message"></span>
@@ -517,6 +590,7 @@
             </div>
             <!-- /ko -->
         </nav>
+
         <div data-bind="visible: settingVM.showCredits" id="divCredits">
             <div id="innerDivCredits">
                 <!-- http://stackoverflow.com/questions/3106290/align-icons-with-text -->
@@ -554,6 +628,7 @@
         <div id="tabMain" class="hidden">
             <div id="flexShortSensorInfo" class="flex rowwrap spacearound flexstartitems">
                 <!-- Don't render DOM if sensors for a device type is not available by using ko directive inside comment -->
+
                 <!-- ko if: (settingVM.showSensors.HRM() && sensorVM.devices.HRM().length > 0) -->
                 <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                     <a href="#tabHRM" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.heartrate().details }">
@@ -566,6 +641,7 @@
                     </div>
                 </div>
                 <!-- /ko -->
+
                 <!-- ko if: (settingVM.showSensors.BIKE_POWER() && sensorVM.devices.BIKE_POWER().length > 0) -->
                 <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                     <a href="#tabBIKE_POWER" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.power().details }">
@@ -578,6 +654,7 @@
                     </div>
                 </div>
                 <!-- /ko -->
+
                 <!-- ko if: (settingVM.showSensors.SPDCAD() && sensorVM.devices.SPDCAD().length > 0) -->
                 <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                     <a href="#tabSPDCAD" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.speedandcadence().details }">
@@ -589,6 +666,7 @@
                     </div>
                 </div>
                 <!-- /ko -->
+
                 <!-- ko if: (settingVM.showSensors.ENVIRONMENT() && sensorVM.devices.ENVIRONMENT().length > 0) -->
                 <div class="flex spacearound centeritems" style="flex-flow: column nowrap">
                     <a href="#tabEnvironment" class="tabItem" style="padding-bottom : 8px; padding-right: 3px" data-bind="attr: {title: languageVM.temperature_overview().details }">
@@ -605,19 +683,31 @@
             <div id="sensorChart-integrated">
             </div>
         </div>
+
+        <div id="tabBIKE_POWER" class="hidden">
+
+            <h1 class="tabHeading"><img src="icon/iconfinder/power24x24.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.bike_power_overview().message"></span></h1>
+
+            <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.BIKE_POWER}"></ul>
+
+        </div>
+
         <div id="tabEnvironment" class="hidden">
             <h1 class="tabHeading"><img src="icon/temperature-icon-128.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.temperature_overview().message"></span></h1>
 
             <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.ENVIRONMENT}"></ul>
         </div>
+
         <div id="tabSPDCAD" class="hidden">
             <h1 class="tabHeading"><img src="icon/spdcad.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.spdcad_overview().message"></span></h1>
             <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.SPDCAD}"></ul>
         </div>
+
         <div id="tabHRM" class="hidden">
             <h1 class="tabHeading"><img src="icon/heart.png" class="tabHeading" /><span class="tabHeading" data-bind="text:languageVM.hrm_overview().message"></span></h1>
             <ul class="liststylenone" data-bind="template: {name : sensorVM.getTemplateName, foreach: sensorVM.devices.HRM}"></ul>
         </div>
+
         <div id="tabSettings" class="hidden">
             <h2>
                 <img src="icon/fugue/settings.png" class="icon verticalAlignMiddle" />
@@ -649,4 +739,4 @@
         </div>
     </div>
 </body>
-</html>   
+</html>

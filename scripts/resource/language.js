@@ -44,6 +44,11 @@ define(function _defineLanguageResource() {
                 details: 'Vis temperatur oversikt'
             },
 
+             bike_power_overview: {
+                message: 'Oversikt',
+                details: 'Vis kraft oversikt'
+            },
+
             hrm_overview: {
                 message: 'Oversikt'
             },
@@ -214,6 +219,11 @@ define(function _defineLanguageResource() {
             temperature_overview: {
                 message: 'Overview',
                 details: 'Show temperature overview'
+            },
+
+            bike_power_overview: {
+                message: 'Overview',
+                details: 'Show power overview'
             },
 
             hrm_overview: {

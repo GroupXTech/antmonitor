@@ -51,6 +51,10 @@ define(['scripts/resource/language','logger'], function _defineLanguageVM(resour
             return this.getMessage('temperature_overview');
         }.bind(this));
 
+        this.bike_power_overview = ko.computed(function () {
+            return this.getMessage('bike_power_overview');
+        }.bind(this));
+
         this.hrm_overview = ko.computed(function () {
             return this.getMessage('hrm_overview');
         }.bind(this));
