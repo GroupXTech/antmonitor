@@ -30,13 +30,8 @@
            <li>
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
-                <div style="text-align: center" data-bind="if: instantaneousPower() > 0x00">
+                <div style="text-align: center" data-bind="if: instantaneousPower() >= 0x00">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: instantaneousPower "></span>
-                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
-                </div>
-
-                <div style="text-align: center" data-bind="if: instantaneousPower() === 0x00">
-                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
                 </div>
 
@@ -54,14 +49,11 @@
         <script type="text/html" id="HRM-short-template">
             <li>
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
-                <div style="text-align: center" data-bind="if: computedHeartRate() > 0x00">
+                <div style="text-align: center" data-bind="if: computedHeartRate() >= 0x00">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: computedHeartRate "></span>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
                 </div>
-                <div style="text-align: center" data-bind="if: computedHeartRate() === 0x00">
-                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---'"></span>
-                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_bpm().message"></span>
-                </div>
+
                 <div style="text-align: center" data-bind="if: RRInterval() >= 0x00">
 
                     <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: RRInterval"></span>
@@ -96,28 +88,37 @@
         <script type="text/html" id="SPDCAD-short-template">
            <li>
                 <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
-                <!-- SPEED -->
-                <div data-bind="visible: speed() !== undefined">
-                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
+
+                    <!-- SPEED -->
+
+                    <div data-bind="if: speed() !== undefined">
+                        <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedSpeed"></span>
 
                     <div style="display:inline" data-bind="if: distanceMode() === 1">
                         <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_km_pr_h().message"></span>
                     </div>
+
                     <div style="display:inline" data-bind="if: distanceMode() === 2">
                         <span class="verticalAlignMiddle" data-bind="text: $root.languageVM.unit_mph().message"></span>
                     </div>
+
                 </div>
-                <!-- CADENCE -->
+
+                    <!-- CADENCE -->
+
                 <div style="text-align: center" data-bind="visible: cadence() !== undefined">
                     <div style="display:inline" data-bind="if: deviceType === 121">
                         <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
                     </div>
+
                     <!-- Cadence sensor only -->
+
                     <div style="display:inline" data-bind="if: deviceType === 122">
                         <span class="primary-short-heading verticalAlignMiddle" data-bind="text: formattedCadence "></span>
                     </div>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                 </div>
+
                 <div data-bind="visible: cumulativeDistance() && (cumulativeDistance() !== 0)">
                     <span class="tertiary-short-heading verticalAlignMiddle" data-bind="text: formattedCumulativeDistance"></span>
                     <!-- unit km or mi -->
