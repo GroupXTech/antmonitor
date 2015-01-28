@@ -38,6 +38,8 @@ define(['vm/genericVM'], function (GenericVM) {
 
         this.instantaneousPower = ko.observable();
 
+        this.pageNotUpdated = ko.observable();
+
         this.init(configuration);
 
     }
@@ -129,6 +131,12 @@ define(['vm/genericVM'], function (GenericVM) {
     {
         var settingVM = this.rootVM.settingVM;
 
+        // Don't update series when there is no update event count
+        if (page.pageNotUpdated)
+        {
+            return;
+        }
+
         if (page.instantaneousPower !== undefined) {
 
             this.series.instantaneousPower.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.instantaneousPower], false, false, false);
@@ -156,15 +164,21 @@ define(['vm/genericVM'], function (GenericVM) {
             this.timestamp(page.timestamp);
         }
 
+        this.pageNotUpdated(page.pageNotUpdated);
 
-        if (page.instantaneousPower !== undefined) {
-            this.instantaneousPower(page.instantaneousPower);
+        if (page.pageNotUpdated === undefined)
+        {
+
+            if (page.instantaneousPower !== undefined) {
+                this.instantaneousPower(page.instantaneousPower);
+            }
+
+
+            if (page.instantaneousCadence !== undefined) {
+                this.instantaneousCadence(page.instantaneousCadence);
+            }
         }
 
-
-        if (page.instantaneousCadence !== undefined) {
-            this.instantaneousCadence(page.instantaneousCadence);
-        }
 
         this.updateBackgroundPage(page); // Background pages
 
@@ -182,6 +196,7 @@ define(['vm/genericVM'], function (GenericVM) {
         this.timestamp(undefined);
         this.instantaneousPower(undefined);
         this.instantaneousCadence(undefined);
+        this.pageNotUpdated(undefined);
 
         GenericVM.prototype.reset.call(this);
 

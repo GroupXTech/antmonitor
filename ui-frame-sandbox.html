@@ -5,18 +5,14 @@
     <!-- Add meta tag/chartset for proper intepretation of special characters, e.g  º -->
     <title>ANTmonitor</title>
     <link href="/css/ui.css" rel="stylesheet" />
-    <!-- Knockoutjs : http://opensource.org/licenses/mit-license.php -->
-    <script src="bower_components/knockout/dist/knockout.debug.js"></script>
 
     <!-- Some icons by Yusuke Kamiyamane http://creativecommons.org/licenses/by/3.0/  https://github.com/yusukekamiyamane/fugue-icons -->
-    <!--  Highcharts adapter -->
-    <script src="bower_components/highcharts/adapters/standalone-framework.src.js"></script>
-    <!--  Highcharts -->
 
-    <script src="bower_components/highcharts/highcharts.src.js"></script>
-    <!-- Requirejs https://github.com/jrburke/requirejs/blob/master/LICENSE -->
     <script src="bower_components/requirejs/require.js"></script>
-    <!--<script src="/Scripts/require.min.js"></script>-->
+    <script src="bower_components/knockout/dist/knockout.debug.js"></script>
+    <script src="bower_components/highcharts/adapters/standalone-framework.src.js"></script>
+    <script src="bower_components/highcharts/highcharts.src.js"></script>
+
     <script src="/scripts/ui.js"></script>
 </head>
 <body>
@@ -30,14 +26,25 @@
            <li>
             <div class="flex spacearound centeritems" style="flex-flow : column nowrap; height : inherit">
 
-                <div style="text-align: center" data-bind="if: instantaneousPower() >= 0x00">
+                <div style="text-align: center" data-bind="if: !pageNotUpdated() && instantaneousPower() >= 0x00">
                     <span class="primary-short-heading verticalAlignMiddle" data-bind="text: instantaneousPower "></span>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
                 </div>
 
-                <div style="text-align: center" data-bind="if: instantaneousCadence() >= 0x00">
+                <div style="text-align: center" data-bind="if: !pageNotUpdated() && instantaneousCadence() >= 0x00">
 
                     <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: instantaneousCadence" ></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
+                </div>
+
+                 <div style="text-align: center" data-bind="if: pageNotUpdated">
+                    <span class="primary-short-heading verticalAlignMiddle" data-bind="text: '---' "></span>
+                    <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_power().message"></span>
+                </div>
+
+                <div style="text-align: center" data-bind="if: pageNotUpdated">
+
+                    <span class="secondary-short-heading verticalAlignMiddle" data-bind="text: '---'" ></span>
                     <span class="verticalAlignMiddle" data-bind="text:' '+$root.languageVM.unit_cadence().message"></span>
                 </div>
 
