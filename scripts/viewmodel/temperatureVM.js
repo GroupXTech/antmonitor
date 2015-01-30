@@ -113,6 +113,10 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
 
     TemperatureVM.prototype.convert = new TemperatureConverter();
 
+    TemperatureVM.prototype.yAxis = {
+      id : 'temperature-yAxis'
+    };
+
     TemperatureVM.prototype.init = function (configuration)
     {
         var page = configuration.page;
@@ -128,6 +132,64 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
         // Update on subsequent changes
         this.rootVM.settingVM.fahrenheit.subscribe(this.onTemperatureModeChange.bind(this));
 
+        this.addAxis({
+            id: this.yAxis.id,
+
+            title: {
+                //text: this.viewModel.rootVM.languageVM.temperature().message.toLocaleUpperCase(),
+                text : null,
+                style: {
+                    color: 'black',
+                    fontSize: '16px',
+                    fontWeight : 'bold'
+                }
+            },
+
+            min: (function _setTempYaxisMin(vm) {
+
+                if (vm.rootVM.settingVM.temperatureMode && vm.rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.CELCIUS)
+                {
+                    return -20;
+                }
+                else if (vm.rootVM.settingVM.temperatureMode && vm.rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT)
+                {
+                    return -4;
+                } else {
+                    return -20;
+                }
+            })(this),
+
+            //max: (function () {
+            //    if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.CELCIUS)
+            //        return 60;
+            //    else if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT)
+            //        return 140;
+            //    else
+            //        return 60;
+
+            //})(),
+
+            gridLineWidth: 0,
+
+            showEmpty: false,
+
+            tooltip: {
+                enabled: false
+            },
+
+            labels:
+            {
+                enabled: true,
+                style: {
+                    color: 'black',
+                    fontWeight: 'bold',
+                    fontSize: '16px'
+                }
+            }
+
+        },false);
+
+
         this.addSeries(page,{ temperature : {
                                     name: this.rootVM.languageVM.temperature().message,
                                     id: 'ENVIRONMENT-current-',
@@ -140,7 +202,7 @@ define(['vm/genericVM','converter/temperatureConverter'], function(GenericVM, Te
                                     //    radius : 2
                                     //},
 
-                                    yAxis: 0,
+                                    yAxis: this.yAxis.id,
 
                                     tooltip: {
                                         valueDecimals: 2,

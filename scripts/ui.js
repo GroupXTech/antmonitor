@@ -183,7 +183,7 @@
         this.viewModel.rootVM = {
 
             // Holds references to the viewmodel for a particular sensor (using sensorId based on ANT channelId)
-            dictionary : {},
+            VMdictionary : {},
 
             languageVM : new this.module.LanguageVM({
                 logger : this.logger,
@@ -290,6 +290,7 @@
                 renderTo: 'sensorChart-integrated',
                 backgroundColor: 'transparent',
                 animation: false,
+                //alignTicks : false,
                 //height: 80,
                 //width: 200,
                 //  spacing: [7, 7, 7, 7]
@@ -304,108 +305,6 @@
             },
 
             yAxis: [
-
-                {
-                    id: 'temperature-axis',
-
-                    title: {
-                        //text: this.viewModel.rootVM.languageVM.temperature().message.toLocaleUpperCase(),
-                        text : null,
-                        style: {
-                            color: 'black',
-                            fontSize: '16px',
-                            fontWeight : 'bold'
-                        }
-                    },
-
-                    min: (function (antUI) {
-                        var TemperatureVM = antUI.module.TemperatureVM;
-
-                        if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.CELCIUS)
-                        {
-                            return -20;
-                        }
-                        else if (rootVM.settingVM.temperatureMode && rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT)
-                        {
-                            return -4;
-                        } else {
-                            return -20;
-                        }
-                    })(antUI),
-
-                    //max: (function () {
-                    //    if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.CELCIUS)
-                    //        return 60;
-                    //    else if (rootVM.settingVM.temperatureMode() === TemperatureVM.prototype.MODE.FAHRENHEIT)
-                    //        return 140;
-                    //    else
-                    //        return 60;
-
-                    //})(),
-
-                    gridLineWidth: 0,
-
-                    showEmpty: false,
-
-                    tooltip: {
-                        enabled: false
-                    },
-
-                    labels:
-                    {
-                        enabled: true,
-                        style: {
-                            color: 'black',
-                            fontWeight: 'bold',
-                            fontSize: '16px'
-                        }
-                    }
-
-                },
-
-                {
-                    id: 'heartrate-axis',
-                    title: {
-                        //text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
-                        text : null,
-                        style: {
-                            color: 'red',
-                            fontSize: '16px',
-                            fontWeight: 'bold'
-                        }
-                    },
-
-                    min: 0,
-                    //max: 255,
-
-                    gridLineWidth: 0,
-
-                    //tickPositions: [],
-
-                    //startOnTick: false,
-
-                    // endOnTick: false,
-
-                    showEmpty: false,
-
-                    // Does not disable tooltip generation (series.tooltips) -> set  enableMouseTracking = false in invd. series options
-                    tooltip: {
-                        enabled: false
-                    },
-
-                    labels:
-                    {
-                        enabled: true,
-                        style: {
-                            color: 'red',
-                            fontWeight: 'bold',
-                            fontSize: '16px'
-                        }
-                    },
-
-                    opposite : true
-
-                },
 
                  {
                      id: 'footpod-speed-axis',
@@ -583,49 +482,7 @@
 
                 },
 
-                  {
-                      id: 'hrm-rr-yaxis',
-                      title: {
-                          //text: 'RR',
-                          text : null,
-                          style: {
-                              color: 'gray',
-                              fontSize: '16px',
-                              fontWeight: 'bold'
-                          }
-                      },
 
-                      //min: 0,
-                      //max: 255,
-
-                      gridLineWidth: 0,
-
-                      //tickPositions: [],
-
-                      //startOnTick: false,
-
-                      // endOnTick: false,
-
-                      showEmpty: false,
-
-                      // Does not disable tooltip generation (series.tooltips) -> must use enableMouseTracking = false
-                      tooltip: {
-                          enabled: false
-                      },
-
-                      //opposite: true,
-
-                      labels:
-                     {
-                         enabled: true,
-                         style: {
-                             color: 'gray',
-                             fontWeight: 'bold',
-                             fontSize: '16px'
-                         }
-                     }
-
-                  }
 
             ],
 
@@ -658,55 +515,7 @@
                         y: 18
                     },
 
-            },
-
-            {
-
-               id: 'hrm-rr-xaxis',
-
-               labels:
-                    {
-                        enabled: true,
-                        style: {
-                            //color: '#6D869F',
-                            fontWeight: 'bold',
-                            fontSize: '16px',
-
-                        },
-
-                        y: 18
-                    },
-
-               offset : 32+28,
-
-               showEmpty : false // Don't show when (visible === false)
-
-            //    categories : [],
-
-            //    // Turn off X-axis line
-            //    lineWidth: 0,
-
-            //    // Turn off tick-marks
-            //    //tickLength: 0,
-
-            //    //tickPositions: [],
-
-            //    //labels:
-            //    //    {
-            //    //        enabled: true,
-            //    //        style: {
-            //    //            //color: '#6D869F',
-            //    //            fontWeight: 'bold',
-            //    //            fontSize: '16px',
-
-            //    //        },
-            //    //        y: 18
-            //    //    },
-
-            //    visible : false
-
-            }
-            ],
+            }],
 
             series: []
 
@@ -759,7 +568,7 @@
             sensorId: sensorId
         });
 
-        this.viewModel.rootVM.dictionary[sensorId] = deviceTypeVM;
+        this.viewModel.rootVM.VMdictionary[sensorId] = deviceTypeVM;
 
         deviceTypeVM.updateFromPage(page);
 
@@ -792,9 +601,10 @@
             defaultOptions,
             deviceSeries;
 
-        deviceTypeVM = rootVM.dictionary[sensorId];
+        deviceTypeVM = rootVM.VMdictionary[sensorId];
 
-        if (deviceTypeVM) {// Ignore initialization of viewmodel if its already created
+        // Ignore initialization of viewmodel if its already created
+        if (deviceTypeVM) {
          return;
         }
 
@@ -859,9 +669,9 @@
 
         if (Viewmodel) {
 
-            this.viewModel.rootVM.dictionary[sensorId] = new Viewmodel(defaultOptions);
+            this.viewModel.rootVM.VMdictionary[sensorId] = new Viewmodel(defaultOptions);
 
-            deviceSeries.push(this.viewModel.rootVM.dictionary[sensorId]);
+            deviceSeries.push(this.viewModel.rootVM.VMdictionary[sensorId]);
 
             this.redrawIntegratedChart();
         }

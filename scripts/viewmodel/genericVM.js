@@ -318,6 +318,31 @@ define(['logger', 'profiles/backgroundPage','events'], function (Logger, Backgro
     };
     /* jshint ignore: end */
 
+    GenericVM.prototype.addAxis = function (axisOptions,isX)
+    {
+
+      var axis;
+
+      if (axisOptions.id === undefined)
+      {
+        if (this._logger && this._logger.logging)
+        {
+            this._logger.log('warn','No id specified for axis',axisOptions);
+        }
+
+      }
+
+       axis = this.chart.get(axisOptions.id);
+
+      if (axis)
+      {
+        return; // No need to add an existing axis
+      }
+
+      this.chart.addAxis(axisOptions,isX,false,false);
+    };
+
+
     GenericVM.prototype.addSeries = function (page,seriesOptions)
     {
         var sensorId = page.broadcast.channelId.sensorId;

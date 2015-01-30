@@ -51,9 +51,155 @@ define(['vm/genericVM'], function (GenericVM) {
 
     HRMVM.prototype.INVALID_HR = 0x00;
 
+    HRMVM.prototype.yAxis = {
+      id :          'heartrate-yAxis',
+      id_rr :       'heartrate-rr-yAxis',
+
+    };
+
+    HRMVM.prototype.xAxis = {
+      id_rr : 'heartrate-rr-xAxis'
+    };
+
     HRMVM.prototype.init = function (configuration)
     {
         var page = configuration.page;
+
+
+        this.addAxis({
+
+           id: this.xAxis.id_rr,
+
+           labels:
+                {
+                    enabled: true,
+                    style: {
+                        //color: '#6D869F',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+
+                    },
+
+                    y: 18
+                },
+
+           offset : 32+28,
+
+           showEmpty : false // Don't show when (visible === false)
+
+        //    categories : [],
+
+        //    // Turn off X-axis line
+        //    lineWidth: 0,
+
+        //    // Turn off tick-marks
+        //    //tickLength: 0,
+
+        //    //tickPositions: [],
+
+        //    //labels:
+        //    //    {
+        //    //        enabled: true,
+        //    //        style: {
+        //    //            //color: '#6D869F',
+        //    //            fontWeight: 'bold',
+        //    //            fontSize: '16px',
+
+        //    //        },
+        //    //        y: 18
+        //    //    },
+
+        //    visible : false
+
+      },true);
+
+        this.addAxis({
+            id: this.yAxis.id,
+            title: {
+                //text: this.viewModel.rootVM.languageVM.heartrate().message.toLocaleUpperCase(),
+                text : null,
+                style: {
+                    color: 'red',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                }
+            },
+
+            min: 0,
+            //max: 255,
+
+            gridLineWidth: 0,
+
+            //tickPositions: [],
+
+            //startOnTick: false,
+
+            // endOnTick: false,
+
+            showEmpty: false,
+
+            // Does not disable tooltip generation (series.tooltips) -> set  enableMouseTracking = false in invd. series options
+            tooltip: {
+                enabled: false
+            },
+
+            labels:
+            {
+                enabled: true,
+                style: {
+                    color: 'red',
+                    fontWeight: 'bold',
+                    fontSize: '16px'
+                }
+            },
+
+            opposite : true
+
+        },false);
+
+        this.addAxis({
+            id: this.yAxis.id_rr,
+            title: {
+                //text: 'RR',
+                text : null,
+                style: {
+                    color: 'gray',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                }
+            },
+
+            //min: 0,
+            //max: 255,
+
+            gridLineWidth: 0,
+
+            //tickPositions: [],
+
+            //startOnTick: false,
+
+            // endOnTick: false,
+
+            showEmpty: false,
+
+            // Does not disable tooltip generation (series.tooltips) -> must use enableMouseTracking = false
+            tooltip: {
+                enabled: false
+            },
+
+            //opposite: true,
+
+            labels:
+           {
+               enabled: true,
+               style: {
+                   color: 'gray',
+                   fontWeight: 'bold',
+                   fontSize: '16px'
+               }
+           }
+
+        },false);
 
         this.addSeries(page, {
             hrm :  {
@@ -68,7 +214,7 @@ define(['vm/genericVM'], function (GenericVM) {
                   // radius : 2
               },
 
-              yAxis: 1,
+              yAxis: this.yAxis.id,
 
               tooltip: {
                   enabled: false
@@ -97,8 +243,8 @@ define(['vm/genericVM'], function (GenericVM) {
                   radius : 2
               },
 
-              yAxis: 5,
-              xAxis: 1,
+              yAxis: this.yAxis.id_rr,
+              xAxis: this.xAxis.id_rr,
 
               tooltip: {
                   enabled: false
@@ -123,8 +269,8 @@ define(['vm/genericVM'], function (GenericVM) {
               color : 'gray',
               data : [],
               type : 'line',
-              yAxis : 5,
-              xAxis : 1,
+              yAxis : this.yAxis.id_rr,
+              xAxis : this.xAxis.id_rr,
 
               dashStyle: 'shortdot',
 
