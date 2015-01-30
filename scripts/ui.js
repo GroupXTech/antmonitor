@@ -274,15 +274,11 @@
 
     ANTmonitorUI.prototype.createIntegratedChart = function () {
 
-        var rootVM = this.viewModel.rootVM,
-            antUI = this,
-            integratedChart;
+        var redrawInterval = 1000;
 
         this.sensorChart.integrated = {
             options: {}
         };
-
-        integratedChart = this.sensorChart.integrated;
 
         this.sensorChart.integrated.chart = new Highcharts.Chart({
 
@@ -290,7 +286,6 @@
                 renderTo: 'sensorChart-integrated',
                 backgroundColor: 'transparent',
                 animation: false,
-                //alignTicks : false,
                 //height: 80,
                 //width: 200,
                 //  spacing: [7, 7, 7, 7]
@@ -341,8 +336,11 @@
 
         });
 
-        this.timerID.interval.redrawIntegratedChart = setInterval(this.redrawIntegratedChart.bind(this), 1000);
+        this.timerID.interval.redrawIntegratedChart = setInterval(this.redrawIntegratedChart.bind(this), redrawInterval);
 
+        if (this.logger && this.logger.logging) {
+            this.logger.log('info', 'Started redraw interval for integrated chart',redrawInterval);
+        }
     };
 
     ANTmonitorUI.prototype.redrawIntegratedChart = function () {
