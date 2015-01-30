@@ -163,7 +163,7 @@ define(['vm/genericVM'], function (GenericVM) {
 
       BikeSharedVM.prototype.reset = function ()
       {
-        Generic.prototype.reset.call(this);
+        GenericVM.prototype.reset.call(this);
       };
 
       return BikeSharedVM;
