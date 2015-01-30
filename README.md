@@ -7,7 +7,7 @@ Open for **non-commercial/personal** use : https://creativecommons.org/licenses/
 
 Screenshot:
 
-![Screenshot](/screenshot/chrome/ANTmonitor-1280x800.png?raw=true)
+![Screenshot](/screenshot/chrome/ANTmonitor-github.png?raw=true)
 
 *nix:
 
