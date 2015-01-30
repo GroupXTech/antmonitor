@@ -1,12 +1,12 @@
 /* global define: true, ko: true */
 
-define(['vm/genericVM'], function (GenericVM) {
+define(['vm/bikeSharedVM'], function (BikeSharedVM) {
 
     'use strict';
 
     function BikePowerVM(configuration) {
 
-        GenericVM.call(this, configuration);
+        BikeSharedVM.call(this, configuration);
 
         this._page = undefined;
 
@@ -44,7 +44,7 @@ define(['vm/genericVM'], function (GenericVM) {
 
     }
 
-    BikePowerVM.prototype = Object.create(GenericVM.prototype);
+    BikePowerVM.prototype = Object.create(BikeSharedVM.prototype);
     BikePowerVM.prototype.constructor = BikePowerVM;
 
 
@@ -55,6 +55,8 @@ define(['vm/genericVM'], function (GenericVM) {
 
         this.deviceType = page.broadcast.channelId.deviceType;
 
+        this.addAxis(this.getPowerYAxisConfiguration(),false);
+        this.addAxis(this.getCadenceYAxisConfiguration(),false);
 
            seriesOptions.instantaneousPower = {
 
@@ -69,7 +71,7 @@ define(['vm/genericVM'], function (GenericVM) {
                    // radius : 2
                },
 
-               yAxis: 5,
+               yAxis: this.yAxis.id_power,
 
                tooltip: {
                    enabled: false
@@ -98,7 +100,7 @@ define(['vm/genericVM'], function (GenericVM) {
                    // radius : 2
                },
 
-               yAxis: 4,
+               yAxis: this.yAxis.id_cadence,
 
                tooltip: {
                    enabled: false
@@ -198,7 +200,7 @@ define(['vm/genericVM'], function (GenericVM) {
         this.instantaneousCadence(undefined);
         this.pageNotUpdated(undefined);
 
-        GenericVM.prototype.reset.call(this);
+        BikeSharedVM.prototype.reset.call(this);
 
     };
 

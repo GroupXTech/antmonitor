@@ -1,12 +1,12 @@
 /* global define: true, ko: true */
 
-define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (GenericVM, deviceProfileSPDCAD) {
+define(['vm/bikeSharedVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (BikeSharedVM, deviceProfileSPDCAD) {
 
     'use strict';
 
     function SPDCADVM(configuration) {
 
-        GenericVM.call(this, configuration);
+        BikeSharedVM.call(this, configuration);
 
         this._page = undefined;
 
@@ -138,7 +138,7 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
 
     }
 
-    SPDCADVM.prototype = Object.create(GenericVM.prototype);
+    SPDCADVM.prototype = Object.create(BikeSharedVM.prototype);
     SPDCADVM.prototype.constructor = SPDCADVM;
 
     SPDCADVM.prototype.SPEED_MODE = {
@@ -220,6 +220,9 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
         // Update on subsequent changes
         this.rootVM.settingVM.mileDistanceUnit.subscribe(this.onDistanceModeChange.bind(this));
 
+        this.addAxis(this.getSpeedYAxisConfiguration(),false);
+        this.addAxis(this.getCadenceYAxisConfiguration(),false);
+
         if (this.deviceType === 121 || this.deviceType === 122) {
           seriesOptions.cadence = {
                name: this.rootVM.languageVM.cadence().message,
@@ -233,7 +236,7 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
                    // radius : 2
                },
 
-               yAxis: 4,
+               yAxis: this.yAxis.id_cadence,
 
                tooltip: {
                    enabled: false
@@ -274,7 +277,7 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
                    // radius : 2
                },
 
-               yAxis: 3,
+               yAxis: this.yAxis.id_speed,
 
                tooltip: {
                    enabled: false
@@ -391,7 +394,7 @@ define(['vm/genericVM', 'profiles/bike_spdcad/deviceProfile_SPDCAD'], function (
         this.cadence(undefined);
         this.cumulativeDistance(0);
 
-        GenericVM.prototype.reset.call(this);
+        BikeSharedVM.prototype.reset.call(this);
 
     };
 
