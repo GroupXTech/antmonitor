@@ -78,7 +78,7 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
      // Reset sensor viewmodels
    TimerVM.prototype.resetViewModels = function () {
 
-        var sensorDictionary = this.rootVM.dictionary;
+        var sensorDictionary = this.rootVM.getVMdictionary();
 
         for (var sensorId in sensorDictionary) {
             if (typeof sensorDictionary[sensorId].reset === 'function')
@@ -217,4 +217,3 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
     return TimerVM;
 
 });
-

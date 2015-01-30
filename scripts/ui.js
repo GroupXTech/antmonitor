@@ -238,6 +238,11 @@
 
         rootVM = this.viewModel.rootVM;
 
+        rootVM.getVMdictionary = function ()
+        {
+          return rootVM.VMdictionary;
+        };
+
          rootVM.timerVM = new this.module.TimerVM({
                 logger : this.logger,
                 log: true,
