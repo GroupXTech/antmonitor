@@ -304,53 +304,7 @@
                 text: '',
             },
 
-            yAxis: [
-
-                 {
-                     id: 'footpod-speed-axis',
-                     title: {
-                         //text: 'Footpod speed',
-                         text : null,
-                         style: {
-                             color: 'green',
-                             fontSize: '16px',
-                             fontWeight: 'bold'
-                         }
-                     },
-
-                     min: 0,
-                     //max: 255,
-
-                     gridLineWidth: 0,
-
-                     //tickPositions: [],
-
-                     //startOnTick: false,
-
-                     // endOnTick: false,
-
-                     showEmpty: false,
-
-                     // Does not disable tooltip generation (series.tooltips) -> enableMouseTracking = false
-                     tooltip: {
-                         enabled: false
-                     },
-
-                     opposite: true,
-
-                     labels:
-                    {
-                        enabled: true,
-                        style: {
-                            //color: '#6D869F',
-                            fontWeight: 'bold',
-                            fontSize: '16px'
-                        }
-                    }
-
-                 }
-
-            ],
+            yAxis: [],
 
             xAxis: [{
 
@@ -388,63 +342,6 @@
         });
 
         this.timerID.interval.redrawIntegratedChart = setInterval(this.redrawIntegratedChart.bind(this), 1000);
-
-    };
-
-    ANTmonitorUI.prototype.addFootpodSeries = function (page) {
-
-        var addedSeries,
-          FootpodVM = this.viewModel.FootpodVM,
-         deviceTypeVM,
-         sensorId = page.broadcast.channelId.sensorId;
-
-
-        addedSeries = this.sensorChart.integrated.chart.addSeries(
-           {
-               name: 'Footpod ' + sensorId,
-               id: 'footpod-speed-' + sensorId,
-               color: 'green',
-               data: [], // tuples [timestamp,value]
-               type: 'spline',
-
-               marker: {
-                   enabled: false
-                   // radius : 2
-               },
-
-               yAxis: 2, // Footpod
-
-               tooltip: {
-                   enabled: false
-               },
-
-               //tooltip: {
-               //    valueDecimals: 0,
-               //    valueSuffix: ' bpm'
-               //},
-
-               // Disable generation of tooltip data for mouse tracking - improve performance
-
-               enableMouseTracking: false
-
-           }, false, false);
-
-        deviceTypeVM = new FootpodVM({
-            logger: this.logger,
-            sensorId: sensorId
-        });
-
-        this.viewModel.rootVM.VMdictionary[sensorId] = deviceTypeVM;
-
-        deviceTypeVM.updateFromPage(page);
-
-        if (page.speed !== undefined) {
-
-            addedSeries.addPoint([page.timestamp + this.timezoneOffsetInMilliseconds, page.speed], false, false, false);
-
-        }
-
-        this.redrawIntegratedChart();
 
     };
 

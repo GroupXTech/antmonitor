@@ -112,7 +112,7 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
             }.bind(this)
         });
 
-
+     this.init(configuration);
 
     }
 
@@ -136,6 +136,98 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
     FootpodVM.prototype.CONVERSION_FACTOR = {
         INTERNATIONAL : 1609.344,
         US : 1609.347219
+    };
+
+    FootpodVM.prototype.yAxis = {
+      id : 'footpod-speed-yAxis'
+    };
+
+    FootpodVM.prototype.init = function (configuraiton)
+    {
+      var page = configuration.page,
+          seriesOptions = {};
+
+          this.addAxis(
+          {
+              id: this.yAxis.id,
+              title: {
+                  //text: 'Footpod speed',
+                  text : null,
+                  style: {
+                      color: 'green',
+                      fontSize: '16px',
+                      fontWeight: 'bold'
+                  }
+              },
+
+              min: 0,
+              //max: 255,
+
+              gridLineWidth: 0,
+
+              //tickPositions: [],
+
+              //startOnTick: false,
+
+              // endOnTick: false,
+
+              showEmpty: false,
+
+              // Does not disable tooltip generation (series.tooltips) -> enableMouseTracking = false
+              tooltip: {
+                  enabled: false
+              },
+
+              opposite: true,
+
+              labels:
+             {
+                 enabled: true,
+                 style: {
+                     //color: '#6D869F',
+                     fontWeight: 'bold',
+                     fontSize: '16px'
+                 }
+             }
+
+          },false);
+
+
+          seriesOptions.footpod =  {
+               name: 'Footpod-',
+               id: 'footpod-speed-',
+               color: 'green',
+               data: [], // tuples [timestamp,value]
+               type: 'spline',
+
+               marker: {
+                   enabled: false
+                   // radius : 2
+               },
+
+               yAxis: this.yAxis.id,
+
+               tooltip: {
+                   enabled: false
+               },
+
+               //tooltip: {
+               //    valueDecimals: 0,
+               //    valueSuffix: ' bpm'
+               //},
+
+               // Disable generation of tooltip data for mouse tracking - improve performance
+
+               enableMouseTracking: false
+
+           };
+
+           this.addSeries(page, seriesOptions);
+
+           this.updateFromPage(page); // Run update on page (must be the last operation -> properties must be defined on viewmodel)
+
+            this.addPoint(page);
+
     };
 
 
@@ -237,6 +329,17 @@ define(['require', 'module', 'exports', 'logger', 'profiles/Page', 'vm/genericVM
             this.status.SDMLocationFriendly(page.status.SDMLocationFriendly);
 
         this.updateBackgroundPage(page);
+    };
+
+    FootpodVM.prototype.addPoint = function (page)
+    {
+      var settingVM = this.rootVM.settingVM;
+
+      if (page.speed !== undefined) {
+
+          this.series.footpod.addPoint([page.timestamp + settingVM.timezoneOffsetInMilliseconds, page.speed], false, false, false);
+
+      }
     };
 
     FootpodVM.prototype.getTemplateName = function (item) {
