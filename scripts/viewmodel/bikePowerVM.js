@@ -40,6 +40,69 @@ define(['vm/bikeSharedVM'], function (BikeSharedVM) {
 
         this.pageNotUpdated = ko.observable();
 
+        // 0x01 Calibration
+
+        this.calibrationID = ko.observable();
+        this.formattedCalibrationID =  ko.computed({
+
+            read: function () {
+                var calID;
+
+                if (this.calibrationID() !== undefined) {
+                    switch (this.calibrationID())
+                    {
+                      case 0xAC :
+                        calID = 'Success';
+                        break;
+
+                      case 0xAF :
+                        calID = 'Failed';
+                        break;
+
+
+                      default :
+                         calID = '0x'+this.calibrationID().toString(16);
+                    }
+
+                    return calID;
+                }
+
+            }.bind(this)
+          });
+
+        this.autoZeroStatus = ko.observable();
+        this.formattedAutoZeroStatus =  ko.computed({
+
+            read: function () {
+                var autoZeroStr;
+
+                if (this.autoZeroStatus() !== undefined) {
+                    switch (this.autoZeroStatus())
+                    {
+                      case 0x00 :
+                        autoZeroStr = 'OFF';
+                        break;
+
+                      case 0x01 :
+                        autoZeroStr = 'ON';
+                        break;
+
+                      case 0xFF :
+                        autoZeroStr =  'Not supported';
+                        break;
+                      default :
+                         autoZeroStr = '0x'+this.autoZeroStatus().toString(16);
+                         break;
+                    }
+
+                    return autoZeroStr;
+                }
+
+            }.bind(this)
+        });
+
+        this.calibrationData = ko.observable();
+
         this.init(configuration);
 
     }
@@ -168,19 +231,32 @@ define(['vm/bikeSharedVM'], function (BikeSharedVM) {
 
         this.pageNotUpdated(page.pageNotUpdated);
 
-        if (page.pageNotUpdated === undefined)
-        {
+      if (page.number !== undefined)
+      {
+        switch (page.number){
+          case 0x10 :
+            if (page.pageNotUpdated === undefined)
+            {
 
-            if (page.instantaneousPower !== undefined) {
-                this.instantaneousPower(page.instantaneousPower);
+                if (page.instantaneousPower !== undefined) {
+                    this.instantaneousPower(page.instantaneousPower);
+                }
+
+
+                if (page.instantaneousCadence !== undefined) {
+                    this.instantaneousCadence(page.instantaneousCadence);
+                }
             }
+            break;
 
+          case 0x01: // Calibration
 
-            if (page.instantaneousCadence !== undefined) {
-                this.instantaneousCadence(page.instantaneousCadence);
-            }
+               this.calibrationID(page.calibrationID);
+               this.autoZeroStatus(page.autoZeroStatus);
+               this.calibrationData(page.calibrationData);
+          break;
         }
-
+      }
 
         this.updateBackgroundPage(page); // Background pages
 

@@ -180,12 +180,15 @@
                         </div>
                     </div>-->
                     <span data-bind="text: sensorId"></span>
+
                     <div style="display:inline" data-bind="visible: HWRevision() !== undefined ">
                         <span data-bind="text: 'Manufacturer '+manufacturerString() +' HW '+HWRevision() + ' Model '+modelNumber()"></span>
                     </div>
+
                     <div style="display:inline" data-bind="visible: SWRevision() !== undefined ">
                         <span data-bind="text: 'SW '+SWRevision() + ' SN '+serialNumber()"></span>
                     </div>
+
                     <div style="display:inline" data-bind="visible: (cumulativeOperatingTime() !== undefined) ">
                         <span class="verticalAlignMiddle" data-bind="text:  'Reset '+lastBatteryReset()+' ('+cumulativeOperatingTimeString()+')'"></span>
                         <div style="display:inline" data-bind="if: batteryStatus() === 1">
@@ -201,6 +204,10 @@
                             <img class="verticalAlignMiddle" src="icon/battery-empty.png" />
                         </div>
                         <span class="verticalAlignMiddle" data-bind="text: batteryStatusString"></span>
+                    </div>
+
+                    <div style="display:inline" data-bind="visible: (calibrationID() !== undefined) ">
+                      <span data-bind="text: 'Calibration: '+formattedCalibrationID()+' Auto Zero: '+formattedAutoZeroStatus()+ ' Data: '+calibrationData()"></span>
                     </div>
                 </div>
                 <!--<div class="temperatureChart" data-bind="attr: {id: 'sensorChart-'+sensorId }, visible : $root.settingVM.showGraph()"></div>-->
