@@ -28,7 +28,7 @@ define(['vm/bikeSharedVM'], function (BikeSharedVM) {
 
         this.pedalPower = ko.observable();
 
-        this.rightPedalPowerContribution = ko.observable();
+        this.isRightPedalPower = ko.observable();
 
         this.pedalPowerPercent = ko.observable();
 
@@ -245,6 +245,18 @@ define(['vm/bikeSharedVM'], function (BikeSharedVM) {
 
                 if (page.instantaneousCadence !== undefined) {
                     this.instantaneousCadence(page.instantaneousCadence);
+                }
+
+                if (page.pedalPower !== undefined) {
+                  this.pedalPower(page.pedalPower);
+                }
+
+                if (page.isRightPedalPower !== undefined) {
+                  this.isRightPedalPower(page.isRightPedalPower);
+                }
+
+                if (page.pedalPowerPercent !== undefined) {
+                  this.pedalPowerPercent(page.pedalPowerPercent);
                 }
             }
             break;
