@@ -199,7 +199,7 @@ define(['logger'], function _requireDefine(Logger) {
             }
         });
 
-        this.channel.addEventListener('page', this.onpage.bind(this));
+        this.channel.addListener('page', this.onpage.bind(this));
 
         this.host.init(hostOptions, this.onHostInit.bind(this));
     };

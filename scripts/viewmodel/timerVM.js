@@ -78,7 +78,7 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
      // Reset sensor viewmodels
    TimerVM.prototype.resetViewModels = function () {
 
-        var sensorDictionary = this.rootVM.getVMdictionary(); 
+        var sensorDictionary = this.rootVM.getVMdictionary();
 
         for (var sensorId in sensorDictionary) {
             if (typeof sensorDictionary[sensorId].reset === 'function')
@@ -126,23 +126,23 @@ define(['converter/timeFormatter','scripts/timer','logger','events'],function _r
 
     TimerVM.prototype.init = function ()
     {
-         this.addEventListener('stop', function (latestLocalStopTime) {
+         this.addListener('stop', function (latestLocalStopTime) {
             this.addPlotLine('red', latestLocalStopTime);
         }.bind(this));
 
-        this.addEventListener('start', function (latestLocalStartTime) {
+        this.addListener('start', function (latestLocalStartTime) {
             this.addPlotLine('green', latestLocalStartTime);
         }.bind(this));
 
-        this.addEventListener('lap', function (localLapTime) {
+        this.addListener('lap', function (localLapTime) {
             this.addPlotLine('gray', localLapTime);
         }.bind(this));
 
-        this.addEventListener('firststart', function () {
+        this.addListener('firststart', function () {
             this.resetViewModels();
         }.bind(this));
 
-        this.addEventListener('reset', function () {
+        this.addListener('reset', function () {
            this.removePlotlinesAndSeriesData();
         }.bind(this));
     };
