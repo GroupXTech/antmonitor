@@ -12,7 +12,7 @@ Screenshot:
 *nix:
 
     * Listing of attached usb devices from Dynastream
-        'lsusb | grep Dynastream'
+        'lsusb -d 0x0fcf:'
 
     * Listing of processes that owns USB devices
         'sudo lsof +D /dev/bus/usb'
