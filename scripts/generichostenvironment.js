@@ -25,7 +25,6 @@ define(['logger'], function _requireDefine(Logger) {
 
         this.moduleId = {
             storage: undefined,
-            usb: undefined
         };
 
         // Constructor function to modules
@@ -131,78 +130,20 @@ define(['logger'], function _requireDefine(Logger) {
     };
 
     GenericHostEnvironment.prototype.loadSubSystems = function () {
-        require(['anthost', this.moduleId.usb, 'profiles/RxScanMode', this.moduleId.storage],
-            this.onSubsystemLoaded.bind(this));
+        require(['anthost', this.moduleId.storage], this.onSubsystemLoaded.bind(this));
     };
 
-    // Initialization of ANT host and USB
-    GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, USBHost, RxScanMode, Storage) {
+    // Initialization
+    GenericHostEnvironment.prototype.onSubsystemLoaded = function (ANTHost, Storage) {
 
         this.storage = new Storage({ log: true });
 
         this.host = new ANTHost({ log: true });
 
-        this.module.usb = USBHost;
-        this.module.rxscanmode = RxScanMode;
+        this.host.init(0,this.onHostInit.bind(this));
 
-        // Get default device specified by user
-        this.storage.get(Object.getPrototypeOf(this.storage).KEY.defaultDeviceId, function (db) {
-
-            this.configureUSB(db[Object.getPrototypeOf(this.storage).KEY.defaultDeviceId]);
-        }.bind(this));
     };
 
-    GenericHostEnvironment.prototype.configureUSB = function (deviceId) {
-
-        var USBoptions = {
-
-            deviceId: deviceId,
-
-            log: true,
-
-            // Requested transfer size 512 bytes - allows reading of driver buffered data
-
-            length: { in: 64 * 8 },
-
-
-        };
-
-        var usb = new this.module.usb(USBoptions),
-            hostOptions;
-
-        hostOptions = {
-
-            usb: usb,
-
-            // Reset device during init
-            reset: true,
-
-            // Append extended data
-            libconfig: 'channelid,rxtimestamp,rssi',
-
-            //maxTransferRetries : 5, // Default = 5
-
-            // Increased to 2 seconds to allow for handling buffered data (typically broadcasts) by driver (WINUSB)
-            // at start without any resending
-            transferProcessingLatency: 2000, // Default = 10 ms
-
-            log: true
-        };
-
-        this.channel = new this.module.rxscanmode({
-            log: true,
-            channelId: {
-                deviceNumber: 0,
-                //  deviceType : TEMPprofile.prototype.CHANNEL_ID.DEVICE_TYPE,
-                deviceType: 0,
-                transmissionType: 0
-            }
-        });
-
-        this.channel.addListener('page', this.onpage.bind(this));
-
-        this.host.init(hostOptions, this.onHostInit.bind(this));
-    };
 
     GenericHostEnvironment.prototype.onChannelEstablished = function (error, _pchannel) {
         //console.profileEnd();
@@ -233,21 +174,8 @@ define(['logger'], function _requireDefine(Logger) {
             if (this.logger && this.logger.logging) {
                 this.logger.log('log', "ANT host initialized");
             }
-            if (typeof this.host.usb.getDeviceWatcher === 'function' && this.logger && this.logger.logging) {
-                this.logger.log('log', 'Host environment offers device watching capability, e.g windows 8.1');
-            }
 
-            // console.profile('Establish channel');
-
-            this.host.establishChannel({
-                channelNumber: 0,
-                networkNumber: 0,
-                // channelPeriod will be ignored for RxScanMode channel
-                //channelPeriod: TEMPprofile.prototype.CHANNEL_PERIOD_ALTERNATIVE, // 0.5 Hz - every 2 seconds
-                configurationName: 'slave only',
-                channel: this.channel,
-                open: true
-            }, this.onChannelEstablished.bind(this));
+          this.host.establishRXScanModeChannel(this.onPage.bind(this),this.onChannelEstablished.bind(this));
 
         }
     };

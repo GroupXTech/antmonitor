@@ -9,6 +9,12 @@ Screenshot:
 
 ![Screenshot](/screenshot/chrome/ANTmonitor-github.png?raw=true)
 
+###Installation
+1. Download latest release https://github.com/hkskoglund/antmonitor/releases
+2. Unzip
+3. Run 'bower install' (for knockoutjs/highcharts/libantjs)
+4. Load app in chrome browser in developer mode (chrome://extensions)
+
 *nix:
 
     * Listing of attached usb devices from Dynastream
@@ -23,15 +29,6 @@ Screenshot:
     * Tracing usb traffic/packets on bus 4
 
        'cat /sys/kernel/debug/usb/usbmon/4u'
-
-Tested platforms:
-
-   *nix (Fedora/Ubuntu)
-        Chrome 36.0.1951.5 dev/Chrome stable
-
-    Windows 8.1
-
-        Chrome Canary/Chrome stable
 
 USB ANT hardware requirements:
 
@@ -55,10 +52,3 @@ Development platform:
         Windows virtual machine with  [SimulANT+](http://www.thisisant.com/developer/resources/downloads/ "SimulANT+") v ADY1.5.0.0
     Chrome
     Brackets
-
-Known issues:
-
-  * Windows: Require WINUSB drivers for ANT stick -> can be installed with the tool ZADIG http://zadig.akeo.ie/
-  * Resource relase :
-        * Garmin Express: Garmin Core Update Service must be disabled
-        * ANT Agent : must be exited
